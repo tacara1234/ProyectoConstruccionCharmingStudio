@@ -338,9 +338,9 @@ public class DAOProveedores extends GestorBD {
                 busquedaProveedor.getString(columnaTelefono),
                 busquedaProveedor.getString(columnaCorreo));
         /*
-        LinkedList<Servicio> servicios = encontrarServiciosDelProveedor(unProveedor.getIdPersona());
-        unProveedor.setServiciosQueProvee(servicios);
-        */
+         LinkedList<Servicio> servicios = encontrarServiciosDelProveedor(unProveedor.getIdPersona());
+         unProveedor.setServiciosQueProvee(servicios);
+         */
         return unProveedor;
     }
 
@@ -351,9 +351,8 @@ public class DAOProveedores extends GestorBD {
      * @return
      * @throws SQLException
      */
-    
     private static final int columnaCostoServicio = 3;
-    
+
     public LinkedList obtenerProveedoresDelServicio(String nombreServicio) throws SQLException {
         DAOServicios ctrlServicio = new DAOServicios();
         LinkedList<Proveedor> proveedores = new LinkedList();
@@ -371,24 +370,24 @@ public class DAOProveedores extends GestorBD {
             return null;
         }
 
-        Proveedor provTemporal,proveedor;
+        Proveedor provTemporal, proveedor;
         Servicio unServicio;
         while (BusquedaIdProvs.next()) {
-            
+
             provTemporal = buscarProveedorPorId(BusquedaIdProvs.getInt(columnaIdProveedor));
-            
+
             /*necesitamos nuevos objetos, debido a que puede haber
-            varios proveedores que den el mismo servicio:*/
+             varios proveedores que den el mismo servicio:*/
             proveedor = new Proveedor(provTemporal.getIdPersona(),
                     provTemporal.getNombrePersona(),
                     provTemporal.getDireccionPersona(),
                     provTemporal.getTelefonoPersona(),
                     provTemporal.getCorreoPersona());
-            
-            unServicio = new Servicio(servicio.getId(), 
+
+            unServicio = new Servicio(servicio.getId(),
                     servicio.getServNombre(),
                     BusquedaIdProvs.getFloat(columnaCostoServicio));
-            
+
             proveedor.agregarUnServicio(unServicio);
             proveedores.add(proveedor);
         }//fin while
@@ -403,8 +402,8 @@ public class DAOProveedores extends GestorBD {
         } catch (SQLException ex) {
             System.out.println("error");
             ex.printStackTrace();
-            
+
         }
     }
-    
+
 }

@@ -101,22 +101,6 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         }
     }
 
-    private static final int numColumnasDeProveedores = 4;
-
-    private void llenarListaProveedores() {
-        try {
-            //obtenemos el controlador que nos ayudará a encontrar los proveedores:
-            ControladorEventos unControlador = new ControladorEventos();
-            LinkedList proveedores = unControlador.encontrarProveedoresDeServicioBasico();
-
-            //pintamos la lista en la tabla:
-            llenarLista(listaDeProveedoresConServicios, numColumnasDeProveedores, proveedores);
-
-        } catch (SQLException ex) {
-            mostrarMensajeEnPantalla("Error con la base de datos: " + ex.getLocalizedMessage());
-        }
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -251,12 +235,23 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         });
 
         rbPaqIntermedio.setText("Paquete Intermedio");
+        rbPaqIntermedio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbPaqIntermedioActionPerformed(evt);
+            }
+        });
 
         rbPaqCompleto.setText("Paquete Completo");
+        rbPaqCompleto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbPaqCompletoActionPerformed(evt);
+            }
+        });
 
         lbTituloPaq.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lbTituloPaq.setText("Escoja el paquete que desea:");
 
+        listaDeProveedoresConServicios.setAutoCreateRowSorter(true);
         listaDeProveedoresConServicios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -329,18 +324,7 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
                 .addComponent(btnRegreso)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnAgregarEvento)
-                .addGap(220, 220, 220))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(lbTitulo)
-                        .addGap(379, 379, 379))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(panelListaClientes)
-                        .addContainerGap())
-                    .addComponent(PanelDeServicios)))
+                .addGap(221, 221, 221))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -352,17 +336,8 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnBuscarCliente))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(192, 192, 192)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(rbPaqBasico)
-                                .addGap(96, 96, 96)
-                                .addComponent(rbPaqIntermedio)
-                                .addGap(50, 50, 50)
-                                .addComponent(rbPaqCompleto))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(224, 224, 224)
-                                .addComponent(lbTituloPaq))))
+                        .addGap(416, 416, 416)
+                        .addComponent(lbTituloPaq))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -391,12 +366,33 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(lbAnio, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(0, 16, Short.MAX_VALUE))
+                                        .addGap(0, 147, Short.MAX_VALUE))
                                     .addComponent(comboAnio, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(43, 43, 43)
                         .addComponent(lbSeleccioneServicios)))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(PanelDeServicios)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lbTitulo)
+                        .addGap(379, 379, 379))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(panelListaClientes)
+                        .addContainerGap())))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(286, 286, 286)
+                .addComponent(rbPaqBasico)
+                .addGap(96, 96, 96)
+                .addComponent(rbPaqIntermedio)
+                .addGap(50, 50, 50)
+                .addComponent(rbPaqCompleto)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -435,24 +431,19 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
                             .addComponent(comboAnio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(50, 50, 50)))
                 .addComponent(lbTituloPaq)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(rbPaqBasico)
-                            .addComponent(rbPaqIntermedio)
-                            .addComponent(rbPaqCompleto))
-                        .addGap(13, 13, 13)
-                        .addComponent(lbSeleccioneServicios)
-                        .addGap(18, 18, 18)
-                        .addComponent(PanelDeServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnAgregarEvento)
-                        .addContainerGap(36, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnRegreso)
-                        .addGap(22, 22, 22))))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rbPaqBasico)
+                    .addComponent(rbPaqIntermedio)
+                    .addComponent(rbPaqCompleto))
+                .addGap(13, 13, 13)
+                .addComponent(lbSeleccioneServicios)
+                .addGap(18, 18, 18)
+                .addComponent(PanelDeServicios, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRegreso)
+                    .addComponent(btnAgregarEvento)))
         );
 
         pack();
@@ -477,26 +468,36 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
     private void rbPaqBasicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbPaqBasicoActionPerformed
         // TODO add your handling code here:
         //Solo está implementado con el paquete básico:
-        llenarListaProveedores();
+        limpiarLista(listaDeProveedoresConServicios);
+        llenarListaProveedores("Basico");
 
 
     }//GEN-LAST:event_rbPaqBasicoActionPerformed
 
-    private Date convetirStrEnDate(String strFecha){
-        Date dateFecha = null;
-        DateFormat formatoDelTexto = new SimpleDateFormat("yyyy-MM-dd");
+    private void llenarListaProveedores(String tipoPaquete) {
         try {
-            dateFecha = formatoDelTexto.parse(strFecha);
-            
-        } catch (ParseException ex) {
-            Logger.getLogger(vtnAgregaEventoSocial.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return dateFecha;
-    }
+            limpiarLista(listaDeProveedoresConServicios);
+            //obtenemos el controlador que nos ayudará a encontrar los proveedores:
+            ControladorEventos unControlador = new ControladorEventos();
 
+            DefaultTableModel modeloConDatos = unControlador.llenarListaProveedores(tipoPaquete,
+                    (DefaultTableModel) listaDeProveedoresConServicios.getModel());
+
+            this.listaDeProveedoresConServicios.setModel(modeloConDatos);
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            mostrarMensajeEnPantalla("Error con la base de datos: " + ex.getLocalizedMessage());
+        }
+    }
     private void btnAgregarEventoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarEventoActionPerformed
         //obtenemos lo necesario de la vista:
+        if (this.listaDeProveedoresConServicios.getSelectedRowCount() > 5) {
+            
+            JOptionPane.showMessageDialog(null, "No puede seleccionar múltipes renglones", "Error", JOptionPane.INFORMATION_MESSAGE);
+            
+            return;
+        }
         int idCliente = obtenerClaveClienteSeleccionado();
         int idEmpleado = obtenerClaveEmpleadoSeleccionado();
         int idMesa = obtenerClaveMesaSeleccionada();
@@ -509,11 +510,7 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         //creamos el controlador de eventos.
         try {
             ControladorEventos unControlador = new ControladorEventos();
-            
-            boolean existe = unControlador.ExisteElEvento(idCliente, idMesa, fecha, idEmpleado);
-            if(existe){
-                mostrarMensajeEnPantalla("Este evento ya existe");
-            }else{
+
             boolean seAgregoEvento = unControlador.agregarEvento(idCliente,
                     idEmpleado, idMesa, proveedores, idPaquete,
                     precioTotal, fecha);
@@ -522,23 +519,42 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
             } else {
                 mostrarMensajeEnPantalla("Evento NO Agregado");
             }
-        }
+
         } catch (SQLException ex) {
-            mostrarMensajeEnPantalla("Error con la BD este evento ya existe " );
+            mostrarMensajeEnPantalla("Error con la BD este evento ya existe ");
         }
-    
+
     }//GEN-LAST:event_btnAgregarEventoActionPerformed
 
     private void btnRegresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresoActionPerformed
         // TODO add your handling code here:
-        
+
         //hay que limpiar toda la pantalla.
         VtnEventosSociales regreso = new VtnEventosSociales();
         regreso.setVisible(true);
         this.dispose();
-        
-        
+
+
     }//GEN-LAST:event_btnRegresoActionPerformed
+
+    private void rbPaqIntermedioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbPaqIntermedioActionPerformed
+        // TODO add your handling code here:
+        limpiarLista(listaDeProveedoresConServicios);
+        llenarListaProveedores("Intermedio");
+    }//GEN-LAST:event_rbPaqIntermedioActionPerformed
+
+    private void rbPaqCompletoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbPaqCompletoActionPerformed
+        // TODO add your handling code here:
+        limpiarLista(listaDeProveedoresConServicios);
+        llenarListaProveedores("Completo");
+    }//GEN-LAST:event_rbPaqCompletoActionPerformed
+
+    private void limpiarVentana() {
+        txtNombreCliente.setText("");
+        limpiarLista(listaDeMesas);
+        limpiarLista(listaDeProveedoresConServicios);
+        limpiarLista(listaClientes);
+    }
 
     private String obtenerFecha() {
         int dia = Integer.parseInt((String) comboDia.getSelectedItem());
@@ -558,9 +574,6 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         strFecha += fecha.get(Calendar.DATE);
         return strFecha;
     }
-    
-    
-  
 
     private int obtenerClaveClienteSeleccionado() {
 
@@ -606,32 +619,17 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
             idProveedor = (int) listaDeProveedoresConServicios.
                     getValueAt(renglonesSeleccionados[vueltas], columnaIdProveedor);
 
-            
             //obtenemos el nombre del servicio que provee el proveedor:
             nombreProveedor = (String) listaDeProveedoresConServicios.
                     getValueAt(renglonesSeleccionados[vueltas], columnaNombreServicio);
-            
-            
+
             proveedores[indice] = idProveedor;
             proveedores[indice + 1] = nombreProveedor;
-            
 
             indice += 2;
         }
 
         return proveedores;
-    }
-
-    
-    /**
-     * Falta Usarla.
-     */
-    private boolean verificarProveedores(int idProveedor1, int idProveedor2) {
-        if (idProveedor1 == idProveedor2) {
-            return true;
-        }
-
-        return false;
     }
 
     private static final int columnaPrecio = 3;
@@ -643,7 +641,7 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         for (int vueltas = 0; vueltas < renglonesSeleccionados.length; vueltas++) {
             precio += (float) listaDeProveedoresConServicios.getValueAt(renglonesSeleccionados[vueltas], columnaPrecio);
         }
-           //System.out.println("Precio es" + precio);
+        //System.out.println("Precio es" + precio);
         return precio;
     }
 
@@ -676,8 +674,6 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
 
         limpiarLista(tabla);
 
-        boolean seAgregaranProveedores = false;
-
         for (Object dato : listaDeDatos) {
             switch (numColumnas) {
                 case numColumnasDeClientes:
@@ -693,28 +689,11 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
                     renglonDeDatos[1] = ((MesaDeDulces) dato).getNombreDeMesa();
                     renglonDeDatos[2] = ((MesaDeDulces) dato).getPrecio();
                     break;
-
-                case numColumnasDeProveedores:
-                    String nombreProveedor = ((Proveedor) dato).getNombrePersona();
-                    int idProveedor = ((Proveedor) dato).getIdPersona();
-                    LinkedList<Servicio> serviciosDeProveedor = ((Proveedor) dato).getServiciosQueProvee();
-
-                    for (Servicio unServicio : serviciosDeProveedor) {
-                        renglonDeDatos[0] = idProveedor;
-                        renglonDeDatos[1] = nombreProveedor;
-                        renglonDeDatos[2] = unServicio.getServNombre();
-                        renglonDeDatos[3] = unServicio.getCosto();
-                        modeloLista.addRow(renglonDeDatos);
-                    }
-                    seAgregaranProveedores = true;
-                    break;
-
             }
             //Si se agregan proveedores, entonces los renglones
             //ya han sido agregados a las tablas.
-            if (!seAgregaranProveedores) {
-                modeloLista.addRow(renglonDeDatos);
-            }
+
+            modeloLista.addRow(renglonDeDatos);
         }
 
         tabla.setModel(modeloLista);

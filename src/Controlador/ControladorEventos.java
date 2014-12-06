@@ -10,11 +10,16 @@ import Modelo.Empleado;
 import Modelo.EventosSociales;
 import Modelo.MesaDeDulces;
 import Modelo.Proveedor;
+import Modelo.Servicio;
+import com.google.gson.Gson;
 import java.sql.SQLException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -49,7 +54,6 @@ public class ControladorEventos {
 
         int idEvento = dao.agregarElementoA_TablaEventoSocial(claveCliente, claveMesaDulces, fechaEvento,
                 precioEvento, claveEmpleado);
-
 
         //Se actualiza la información de los paquetes en la BD:
         agregarPaquetes(idEvento, clavePaquete, proveedores, fechaEvento);
@@ -162,11 +166,29 @@ public class ControladorEventos {
      * @return lista simple con la información completa de los proveedores.
      * @throws SQLException
      */
-    public LinkedList encontrarProveedoresDeServicioBasico() throws SQLException {
+    public LinkedList<Proveedor> encontrarProveedoresDeServicioBasico() throws SQLException {
         LinkedList<Proveedor> proveedores = new LinkedList();
         ControladorProveedores ctrlProv = new ControladorProveedores();
 
-        proveedores = ctrlProv.obtenerTodosLosProveedoresDeservicioBasico();
+        proveedores = ctrlProv.obtenerTodosLosProveedoresDeServicioBasico();
+
+        return proveedores;
+    }
+
+    public LinkedList<Proveedor> encontrarProveedoresDeServicioIntermedio() throws SQLException {
+        LinkedList<Proveedor> proveedores = new LinkedList();
+        ControladorProveedores ctrlProv = new ControladorProveedores();
+
+        proveedores = ctrlProv.obtenerTodosLosProveedoresDeServicioIntermedio();
+
+        return proveedores;
+    }
+
+    public LinkedList<Proveedor> encontrarProveedoresDeServicioCompleto() throws SQLException {
+        LinkedList<Proveedor> proveedores = new LinkedList();
+        ControladorProveedores ctrlProv = new ControladorProveedores();
+
+        proveedores = ctrlProv.obtenerTodosLosProveedoresDeServicioCompleto();
 
         return proveedores;
     }
@@ -223,6 +245,43 @@ public class ControladorEventos {
 
     }
 
+    private static final int numColumnasDeProveedores = 4;
+
+    public DefaultTableModel llenarListaProveedores(String tipoPaquete, DefaultTableModel modeloLista) throws SQLException {
+        LinkedList<Proveedor> proveedores = new LinkedList<>();
+
+        switch (tipoPaquete) {
+            case "Basico":
+                proveedores = encontrarProveedoresDeServicioBasico();
+                break;
+            case "Intermedio":
+                proveedores = encontrarProveedoresDeServicioIntermedio();
+                break;
+            case "Completo":
+                proveedores = encontrarProveedoresDeServicioCompleto();
+                break;
+        }
+
+        Object[] renglonDeDatos = new Object[numColumnasDeProveedores];
+        
+
+        for (Proveedor unProveedor : proveedores) {
+            String nombreProveedor = unProveedor.getNombrePersona();
+            int idProveedor = unProveedor.getIdPersona();
+            LinkedList<Servicio> serviciosDeProveedor = unProveedor.getServiciosQueProvee();
+
+            for (Servicio unServicio : serviciosDeProveedor) {
+                renglonDeDatos[0] = idProveedor;
+                renglonDeDatos[1] = nombreProveedor;
+                renglonDeDatos[2] = unServicio.getServNombre();
+                renglonDeDatos[3] = unServicio.getCosto();
+                modeloLista.addRow(renglonDeDatos);
+            }
+        }
+
+        return modeloLista;
+    }
+
     public boolean eliminarEvento(int idEvento) throws SQLException {
 
         return dao.eliminarEvento(idEvento);
@@ -232,20 +291,22 @@ public class ControladorEventos {
     private String convertirFechaEnTexto(EventosSociales evento) {
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
         String fechaEvt = formatter.format(evento.getFecha());
-        
+
         return fechaEvt;
     }
 
     public boolean ExisteElEvento(int idCliente, int idMesaDulces, String fecha, int idEmpleado) throws SQLException {
         boolean existe = false;
         LinkedList<EventosSociales> listaDeEventos = dao.obtenerTodosLosEventos();
-        //EventosSociales eventoAverificar = new EventosSociales(idCliente, idMesaDulces, fecha, idEmpleado);
 
         for (EventosSociales evento : listaDeEventos) {
 
             String fechaEvt = convertirFechaEnTexto(evento);
-//Ver si se puede hacer mas corta o refactorizar de alguna manera
-            if (idCliente == evento.getIdCliente() && idMesaDulces == evento.getIdMD() && idEmpleado == evento.getIdEmpleado() && fecha.equalsIgnoreCase(fechaEvt)) {
+            //Ver si se puede hacer mas corta o refactorizar de alguna manera
+            if (idCliente == evento.getIdCliente()
+                    && idMesaDulces == evento.getIdMD()
+                    && idEmpleado == evento.getIdEmpleado()
+                    && fecha.equalsIgnoreCase(fechaEvt)) {
                 existe = true;
             }
         }
