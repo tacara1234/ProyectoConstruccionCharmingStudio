@@ -282,7 +282,7 @@ public class DAOEmpleados extends GestorBD {
 
         Statement sentenciaDeBusquedaDeEmpleados = Conexion.createStatement();
         ResultSet BusquedaDeEmpleados = sentenciaDeBusquedaDeEmpleados.
-                executeQuery("SELECT empleado.Nombre, empleado.Desempeno, empleado.Sueldo, sum(eventos.PrecioTotal) as PrecioTotal from eventos INNER JOIN empleado on eventos.idEmpleado=empleado.idEmpleado GROUP BY eventos.idEmpleado");
+                executeQuery("SELECT empleado.Nombre, empleado.Desempeno, empleado.Sueldo, sum(eventos.PrecioTotal) as PrecioTotal from eventos INNER JOIN empleado on eventos.idEmpleado=empleado.idEmpleado GROUP BY eventos.idEmpleado ORDER BY PrecioTotal DESC");
 
         /*En este caso, se espera que la búsqueda no siempre sea nula, por
          lo que nos interesa el negativo de las sentencia:*/
@@ -294,9 +294,9 @@ public class DAOEmpleados extends GestorBD {
 
                 //agregamos c/cliente a la lista:
                 empleadosConVentas.add(BusquedaDeEmpleados.getString("Nombre"));
-                empleadosConVentas.add(BusquedaDeEmpleados.getFloat("Desempeno"));
-                empleadosConVentas.add(BusquedaDeEmpleados.getInt("Sueldo"));
-                empleadosConVentas.add(BusquedaDeEmpleados.getFloat("PrecioTotal"));
+                empleadosConVentas.add(BusquedaDeEmpleados.getString("Desempeno"));
+                empleadosConVentas.add(BusquedaDeEmpleados.getString("Sueldo"));
+                empleadosConVentas.add(BusquedaDeEmpleados.getString("PrecioTotal"));
             }
             return empleadosConVentas;
         }
