@@ -22,6 +22,7 @@ public class VtnEventosSociales extends javax.swing.JFrame {
 
     private final int SI = 0;
     private final int MOSTRAR_DOS_OPCIONES = 0;
+    private int tipoDellenado = 1;
     // private static VtnEventosSociales instanciaDeVtnEventosSociales = new VtnEventosSociales();
 
     /**
@@ -137,7 +138,7 @@ public class VtnEventosSociales extends javax.swing.JFrame {
         ControladorEventos ctrlEventos = new ControladorEventos();
         try {
             DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
-            DefaultTableModel datosTablaCompleta = ctrlEventos.obtenerTodosLosEventos(datosTabla);
+            DefaultTableModel datosTablaCompleta = ctrlEventos.obtenerTodosLosEventos(datosTabla,tipoDellenado);
             this.listaEventos.setModel(datosTablaCompleta);
 
         } catch (SQLException ex) {

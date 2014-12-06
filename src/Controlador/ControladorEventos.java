@@ -50,7 +50,6 @@ public class ControladorEventos {
         int idEvento = dao.agregarElementoA_TablaEventoSocial(claveCliente, claveMesaDulces, fechaEvento,
                 precioEvento, claveEmpleado);
 
-
         //Se actualiza la información de los paquetes en la BD:
         agregarPaquetes(idEvento, clavePaquete, proveedores, fechaEvento);
 
@@ -171,14 +170,61 @@ public class ControladorEventos {
         return proveedores;
     }
 
-    public DefaultTableModel obtenerTodosLosEventos(DefaultTableModel modelo) throws SQLException {
+    public DefaultTableModel obtenerTodosLosEventos(DefaultTableModel modelo, int opcion) throws SQLException {
 
         LinkedList<EventosSociales> listaDeEventos = dao.obtenerTodosLosEventos();
+        if (opcion == 1) {
+            return llenarListaDeDatosCompleta(listaDeEventos, modelo);
+        } else {
+            return llenarListaDeDatosParaReporte(listaDeEventos, modelo);
 
-        return llenarListaDeDatos(listaDeEventos, modelo);
+        }
+
     }
 
-    private DefaultTableModel llenarListaDeDatos(LinkedList<EventosSociales> listaDeEventos, DefaultTableModel modelo) throws SQLException {
+        private DefaultTableModel llenarListaDeDatosParaReporte(LinkedList<EventosSociales> listaDeEventos, DefaultTableModel modelo) throws SQLException {
+        //Declaramos las columnas:
+        Object columnasDeDatos[] = new Object[3];
+        ControladorCliente ctrlCliente = new ControladorCliente();
+        ControladorEmpleado ctrlEmpleado = new ControladorEmpleado();
+        ControladorMesaDeDulces ctrlMesaDulces = new ControladorMesaDeDulces();
+        if (listaDeEventos != null) {
+
+            for (EventosSociales evento : listaDeEventos) {
+
+//                Cliente ClienteDelEvento = ctrlCliente.obtenerClientePorId(evento.getIdCliente());
+//                String nombreClienteDelEvento = ClienteDelEvento.getNombrePersona();
+//
+//                Empleado ResponsableDelEvento = ctrlEmpleado.obtenerEmpleadoPorId(evento.getIdEmpleado());
+//                String nombreResponsableDelEvento = ResponsableDelEvento.getNombrePersona();
+//
+//                MesaDeDulces mesaDeDulcesDelEvento = ctrlMesaDulces.obtenerMDPorId(evento.getIdMD());
+//                String nombreMesaDeDulcesDelEvento = mesaDeDulcesDelEvento.getNombreDeMesa();
+
+                //colCliente = evento.getIdCliente() + " " + nombreClienteDelEvento;
+                //colEmpleado = evento.getIdEmpleado() + " " + nombreResponsableDelEvento;
+                //colMesaDeDulces = evento.getIdMD() + " " + nombreMesaDeDulcesDelEvento;
+
+                columnasDeDatos[0] = evento.getIdEvento();
+                //columnasDeDatos[1] = colCliente;
+                //columnasDeDatos[2] = colMesaDeDulces;
+                columnasDeDatos[1] = evento.getFecha();
+                //EL PRECIO TOTAL NO SE COMO OBTENERLO ESE QUE TIENE SIEMPRE PONE 0
+                //CHECAR PORFA 
+                columnasDeDatos[2] = evento.getEvtPrecioTotal();
+                //columnasDeDatos[5] = colEmpleado;
+
+                //agregamos los datos de cada columna en cada renglón:
+                modelo.addRow(columnasDeDatos);
+            }
+        }//se considera el else pero no es necesario                                           
+
+        //establecemos a nuestra tabla, el modelo que tenía:
+        return modelo;
+
+    }
+    
+    private DefaultTableModel llenarListaDeDatosCompleta(LinkedList<EventosSociales> listaDeEventos, DefaultTableModel modelo) throws SQLException {
         //Declaramos las columnas:
         Object columnasDeDatos[] = new Object[6];
         ControladorCliente ctrlCliente = new ControladorCliente();
@@ -232,7 +278,7 @@ public class ControladorEventos {
     private String convertirFechaEnTexto(EventosSociales evento) {
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
         String fechaEvt = formatter.format(evento.getFecha());
-        
+
         return fechaEvt;
     }
 

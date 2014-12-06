@@ -139,7 +139,7 @@ public class VtnReportes extends javax.swing.JFrame {
     }//GEN-LAST:event_btnReporEmpleadosActionPerformed
 
     private void btnReporGananciasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporGananciasActionPerformed
-        VtnReporGanancias ventanaReporGanancias = VtnReporGanancias.getInstanciaDeVtnReporGanancias();
+        VtnReporGanancias ventanaReporGanancias = new VtnReporGanancias();//VtnReporGanancias.getInstanciaDeVtnReporGanancias();
         ventanaReporGanancias.setVisible(true);
         cerrarEstaVentana();
         // TODO add your handling code here:
