@@ -258,7 +258,6 @@ public class ControladorEventos {
         }
 
         Object[] renglonDeDatos = new Object[numColumnasDeProveedores];
-        
 
         for (Proveedor unProveedor : proveedores) {
             String nombreProveedor = unProveedor.getNombrePersona();
@@ -277,6 +276,49 @@ public class ControladorEventos {
         return modeloLista;
     }
 
+    private static final int numColumnasDeClientes = 5;
+
+    public DefaultTableModel llenarListaEmpleado(String nombreEmpleado, DefaultTableModel modeloLista) throws SQLException {
+        LinkedList<Cliente> Clientes = obtenerInformacionClientes(nombreEmpleado);
+
+        Object[] renglonDeDatos = new Object[numColumnasDeClientes];
+
+        for (Cliente unCliente : Clientes) {
+
+            renglonDeDatos[0] = unCliente.getIdPersona();
+            renglonDeDatos[1] = unCliente.getNombrePersona();
+            renglonDeDatos[2] = unCliente.getDireccionPersona();
+            renglonDeDatos[3] = unCliente.getTelefonoPersona();
+            renglonDeDatos[4] = unCliente.getCorreoPersona();
+            modeloLista.addRow(renglonDeDatos);
+        }
+
+        return modeloLista;
+    }
+    
+    private static final int numColumnasDeMesas = 3;
+       public DefaultTableModel llenarListaMesaDulces(DefaultTableModel modeloLista) throws SQLException {
+        LinkedList<MesaDeDulces> mesas = encontrarMesasDeDulces();
+
+        Object[] renglonDeDatos = new Object[numColumnasDeMesas];
+
+        
+        for (MesaDeDulces unaMesa : mesas) {
+
+            renglonDeDatos[0] = unaMesa.getIdMesaDulces();
+            renglonDeDatos[1] = unaMesa.getNombreDeMesa();
+            renglonDeDatos[2] = unaMesa.getPrecio();
+
+            modeloLista.addRow(renglonDeDatos);
+        }
+
+        return modeloLista;
+    }
+
+
+    
+    
+    
     public boolean eliminarEvento(int idEvento) throws SQLException {
 
         return dao.eliminarEvento(idEvento);

@@ -85,9 +85,11 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
 
     private void llenarListaDeMesasDeDulces() {
         try {
+            limpiarLista(listaDeMesas);
             ControladorEventos unControlador = new ControladorEventos();
-            LinkedList<MesaDeDulces> mesas = unControlador.encontrarMesasDeDulces();
-            llenarLista(listaDeMesas, numColumnasDeMesas, mesas);
+            DefaultTableModel modeloConDatos = unControlador.llenarListaMesaDulces((DefaultTableModel)this.listaDeMesas.getModel());
+            this.listaDeMesas.setModel(modeloConDatos);
+            
         } catch (SQLException ex) {
             mostrarMensajeEnPantalla("Error con la base de datos: " + ex.getLocalizedMessage());
         }
@@ -441,16 +443,16 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private static final int numColumnasDeClientes = 5;
 
     private void btnBuscarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarClienteActionPerformed
         try {
             // TODO add your handling code here:
-
+            limpiarLista(listaClientes);
             ControladorEventos controlDeEventos = new ControladorEventos();
             String nombre = this.txtNombreCliente.getText();
-            LinkedList<Cliente> Clientes = controlDeEventos.obtenerInformacionClientes(nombre);
-            llenarLista(listaClientes, numColumnasDeClientes, Clientes);
+            DefaultTableModel modeloConDatos = controlDeEventos.llenarListaEmpleado(nombre, (DefaultTableModel) this.listaClientes.getModel());
+
+            this.listaClientes.setModel(modeloConDatos);
         } catch (SQLException ex) {
             mostrarMensajeEnPantalla("Error con la base de datos: " + ex.getLocalizedMessage());
         }
@@ -485,9 +487,10 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
     private void btnAgregarEventoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarEventoActionPerformed
         //obtenemos lo necesario de la vista:
         if (this.listaDeProveedoresConServicios.getSelectedRowCount() > 5) {
-            
-            JOptionPane.showMessageDialog(null, "No puede seleccionar múltipes renglones", "Error", JOptionPane.INFORMATION_MESSAGE);
-            
+
+            JOptionPane.showMessageDialog(null, "No puede seleccionar múltipes renglones",
+                    "Error", JOptionPane.INFORMATION_MESSAGE);
+
             return;
         }
         int idCliente = obtenerClaveClienteSeleccionado();
@@ -521,7 +524,7 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
     private void btnRegresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresoActionPerformed
         // TODO add your handling code here:
 
-        //hay que limpiar toda la pantalla.
+        limpiarVentana();
         VtnEventosSociales regreso = new VtnEventosSociales();
         regreso.setVisible(true);
         this.dispose();
@@ -654,41 +657,6 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         }
         //Si llega hasta aquí, entonces no seleccionó alguno
         return paqueteInvalido;
-    }
-
-    private static final int numColumnasDeMesas = 3;
-
-    private void llenarLista(JTable tabla, int numColumnas, LinkedList listaDeDatos) {
-
-        Object[] renglonDeDatos = new Object[numColumnas];
-
-        DefaultTableModel modeloLista = (DefaultTableModel) tabla.getModel();
-
-        limpiarLista(tabla);
-
-        for (Object dato : listaDeDatos) {
-            switch (numColumnas) {
-                case numColumnasDeClientes:
-                    renglonDeDatos[0] = ((Cliente) dato).getIdPersona();
-                    renglonDeDatos[1] = ((Cliente) dato).getNombrePersona();
-                    renglonDeDatos[2] = ((Cliente) dato).getDireccionPersona();
-                    renglonDeDatos[3] = ((Cliente) dato).getTelefonoPersona();
-                    renglonDeDatos[4] = ((Cliente) dato).getCorreoPersona();
-                    break;
-
-                case numColumnasDeMesas:
-                    renglonDeDatos[0] = ((MesaDeDulces) dato).getIdMesaDulces();
-                    renglonDeDatos[1] = ((MesaDeDulces) dato).getNombreDeMesa();
-                    renglonDeDatos[2] = ((MesaDeDulces) dato).getPrecio();
-                    break;
-            }
-            //Si se agregan proveedores, entonces los renglones
-            //ya han sido agregados a las tablas.
-
-            modeloLista.addRow(renglonDeDatos);
-        }
-
-        tabla.setModel(modeloLista);
     }
 
     private void limpiarLista(JTable tabla) {
