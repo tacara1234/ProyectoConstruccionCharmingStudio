@@ -5,13 +5,22 @@
 package Vista;
 
 import Controlador.ControladorEmpleado;
-import Modelo.Empleado;
+import java.io.FileNotFoundException;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
-
+import javax.swing.table.TableModel;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 /**
  *
  * @author Carlos
@@ -47,7 +56,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
+        btnExportarExcel = new javax.swing.JButton();
         btnRegresarVtnReportes = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         reporteTablaEmpleados = new javax.swing.JTable();
@@ -56,7 +65,12 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Reporte Empleados");
 
-        jButton1.setText("Exportar a Excel");
+        btnExportarExcel.setText("Exportar a Excel");
+        btnExportarExcel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportarExcelActionPerformed(evt);
+            }
+        });
 
         btnRegresarVtnReportes.setText("Regresar");
         btnRegresarVtnReportes.addActionListener(new java.awt.event.ActionListener() {
@@ -78,7 +92,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Float.class, java.lang.Float.class, java.lang.Float.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -99,7 +113,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(btnExportarExcel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnRegresarVtnReportes))
                     .addGroup(layout.createSequentialGroup()
@@ -116,7 +130,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(btnExportarExcel)
                     .addComponent(btnRegresarVtnReportes))
                 .addContainerGap())
         );
@@ -131,6 +145,31 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
 
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRegresarVtnReportesActionPerformed
+
+    private void btnExportarExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarExcelActionPerformed
+        FileOutputStream out = null;
+        try {
+            // TODO add your handling code here:
+            Workbook wb = new HSSFWorkbook();
+            CreationHelper createhelper = wb.getCreationHelper();
+            Sheet sheet = wb.createSheet("new sheet");
+            Row row = null;
+            Cell cell = null;
+            TableModel tableModel = this.reporteTablaEmpleados.getModel();
+            
+            crearEncabezados(sheet,tableModel);
+            poblarExcel(sheet, tableModel);
+              
+            out = new FileOutputStream("reporteEmpleados.xls");
+            wb.write(out);
+            out.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_btnExportarExcelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -167,8 +206,8 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExportarExcel;
     private javax.swing.JButton btnRegresarVtnReportes;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable reporteTablaEmpleados;
@@ -176,40 +215,38 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
 
     private void listarEmpleados() {
         ControladorEmpleado unControlador = new ControladorEmpleado();
-        
+
         try {
             LinkedList listaDeEmpleados = unControlador.buscarTodosLosEmpleadosConVentas();
-            
+
             Object columnasDeDatos[] = new Object[4];
 
-        //obtenemos el modelo default de la tabla:
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.reporteTablaEmpleados.getModel();
-            System.out.println(listaDeEmpleados.size());
-        limpiarTabla();
-        if (listaDeEmpleados != null) {
-            //agregamos a cada columna los datos que le corresponden:
-            for (int dato=0; dato<listaDeEmpleados.size();dato=dato+4) {
-                columnasDeDatos[0] = listaDeEmpleados.get(dato);
-                columnasDeDatos[1] = listaDeEmpleados.get(dato+1);
-                columnasDeDatos[2] = listaDeEmpleados.get(dato+2);
-                columnasDeDatos[3] = listaDeEmpleados.get(dato+3);
+            //obtenemos el modelo default de la tabla:
+            DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.reporteTablaEmpleados.getModel();
+            limpiarTabla();
+            if (listaDeEmpleados != null) {
+                //agregamos a cada columna los datos que le corresponden:
+                for (int dato = 0; dato < listaDeEmpleados.size(); dato = dato + 4) {
+                    columnasDeDatos[0] = listaDeEmpleados.get(dato);
+                    columnasDeDatos[1] = listaDeEmpleados.get(dato + 1);
+                    columnasDeDatos[2] = listaDeEmpleados.get(dato + 2);
+                    columnasDeDatos[3] = listaDeEmpleados.get(dato + 3);
 
-                //agregamos los datos de cada columna en cada renglón:
-                modeloDeLaTabla.addRow(columnasDeDatos);
-                
-            
+                    //agregamos los datos de cada columna en cada renglón:
+                    modeloDeLaTabla.addRow(columnasDeDatos);
+
+                }
+            } else {
+                /*El else no es necesario, pero fue considerado.*/
             }
-        } else {
-            /*El else no es necesario, pero fue considerado.*/
-        }
-        //establecemos a nuestra tabla, el modelo que tenía:
-        this.reporteTablaEmpleados.setModel(modeloDeLaTabla);
-        
+            //establecemos a nuestra tabla, el modelo que tenía:
+            this.reporteTablaEmpleados.setModel(modeloDeLaTabla);
+
         } catch (SQLException ex) {
             Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private void limpiarTabla() {
         DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.reporteTablaEmpleados.getModel();
         for (int i = 0; i < reporteTablaEmpleados.getRowCount(); i++) {
@@ -217,4 +254,27 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
             i -= 1;
         }
     }
+
+    private void crearEncabezados(Sheet sheet, TableModel tableModel) {
+        Row row = sheet.createRow(0);
+        Cell cell = null;
+            for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                cell =  row.createCell(i);
+                cell.setCellValue(tableModel.getColumnName(i));
+            }
+    }
+
+    private void poblarExcel(Sheet sheet, TableModel tableModel) {
+        Row row;
+        Cell cell;
+        for (int i = 1; i < tableModel.getRowCount()+1; i++) {
+                row = sheet.createRow(i);
+                for (int j = 0; j <  tableModel.getColumnCount(); j++) {
+                    cell =  row.createCell(j);
+                    String dinero = (j>1)? "$":"";
+                    cell.setCellValue(dinero + (String)tableModel.getValueAt(i-1, j));
+                }
+            } 
+    }
+
 }

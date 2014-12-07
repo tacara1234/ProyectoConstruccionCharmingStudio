@@ -9,6 +9,19 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import Controlador.ControladorReporGanancias;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+import javax.swing.table.TableModel;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  *
@@ -28,64 +41,58 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         limpiarTabla();
         mostrarEventos();
-        mostrarMontoTotal();
+        establecerMontoTotal();
+        EstablecerMesConMasVentas();
+        EstablecerMesConMenosVentas();
     }
 
-   // public static VtnReporGanancias getInstanciaDeVtnReporGanancias() {
-    //    return instanciaDeVtnReporGanancias;
-    //}
+  
     private void mostrarEventos() {
         ControladorEventos ctrlEventos = new ControladorEventos();
         try {
-            DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
+            DefaultTableModel datosTabla = (DefaultTableModel) this.reporteTablaGanancias.getModel();
             DefaultTableModel datosTablaCompleta = ctrlEventos.obtenerTodosLosEventos(datosTabla, tipoDellenado);
 
             //System.out.println("datos" +datosTablaCompleta.getValueAt(1,3));
-            this.listaEventos.setModel(datosTablaCompleta);
+            this.reporteTablaGanancias.setModel(datosTablaCompleta);
 
         } catch (SQLException ex) {
             Logger.getLogger(VtnEventosSociales.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private String obtenerMesConMasVentas() {
+    private void EstablecerMesConMasVentas() {
 
-        DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
-         for (int indice = 0; indice < datosTabla.getRowCount(); indice++) {
-            
-            datosTabla.getValueAt(indice, 1);
-        }
-        return "";
-    }
-    
-    private float obtenerVentasDelMes(String mes){
-        DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
-        float totalVentaDelMes = 0;
-         for (int indice = 0; indice < datosTabla.getRowCount(); indice++) {
-            if( mes.equalsIgnoreCase((String)datosTabla.getValueAt(indice, 1))){
-                totalVentaDelMes = totalVentaDelMes + (float)datosTabla.getValueAt(indice, 2);
-            }
-         }
-        
-        return totalVentaDelMes;
+        String mesConMasVentas = "";
+        DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+        ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
+        mesConMasVentas = ctrlReporGanancias.CalcularMesConMasVentas(modelo);
+
+        this.mejorMes.setText(mesConMasVentas);
     }
 
-    private void mostrarMontoTotal() {
+    private void EstablecerMesConMenosVentas() {
 
+        String mesConMenosVentas = "";
+        DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+        ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
+        mesConMenosVentas = ctrlReporGanancias.CalcularMesConMenosVentas(modelo);
+
+        this.peorMes.setText(mesConMenosVentas);
+    }
+
+    private void establecerMontoTotal() {
         float montoTotal = 0;
-        DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
-        //System.out.println("row count " + datosTabla.getRowCount());
-        //System.out.println("Va a entrar");
-        for (int indice = 0; indice < datosTabla.getRowCount(); indice++) {
+        DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+        ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
+        montoTotal = ctrlReporGanancias.calcularMontoTotal(modelo);
 
-            montoTotal = montoTotal + (float) datosTabla.getValueAt(indice, 2);
-        }
         this.montoTotal.setText(String.valueOf(montoTotal));
     }
 
     public void limpiarTabla() {
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaEventos.getModel();
-        for (int i = 0; i < listaEventos.getRowCount(); i++) {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+        for (int i = 0; i < reporteTablaGanancias.getRowCount(); i++) {
             modeloDeLaTabla.removeRow(0);
             i -= 1;
         }
@@ -101,7 +108,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        listaEventos = new javax.swing.JTable();
+        reporteTablaGanancias = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         btnRegresarVtnReportes = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
@@ -116,7 +123,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Reporte Ganancias");
 
-        listaEventos.setModel(new javax.swing.table.DefaultTableModel(
+        reporteTablaGanancias.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -124,7 +131,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
                 "Evento", "Fecha", "Precio"
             }
         ));
-        jScrollPane1.setViewportView(listaEventos);
+        jScrollPane1.setViewportView(reporteTablaGanancias);
 
         jButton1.setText("Generar Reporte Mensual");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -153,6 +160,11 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         });
 
         jButton2.setText("Generar Reporte Hasta el Momento");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Mejor Mes:");
 
@@ -168,34 +180,34 @@ public class VtnReporGanancias extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 12, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 366, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnRegresarVtnReportes))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGap(16, 16, 16)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4)
                                     .addComponent(jLabel3))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(mejorMes, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                                .addGap(10, 10, 10)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(mejorMes)
                                     .addComponent(peorMes))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                                .addGap(28, 28, 28)
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(montoTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(montoTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 366, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(19, 19, 19))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnRegresarVtnReportes)
-                        .addContainerGap())
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -242,6 +254,55 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     private void montoTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_montoTotalActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_montoTotalActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        FileOutputStream out = null;
+        Calendar calendario = Calendar.getInstance();
+        try {
+            // TODO add your handling code here:
+            
+            Workbook wb = new HSSFWorkbook();
+            CreationHelper createhelper = wb.getCreationHelper();
+            Sheet sheet = wb.createSheet("Reporte Hasta Este Momento");
+            Row row = null;
+            Cell cell = null;
+            TableModel tableModel = this.reporteTablaGanancias.getModel();
+
+            crearEncabezados(sheet, tableModel);
+            poblarExcel(sheet, tableModel);
+
+            out = new FileOutputStream("reporteGanancias.xls");
+            wb.write(out);
+            out.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+        private void poblarExcel(Sheet sheet, TableModel tableModel) {
+        Row row;
+        Cell cell;
+        for (int i = 1; i < tableModel.getRowCount()+4; i++) {
+                row = sheet.createRow(i);
+                for (int j = 0; j <  tableModel.getColumnCount(); j++) {
+                    cell =  row.createCell(j);
+                    String dinero = (j>1)? "$":"";
+                    cell.setCellValue(dinero + String.valueOf(tableModel.getValueAt(i-1, j)));
+                }
+            }
+        
+    }
+    private void crearEncabezados(Sheet sheet, TableModel tableModel) {
+        Row row = sheet.createRow(0);
+        Cell cell = null;
+        for (int i = 0; i < tableModel.getColumnCount(); i++) {
+            cell = row.createCell(i);
+            cell.setCellValue(tableModel.getColumnName(i));
+        }
+    }
 
     private void cerrarEstaVentana() {
         //BorrarDatos();
@@ -291,9 +352,9 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable listaEventos;
     private javax.swing.JTextField mejorMes;
     private javax.swing.JTextField montoTotal;
     private javax.swing.JTextField peorMes;
+    private javax.swing.JTable reporteTablaGanancias;
     // End of variables declaration//GEN-END:variables
 }
