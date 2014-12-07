@@ -6,8 +6,6 @@ import Modelo.Proveedor;
 import Modelo.Servicio;
 import java.sql.SQLException;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -98,7 +96,7 @@ public class ControladorProveedores implements ControladorPersona {
         return proveedoresConServicios;
     }
 
-    public LinkedList<Proveedor> obtenerTodosLosProveedoresDeservicioBasico() throws SQLException {
+    public LinkedList<Proveedor> obtenerTodosLosProveedoresDeServicioBasico() throws SQLException {
 
         DAOProveedores daoProv = new DAOProveedores();
         LinkedList<Proveedor> proveedoresDeBanquetera = daoProv.obtenerProveedoresDelServicio("Banquetera");
@@ -109,13 +107,44 @@ public class ControladorProveedores implements ControladorPersona {
         return proveedoresDeBanquetera;
     }
 
+    public LinkedList<Proveedor> obtenerTodosLosProveedoresDeServicioIntermedio() throws SQLException {
+
+        DAOProveedores daoProv = new DAOProveedores();
+        LinkedList<Proveedor> proveedoresDeServicioBasico = obtenerTodosLosProveedoresDeServicioBasico();
+        LinkedList<Proveedor> proveedoresDeIluminacion = daoProv.obtenerProveedoresDelServicio("Iluminacion");
+
+        LinkedList<Proveedor> proveedoresDeServicioIntermedio = combinarServicios(proveedoresDeServicioBasico, proveedoresDeIluminacion);
+
+        return proveedoresDeServicioIntermedio;
+    }
+
+    public LinkedList<Proveedor> obtenerTodosLosProveedoresDeServicioCompleto() throws SQLException {
+
+        DAOProveedores daoProv = new DAOProveedores();
+        LinkedList<Proveedor> proveedoresDeServicioIntermedio = obtenerTodosLosProveedoresDeServicioIntermedio();
+        LinkedList<Proveedor> proveedoresDeMusica = daoProv.obtenerProveedoresDelServicio("Musica");
+        LinkedList<Proveedor> proveedoresDeLugar = daoProv.obtenerProveedoresDelServicio("Lugar");
+        
+        LinkedList<Proveedor> proveedoresDeServicioCompleto = combinarServicios(proveedoresDeServicioIntermedio, proveedoresDeMusica);
+        
+        proveedoresDeServicioCompleto = combinarServicios(proveedoresDeServicioCompleto, proveedoresDeLugar);
+        
+        
+        return proveedoresDeServicioCompleto;
+    }
+
+    public static void main(String[] args) throws SQLException {
+        ControladorProveedores c = new ControladorProveedores();
+        System.out.println(c.obtenerTodosLosProveedoresDeServicioCompleto());
+    }
+    
     private LinkedList<Proveedor> combinarServicios(LinkedList<Proveedor> proveedoresDePrimerServicio,
             LinkedList<Proveedor> proveedoresDeSegundoServicio) {
 
         for (Proveedor unProveedor : proveedoresDePrimerServicio) {
             for (Proveedor otroProveedor : proveedoresDeSegundoServicio) {
                 if (unProveedor.getNombrePersona().equalsIgnoreCase(otroProveedor.getNombrePersona())) {
-                    //Ambos proveedores son iguales.
+                    //Entonces ambos proveedores son iguales.
                     LinkedList<Servicio> servicios = otroProveedor.getServiciosQueProvee();
                     for (Servicio unServicio : servicios) {
                         unProveedor.getServiciosQueProvee().add(unServicio);

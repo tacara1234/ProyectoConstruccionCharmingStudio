@@ -84,8 +84,6 @@ public class DAOServicios {
      * conexión de la BD.
      */
     public Servicio encontrarServicioPorNombre(String serv) throws SQLException {
-        System.out.println(serv);
-
         Statement sentencia = Conexion.createStatement();
         ResultSet busqueda = sentencia.executeQuery("SELECT * FROM charmingstudio.servicios"
                 + " WHERE Nombre ='" + serv + "'");

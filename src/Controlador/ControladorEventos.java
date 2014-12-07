@@ -10,10 +10,10 @@ import Modelo.Empleado;
 import Modelo.EventosSociales;
 import Modelo.MesaDeDulces;
 import Modelo.Proveedor;
+import Modelo.Servicio;
 import java.sql.SQLException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import javax.swing.table.DefaultTableModel;
 
@@ -161,11 +161,29 @@ public class ControladorEventos {
      * @return lista simple con la información completa de los proveedores.
      * @throws SQLException
      */
-    public LinkedList encontrarProveedoresDeServicioBasico() throws SQLException {
+    public LinkedList<Proveedor> encontrarProveedoresDeServicioBasico() throws SQLException {
         LinkedList<Proveedor> proveedores = new LinkedList();
         ControladorProveedores ctrlProv = new ControladorProveedores();
 
-        proveedores = ctrlProv.obtenerTodosLosProveedoresDeservicioBasico();
+        proveedores = ctrlProv.obtenerTodosLosProveedoresDeServicioBasico();
+
+        return proveedores;
+    }
+
+    public LinkedList<Proveedor> encontrarProveedoresDeServicioIntermedio() throws SQLException {
+        LinkedList<Proveedor> proveedores = new LinkedList();
+        ControladorProveedores ctrlProv = new ControladorProveedores();
+
+        proveedores = ctrlProv.obtenerTodosLosProveedoresDeServicioIntermedio();
+
+        return proveedores;
+    }
+
+    public LinkedList<Proveedor> encontrarProveedoresDeServicioCompleto() throws SQLException {
+        LinkedList<Proveedor> proveedores = new LinkedList();
+        ControladorProveedores ctrlProv = new ControladorProveedores();
+
+        proveedores = ctrlProv.obtenerTodosLosProveedoresDeServicioCompleto();
 
         return proveedores;
     }
@@ -269,6 +287,85 @@ public class ControladorEventos {
 
     }
 
+    private static final int numColumnasDeProveedores = 4;
+
+    public DefaultTableModel llenarListaProveedores(String tipoPaquete, DefaultTableModel modeloLista) throws SQLException {
+        LinkedList<Proveedor> proveedores = new LinkedList<>();
+
+        switch (tipoPaquete) {
+            case "Basico":
+                proveedores = encontrarProveedoresDeServicioBasico();
+                break;
+            case "Intermedio":
+                proveedores = encontrarProveedoresDeServicioIntermedio();
+                break;
+            case "Completo":
+                proveedores = encontrarProveedoresDeServicioCompleto();
+                break;
+        }
+
+        Object[] renglonDeDatos = new Object[numColumnasDeProveedores];
+
+        for (Proveedor unProveedor : proveedores) {
+            String nombreProveedor = unProveedor.getNombrePersona();
+            int idProveedor = unProveedor.getIdPersona();
+            LinkedList<Servicio> serviciosDeProveedor = unProveedor.getServiciosQueProvee();
+
+            for (Servicio unServicio : serviciosDeProveedor) {
+                renglonDeDatos[0] = idProveedor;
+                renglonDeDatos[1] = nombreProveedor;
+                renglonDeDatos[2] = unServicio.getServNombre();
+                renglonDeDatos[3] = unServicio.getCosto();
+                modeloLista.addRow(renglonDeDatos);
+            }
+        }
+
+        return modeloLista;
+    }
+
+    private static final int numColumnasDeClientes = 5;
+
+    public DefaultTableModel llenarListaEmpleado(String nombreEmpleado, DefaultTableModel modeloLista) throws SQLException {
+        LinkedList<Cliente> Clientes = obtenerInformacionClientes(nombreEmpleado);
+
+        Object[] renglonDeDatos = new Object[numColumnasDeClientes];
+
+        for (Cliente unCliente : Clientes) {
+
+            renglonDeDatos[0] = unCliente.getIdPersona();
+            renglonDeDatos[1] = unCliente.getNombrePersona();
+            renglonDeDatos[2] = unCliente.getDireccionPersona();
+            renglonDeDatos[3] = unCliente.getTelefonoPersona();
+            renglonDeDatos[4] = unCliente.getCorreoPersona();
+            modeloLista.addRow(renglonDeDatos);
+        }
+
+        return modeloLista;
+    }
+    
+    private static final int numColumnasDeMesas = 3;
+       public DefaultTableModel llenarListaMesaDulces(DefaultTableModel modeloLista) throws SQLException {
+        LinkedList<MesaDeDulces> mesas = encontrarMesasDeDulces();
+
+        Object[] renglonDeDatos = new Object[numColumnasDeMesas];
+
+        
+        for (MesaDeDulces unaMesa : mesas) {
+
+            renglonDeDatos[0] = unaMesa.getIdMesaDulces();
+            renglonDeDatos[1] = unaMesa.getNombreDeMesa();
+            renglonDeDatos[2] = unaMesa.getPrecio();
+
+            modeloLista.addRow(renglonDeDatos);
+        }
+
+        return modeloLista;
+    }
+
+
+    
+    
+    
     public boolean eliminarEvento(int idEvento) throws SQLException {
 
         return dao.eliminarEvento(idEvento);
@@ -285,13 +382,15 @@ public class ControladorEventos {
     public boolean ExisteElEvento(int idCliente, int idMesaDulces, String fecha, int idEmpleado) throws SQLException {
         boolean existe = false;
         LinkedList<EventosSociales> listaDeEventos = dao.obtenerTodosLosEventos();
-        //EventosSociales eventoAverificar = new EventosSociales(idCliente, idMesaDulces, fecha, idEmpleado);
 
         for (EventosSociales evento : listaDeEventos) {
 
             String fechaEvt = convertirFechaEnTexto(evento);
-//Ver si se puede hacer mas corta o refactorizar de alguna manera
-            if (idCliente == evento.getIdCliente() && idMesaDulces == evento.getIdMD() && idEmpleado == evento.getIdEmpleado() && fecha.equalsIgnoreCase(fechaEvt)) {
+            //Ver si se puede hacer mas corta o refactorizar de alguna manera
+            if (idCliente == evento.getIdCliente()
+                    && idMesaDulces == evento.getIdMD()
+                    && idEmpleado == evento.getIdEmpleado()
+                    && fecha.equalsIgnoreCase(fechaEvt)) {
                 existe = true;
             }
         }
