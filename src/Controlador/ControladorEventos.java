@@ -188,10 +188,10 @@ public class ControladorEventos {
         return proveedores;
     }
 
-    public DefaultTableModel obtenerTodosLosEventos(DefaultTableModel modelo, int opcion) throws SQLException {
+    public DefaultTableModel obtenerTodosLosEventos(DefaultTableModel modelo, int tipoDeLlenado) throws SQLException {
 
         LinkedList<EventosSociales> listaDeEventos = dao.obtenerTodosLosEventos();
-        if (opcion == 1) {
+        if (tipoDeLlenado == 1) {
             return llenarListaDeDatosCompleta(listaDeEventos, modelo);
         } else {
             return llenarListaDeDatosParaReporte(listaDeEventos, modelo);
@@ -199,10 +199,11 @@ public class ControladorEventos {
         }
 
     }
+    private static final int numColumnasParaReporte = 3;
 
-        private DefaultTableModel llenarListaDeDatosParaReporte(LinkedList<EventosSociales> listaDeEventos, DefaultTableModel modelo) throws SQLException {
+    private DefaultTableModel llenarListaDeDatosParaReporte(LinkedList<EventosSociales> listaDeEventos, DefaultTableModel modelo) throws SQLException {
         //Declaramos las columnas:
-        Object columnasDeDatos[] = new Object[3];
+        Object columnasDeDatos[] = new Object[numColumnasParaReporte];
         ControladorCliente ctrlCliente = new ControladorCliente();
         ControladorEmpleado ctrlEmpleado = new ControladorEmpleado();
         ControladorMesaDeDulces ctrlMesaDulces = new ControladorMesaDeDulces();
@@ -210,28 +211,11 @@ public class ControladorEventos {
 
             for (EventosSociales evento : listaDeEventos) {
 
-//                Cliente ClienteDelEvento = ctrlCliente.obtenerClientePorId(evento.getIdCliente());
-//                String nombreClienteDelEvento = ClienteDelEvento.getNombrePersona();
-//
-//                Empleado ResponsableDelEvento = ctrlEmpleado.obtenerEmpleadoPorId(evento.getIdEmpleado());
-//                String nombreResponsableDelEvento = ResponsableDelEvento.getNombrePersona();
-//
-//                MesaDeDulces mesaDeDulcesDelEvento = ctrlMesaDulces.obtenerMDPorId(evento.getIdMD());
-//                String nombreMesaDeDulcesDelEvento = mesaDeDulcesDelEvento.getNombreDeMesa();
-
-                //colCliente = evento.getIdCliente() + " " + nombreClienteDelEvento;
-                //colEmpleado = evento.getIdEmpleado() + " " + nombreResponsableDelEvento;
-                //colMesaDeDulces = evento.getIdMD() + " " + nombreMesaDeDulcesDelEvento;
-
                 columnasDeDatos[0] = evento.getIdEvento();
-                //columnasDeDatos[1] = colCliente;
-                //columnasDeDatos[2] = colMesaDeDulces;
-                columnasDeDatos[1] = evento.getFecha();
-                //EL PRECIO TOTAL NO SE COMO OBTENERLO ESE QUE TIENE SIEMPRE PONE 0
-                //CHECAR PORFA 
-                columnasDeDatos[2] = evento.getEvtPrecioTotal();
-                //columnasDeDatos[5] = colEmpleado;
 
+                columnasDeDatos[1] = evento.getFecha();
+
+                columnasDeDatos[2] = evento.getEvtPrecioTotal();
                 //agregamos los datos de cada columna en cada renglón:
                 modelo.addRow(columnasDeDatos);
             }
@@ -241,10 +225,12 @@ public class ControladorEventos {
         return modelo;
 
     }
-    
+
+    private static final int numColumnasDeDatosCompletos = 6;
+
     private DefaultTableModel llenarListaDeDatosCompleta(LinkedList<EventosSociales> listaDeEventos, DefaultTableModel modelo) throws SQLException {
         //Declaramos las columnas:
-        Object columnasDeDatos[] = new Object[6];
+        Object columnasDeDatos[] = new Object[numColumnasDeDatosCompletos];
         ControladorCliente ctrlCliente = new ControladorCliente();
         ControladorEmpleado ctrlEmpleado = new ControladorEmpleado();
         ControladorMesaDeDulces ctrlMesaDulces = new ControladorMesaDeDulces();
@@ -272,8 +258,7 @@ public class ControladorEventos {
                 columnasDeDatos[1] = colCliente;
                 columnasDeDatos[2] = colMesaDeDulces;
                 columnasDeDatos[3] = evento.getFecha();
-                //EL PRECIO TOTAL NO SE COMO OBTENERLO ESE QUE TIENE SIEMPRE PONE 0
-                //CHECAR PORFA 
+
                 columnasDeDatos[4] = evento.getEvtPrecioTotal();
                 columnasDeDatos[5] = colEmpleado;
 
@@ -342,14 +327,14 @@ public class ControladorEventos {
 
         return modeloLista;
     }
-    
+
     private static final int numColumnasDeMesas = 3;
-       public DefaultTableModel llenarListaMesaDulces(DefaultTableModel modeloLista) throws SQLException {
+
+    public DefaultTableModel llenarListaMesaDulces(DefaultTableModel modeloLista) throws SQLException {
         LinkedList<MesaDeDulces> mesas = encontrarMesasDeDulces();
 
         Object[] renglonDeDatos = new Object[numColumnasDeMesas];
 
-        
         for (MesaDeDulces unaMesa : mesas) {
 
             renglonDeDatos[0] = unaMesa.getIdMesaDulces();
@@ -362,10 +347,6 @@ public class ControladorEventos {
         return modeloLista;
     }
 
-
-    
-    
-    
     public boolean eliminarEvento(int idEvento) throws SQLException {
 
         return dao.eliminarEvento(idEvento);

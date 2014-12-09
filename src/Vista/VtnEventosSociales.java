@@ -163,7 +163,7 @@ public class VtnEventosSociales extends javax.swing.JFrame {
     private void btnEliminarEventoSocialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarEventoSocialActionPerformed
         // TODO add your handling code here:
          /*Obtenemos el prov seleccionado de la tabla:*/
-        int idEventoQueSeEliminara = obtenerIdEventoAeliminar(); //o usar obtenerInformacionDeRenglonSelecccionado
+        int idEventoQueSeEliminara = obtenerInformacionDeRenglonSelecccionado().getIdEvento();
 
         //checamos si se seleccionó algún prov de la tabla,
         //es decir, si no es nulo.
@@ -239,47 +239,6 @@ public class VtnEventosSociales extends javax.swing.JFrame {
         //regresamos el EventoSocial.
         return new EventosSociales(id, idCliente, idMD, fecha, precio, idEmpleado);
 
-    }
-
-    private int obtenerIdEventoAeliminar() {
-        //obtiene el número del renglón seleccionado en la tabla.
-        int numDeRenglonSeleccionado = this.listaEventos.getSelectedRow();
-
-        /*Si es negativo, quiere decir que ningún renglón ha sido seleccionado:*/
-        if (numDeRenglonSeleccionado < 0) {
-            return -1;
-        }
-
-        //declaramos las constantes, de las columnas donde está la información:
-        int columnaId = 0;
-        //int columnaIdCliente = 1;
-        //int columnaIdMD = 2;
-        //int columnaFecha = 3;
-        //int columnaPrecio = 4;
-        //int columnaIdEmpleado = 5;
-
-
-        //obtenemos la información del renglón seleccionado.
-        int id = (int) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaId);
-        //String idYcliente = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdCliente);
-        //String idYmd = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdMD);
-        //Date fecha = (Date) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaFecha);
-        //float precio = (float) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaPrecio);
-        //String idYempleado = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdEmpleado);
-
-        //StringTokenizer token1 = new StringTokenizer(idYcliente, " ");
-        //StringTokenizer token2 = new StringTokenizer(idYmd, " ");
-        //StringTokenizer token3 = new StringTokenizer(idYempleado, " ");
-        //int idCliente = Integer.parseInt(token1.nextToken());
-        //int idMD = Integer.parseInt(token2.nextToken());
-        //int idEmpleado = Integer.parseInt(token3.nextToken());
-
-
-
-        //regresamos el EventoSocial.
-        //return new EventosSociales(id, idCliente, idMD, fecha, precio, idEmpleado);
-        //Regresamos el id del evento a eliminar
-        return id;
     }
 
     private void mostrarMensajeEnPantalla(String mensaje) {

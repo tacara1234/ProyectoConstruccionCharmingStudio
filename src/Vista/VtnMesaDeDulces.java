@@ -226,7 +226,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
             /*El controlador, devuelve una lista con los clientes que coincidieron con la búsqueda:*/
             LinkedList<MesaDeDulces> listaDeMesaDeDulces = 
                     controladorMD.buscarCoincidencias(nombreMesa);
-            llenarTablaDeDatos(listaDeMesaDeDulces);
+            llenarListaDeDatos(listaDeMesaDeDulces);
 
         } catch (SQLException ex) {
 
@@ -316,7 +316,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
 
     private void borrarDatos() {
         this.txtNombreMesaDeDulces.setText("");
-        llenarTablaDeDatos(null);
+        llenarListaDeDatos(null);
 
     }
 
@@ -325,7 +325,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
     private static final int columnaPrecio = 2;
     private static final int totalColumnas = 3;
     
-    private void llenarTablaDeDatos(LinkedList<MesaDeDulces> listaDeMesasDeDulces) {
+    private void llenarListaDeDatos(LinkedList<MesaDeDulces> listaDeMesasDeDulces) {
         //Declaramos las columnas:
         Object renglonDeDatos[] = new Object[totalColumnas];
 

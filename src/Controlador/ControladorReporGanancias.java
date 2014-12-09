@@ -1,7 +1,5 @@
 package Controlador;
 
-import static java.sql.JDBCType.DATE;
-import static java.util.Calendar.DATE;
 import java.util.Date;
 import java.util.StringTokenizer;
 import javax.swing.table.DefaultTableModel;
@@ -11,27 +9,12 @@ import javax.swing.table.DefaultTableModel;
  * @version 1.0
  * @created 19-sep-2014 02:35:55 p.m.
  */
-public class ControladorReporGanancias implements AdministraReportes {
+public class ControladorReporGanancias {
 
     private Date fecha;
 
     public ControladorReporGanancias() {
 
-    }
-
-    @Override
-    public Object generaReportes() {
-        return null;
-    }
-
-    /**
-     *
-     * @param vector
-     * @return
-     */
-    @Override
-    public boolean exportaReportes(Object vector) {
-        return false;
     }
 
     public float calcularMontoTotal(DefaultTableModel datosTabla) {
@@ -46,19 +29,20 @@ public class ControladorReporGanancias implements AdministraReportes {
         return montoTotal;
     }
 
+    private final int enero = 1;
+    private final int febrero = 2;
+    private final int marzo = 3;
+    private final int abril = 4;
+    private final int mayo = 5;
+    private final int junio = 6;
+    private final int julio = 7;
+    private final int agosto = 8;
+    private final int septiembre = 9;
+    private final int octubre = 10;
+    private final int noviembre = 11;
+    private final int diciembre = 12;
+
     public String CalcularMesConMasVentas(DefaultTableModel datosTabla) {
-        int enero = 1;
-        int febrero = 2;
-        int marzo = 3;
-        int abril = 4;
-        int mayo = 5;
-        int junio = 6;
-        int julio = 7;
-        int agosto = 8;
-        int septiembre = 9;
-        int octubre = 10;
-        int noviembre = 11;
-        int diciembre = 12;
 
         float[] ventasDelmes = new float[12];
 
@@ -89,21 +73,9 @@ public class ControladorReporGanancias implements AdministraReportes {
     }
 
     public String CalcularMesConMenosVentas(DefaultTableModel datosTabla) {
-        int enero = 1;
-        int febrero = 2;
-        int marzo = 3;
-        int abril = 4;
-        int mayo = 5;
-        int junio = 6;
-        int julio = 7;
-        int agosto = 8;
-        int septiembre = 9;
-        int octubre = 10;
-        int noviembre = 11;
-        int diciembre = 12;
-
+        
         float[] ventasDelmes = new float[12];
-
+        //datosTabla.getValueAt(i, 1);
         String mesConMenosVentas = "";
         ventasDelmes[0] = obtenerVentasDelMes(datosTabla, enero);
         ventasDelmes[1] = obtenerVentasDelMes(datosTabla, febrero);
@@ -173,11 +145,20 @@ public class ControladorReporGanancias implements AdministraReportes {
     }
 
     private float obtenerGananciaMenor(float[] ganancias) {
-        float gananciaMenor = ganancias[0];
-        //float resultado = 0;
-        for (int i = 1; i < ganancias.length; i++) {
-            if (ganancias[i] < gananciaMenor) {
+        boolean band = false;
+        float gananciaMenor = -1;        //float resultado = 0;
+        for (int i = 0; i < ganancias.length; i++) {
+            if (ganancias[i] == 0) {
+                
+            }else{
+                if(band==false){
                 gananciaMenor = ganancias[i];
+                band =true;
+                }else{
+                    if(gananciaMenor>ganancias[i]){
+                        gananciaMenor = ganancias[i];
+                    }
+                }
             }
         }
         return gananciaMenor;

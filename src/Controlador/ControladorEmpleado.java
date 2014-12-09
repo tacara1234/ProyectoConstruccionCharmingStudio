@@ -5,6 +5,10 @@ import Modelo.Empleado;
 import Modelo.Persona;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -92,6 +96,54 @@ public class ControladorEmpleado implements ControladorPersona {
 
         return dao.obtenerTodosLosEmpleadosConVentas();
 
+    }
+    
+    public void llenarListaDeEmpleados(JTable tabla, String nombre){
+        try {
+            DefaultTableModel modelo = (DefaultTableModel)tabla.getModel();
+            LinkedList<Empleado> listaDeEmpleados = buscarCoincidencias(nombre);
+            llenarListaDeDatos(listaDeEmpleados,tabla);
+        } catch (SQLException ex) {
+            Logger.getLogger(ControladorEmpleado.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+     private void llenarListaDeDatos(LinkedList<Empleado> listaDeEmpleados,JTable tabla) {
+        //Declaramos las columnas:
+        Object columnasDeDatos[] = new Object[7];
+
+        //obtenemos el modelo default de la tabla:
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) tabla.getModel();
+
+        limpiarLista(tabla);
+        if (listaDeEmpleados != null) {
+            //agregamos a cada columna los datos que le corresponden:
+            for (Empleado empleado : listaDeEmpleados) {
+                columnasDeDatos[0] = empleado.getIdPersona();
+                columnasDeDatos[1] = empleado.getNombrePersona();
+                columnasDeDatos[2] = empleado.getDireccionPersona();
+                columnasDeDatos[3] = empleado.getTelefonoPersona();
+                columnasDeDatos[4] = empleado.getCorreoPersona();
+                columnasDeDatos[5] = empleado.getEmpDesempenio();
+                columnasDeDatos[6] = empleado.getEmpSueldo();
+
+                //agregamos los datos de cada columna en cada renglón:
+                modeloDeLaTabla.addRow(columnasDeDatos);
+            }
+        } else {
+            /*El else no es necesario, pero fue considerado.*/
+        }
+        //establecemos a nuestra tabla, el modelo que tenía:
+        tabla.setModel(modeloDeLaTabla);
+
+    }
+     
+         private void limpiarLista(JTable tabla) {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) tabla.getModel();
+        for (int i = 0; i < tabla.getRowCount(); i++) {
+            modeloDeLaTabla.removeRow(0);
+            i -= 1;
+        }
     }
     
     

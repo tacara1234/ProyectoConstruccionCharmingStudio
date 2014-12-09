@@ -9,11 +9,12 @@ import Modelo.Empleado;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * 
+ *
  */
 public class VtnEmpleados extends javax.swing.JFrame {
 
@@ -46,7 +47,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
 
         btnAgregarEmpleado = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaEmpleados = new javax.swing.JTable();
+        listaEmpleados = new javax.swing.JTable();
         btnBuscarEmpleado = new javax.swing.JButton();
         txtNombreEmpleado = new javax.swing.JTextField();
         btnRegresarVtnPrincipal = new javax.swing.JButton();
@@ -64,7 +65,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
             }
         });
 
-        tablaEmpleados.setModel(new javax.swing.table.DefaultTableModel(
+        listaEmpleados.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -72,12 +73,12 @@ public class VtnEmpleados extends javax.swing.JFrame {
                 "Id", "Nombre", "Direccion", "Telefono", "Correo", "Desempeño", "Sueldo"
             }
         ));
-        tablaEmpleados.addVetoableChangeListener(new java.beans.VetoableChangeListener() {
+        listaEmpleados.addVetoableChangeListener(new java.beans.VetoableChangeListener() {
             public void vetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {
-                tablaEmpleadosVetoableChange(evt);
+                listaEmpleadosVetoableChange(evt);
             }
         });
-        jScrollPane1.setViewportView(tablaEmpleados);
+        jScrollPane1.setViewportView(listaEmpleados);
 
         btnBuscarEmpleado.setText("Buscar");
         btnBuscarEmpleado.addActionListener(new java.awt.event.ActionListener() {
@@ -197,17 +198,17 @@ public class VtnEmpleados extends javax.swing.JFrame {
         /*Declaramos el controlador que busca los empleados
          en la base de datos:                              */
         ControladorEmpleado ctrlBuscarEmpleados = new ControladorEmpleado();
-
-        try {
-            /*El controlador, devuelve una lista con los empleados que coincidieron con la búsqueda:*/
-            LinkedList<Empleado> listaDeEmpleados = ctrlBuscarEmpleados.buscarCoincidencias(this.txtNombreEmpleado.getText());
-            llenarTablaDeDatos(listaDeEmpleados);
-
-        } catch (SQLException ex) {
-
-            //si hay Excepción, mostramos el mensaje en pantalla:
-            mostrarMensajeEnPantalla("Hubo un error: " + ex.getLocalizedMessage());
-        }
+        ctrlBuscarEmpleados.llenarListaDeEmpleados(this.listaEmpleados,this.txtNombreEmpleado.getText());
+//        try {
+//            /*El controlador, devuelve una lista con los empleados que coincidieron con la búsqueda:*/
+//            LinkedList<Empleado> listaDeEmpleados = ctrlBuscarEmpleados.buscarCoincidencias(this.txtNombreEmpleado.getText());
+//            llenarListaDeDatos(listaDeEmpleados);
+//
+//        } catch (SQLException ex) {
+//
+//            //si hay Excepción, mostramos el mensaje en pantalla:
+//            mostrarMensajeEnPantalla("Hubo un error: " + ex.getLocalizedMessage());
+//        }
     }//GEN-LAST:event_btnBuscarEmpleadoActionPerformed
 
     private void btnModificarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarEmpleadoActionPerformed
@@ -258,32 +259,9 @@ public class VtnEmpleados extends javax.swing.JFrame {
             vtnModificaEmpleado.getTxtSueldoEmpleado().setText(Float.toString(sueldo));
 
             //Obtenemos el sueldo del empleado que se seleccionó en la tabla:
-            float desempenio = empleadoTemporal.getEmpDesempenio();          
-            
-            if (desempenio == vtnModificaEmpleado.getValCbDesempenio1()) {
+            float desempenio = empleadoTemporal.getEmpDesempenio();
 
-                vtnModificaEmpleado.getCbDesempenio1().setSelected(true);
-            }
-            if (desempenio == vtnModificaEmpleado.getValCbDesempenio2()) {
-
-                vtnModificaEmpleado.getCbDesempenio2().setSelected(true);
-            }
-            if (desempenio == vtnModificaEmpleado.getValCbDesempenio3()) {
-
-                vtnModificaEmpleado.getCbDesempenio3().setSelected(true);
-            }
-            
-            if (desempenio == vtnModificaEmpleado.getValCbDesempenio4()) {
-
-                vtnModificaEmpleado.getCbDesempenio4().setSelected(true);
-            }
-
-            
-            if (desempenio == vtnModificaEmpleado.getValCbDesempenio5()) {
-
-                vtnModificaEmpleado.getCbDesempenio5().setSelected(true);
-            }
-
+            establecerDesempenioEnVtn(desempenio, vtnModificaEmpleado);
 
             //le ponemos el título a la ventana:
             vtnModificaEmpleado.setTitle("Modificará la información de un empleado");
@@ -292,7 +270,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
             vtnModificaEmpleado.setSeModificaraEmpleado(true);
             //hacemos visible la ventana:
             vtnModificaEmpleado.setVisible(true);
-            
+
             vtnModificaEmpleado.setEmpleadoDeLaTabla(empleadoTemporal);
 
             //cerramos esta ventana:
@@ -305,9 +283,34 @@ public class VtnEmpleados extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnModificarEmpleadoActionPerformed
 
-        private Empleado obtenerInformacionDeRenglonSelecccionado() {
+    private void establecerDesempenioEnVtn(float desempenio, VtnAgrega_oModificaEmpleados vtnModificaEmpleado) {
+        if (desempenio == vtnModificaEmpleado.getValCbDesempenio1()) {
+
+            vtnModificaEmpleado.getCbDesempenio1().setSelected(true);
+        }
+        if (desempenio == vtnModificaEmpleado.getValCbDesempenio2()) {
+
+            vtnModificaEmpleado.getCbDesempenio2().setSelected(true);
+        }
+        if (desempenio == vtnModificaEmpleado.getValCbDesempenio3()) {
+
+            vtnModificaEmpleado.getCbDesempenio3().setSelected(true);
+        }
+
+        if (desempenio == vtnModificaEmpleado.getValCbDesempenio4()) {
+
+            vtnModificaEmpleado.getCbDesempenio4().setSelected(true);
+        }
+
+        if (desempenio == vtnModificaEmpleado.getValCbDesempenio5()) {
+
+            vtnModificaEmpleado.getCbDesempenio5().setSelected(true);
+        }
+    }
+
+    private Empleado obtenerInformacionDeRenglonSelecccionado() {
         //obtiene el número del renglón seleccionado en la tabla.
-        int numDeRenglonSeleccionado = this.tablaEmpleados.getSelectedRow();
+        int numDeRenglonSeleccionado = this.listaEmpleados.getSelectedRow();
 
         /*Si es negativo, quiere decir que ningún renglón ha sido seleccionado:*/
         if (numDeRenglonSeleccionado < 0) {
@@ -324,17 +327,17 @@ public class VtnEmpleados extends javax.swing.JFrame {
         int columnaSueldo = 6;
 
         //obtenemos la información del renglón seleccionado.
-        int id = (int) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaId);
-        String nombre = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaNombre);
-        String direccion = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaDireccion);
-        String telefono = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaTelefono);
-        String correo = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaCorreo);
-        float desempenio = (float) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaDesempenio);
-        float sueldo = (float) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaSueldo);
+        int id = (int) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaId);
+        String nombre = (String) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaNombre);
+        String direccion = (String) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaDireccion);
+        String telefono = (String) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaTelefono);
+        String correo = (String) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaCorreo);
+        float desempenio = (float) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaDesempenio);
+        float sueldo = (float) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaSueldo);
 
         //regresamos el empelado.
         return new Empleado(id, nombre, direccion, telefono, correo, desempenio, sueldo);
-        
+
     }
 
     private void btnEliminarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarEmpleadoActionPerformed
@@ -368,18 +371,18 @@ public class VtnEmpleados extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnEliminarEmpleadoActionPerformed
 
-    private void tablaEmpleadosVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_tablaEmpleadosVetoableChange
+    private void listaEmpleadosVetoableChange(java.beans.PropertyChangeEvent evt)throws java.beans.PropertyVetoException {//GEN-FIRST:event_listaEmpleadosVetoableChange
         // TODO add your handling code here:
-    }//GEN-LAST:event_tablaEmpleadosVetoableChange
+    }//GEN-LAST:event_listaEmpleadosVetoableChange
 
-    private void llenarTablaDeDatos(LinkedList<Empleado> listaDeEmpleados) {
+    private void llenarListaDeDatos(LinkedList<Empleado> listaDeEmpleados) {
         //Declaramos las columnas:
         Object columnasDeDatos[] = new Object[7];
 
         //obtenemos el modelo default de la tabla:
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaEmpleados.getModel();
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaEmpleados.getModel();
 
-        limpiarTabla();
+        limpiarLista();
         if (listaDeEmpleados != null) {
             //agregamos a cada columna los datos que le corresponden:
             for (Empleado empleado : listaDeEmpleados) {
@@ -389,7 +392,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
                 columnasDeDatos[3] = empleado.getTelefonoPersona();
                 columnasDeDatos[4] = empleado.getCorreoPersona();
                 columnasDeDatos[5] = empleado.getEmpDesempenio();
-                columnasDeDatos[6] = empleado.getEmpSueldo();               
+                columnasDeDatos[6] = empleado.getEmpSueldo();
 
                 //agregamos los datos de cada columna en cada renglón:
                 modeloDeLaTabla.addRow(columnasDeDatos);
@@ -398,13 +401,13 @@ public class VtnEmpleados extends javax.swing.JFrame {
             /*El else no es necesario, pero fue considerado.*/
         }
         //establecemos a nuestra tabla, el modelo que tenía:
-        this.tablaEmpleados.setModel(modeloDeLaTabla);
+        this.listaEmpleados.setModel(modeloDeLaTabla);
 
     }
 
-    private void limpiarTabla() {
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaEmpleados.getModel();
-        for (int i = 0; i < tablaEmpleados.getRowCount(); i++) {
+    private void limpiarLista() {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaEmpleados.getModel();
+        for (int i = 0; i < listaEmpleados.getRowCount(); i++) {
             modeloDeLaTabla.removeRow(0);
             i -= 1;
         }
@@ -412,7 +415,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
 
     private int obtenerIdEmpleadoAEliminar() {
         //obtiene el número del renglón seleccionado en la tabla.
-        int numDeRenglonSeleccionado = this.tablaEmpleados.getSelectedRow();
+        int numDeRenglonSeleccionado = this.listaEmpleados.getSelectedRow();
 
         /*Si es negativo, quiere decir que ningún renglón ha sido seleccionado:*/
         if (numDeRenglonSeleccionado < 0) {
@@ -429,7 +432,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
         //int columnaSueldo = 6;
 
         //obtenemos la información del renglón seleccionado.
-        int id = (int) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaId);
+        int id = (int) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaId);
         //String nombre = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaNombre);
         //String direccion = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaDireccion);
         //String telefono = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaTelefono);
@@ -451,7 +454,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
     private void borrarCampos() {
         this.txtNombreEmpleado.setText("");
         //this.txtNombreEmpleado.requestFocus();
-        llenarTablaDeDatos(null);
+        llenarListaDeDatos(null);
         //limpiarTabla();
     }
 
@@ -501,7 +504,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
     private javax.swing.JButton btnRegresarVtnPrincipal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tablaEmpleados;
+    private javax.swing.JTable listaEmpleados;
     private javax.swing.JTextField txtNombreEmpleado;
     // End of variables declaration//GEN-END:variables
 }
