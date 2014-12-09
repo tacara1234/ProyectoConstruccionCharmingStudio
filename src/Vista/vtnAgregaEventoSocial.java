@@ -6,12 +6,9 @@
 package Vista;
 
 import Controlador.ControladorEventos;
-import Modelo.Cliente;
-import Modelo.MesaDeDulces;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.LinkedList;
 import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -23,13 +20,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class vtnAgregaEventoSocial extends javax.swing.JFrame {
 
-    private static vtnAgregaEventoSocial ventanaAgregaEvento
-            = new vtnAgregaEventoSocial();
-
     /**
      * Creates new form vtnAgregaEventoSocial
      */
-    private vtnAgregaEventoSocial() {
+    public vtnAgregaEventoSocial() {
         initComponents();
         inicializarGrupoDeBotones();
         llenarListaDeEmpleados();
@@ -38,14 +32,6 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
     }
 
-    /**
-     * Métod singleton del JFrame para agregar un nuevo evento.
-     *
-     * @return la instancia del JFrame para agregar un nuevo evento.
-     */
-    public static vtnAgregaEventoSocial getInstanciaVtnAgregaEvento() {
-        return ventanaAgregaEvento;
-    }
 
     private void inicializarGrupoDeBotones() {
         grupoDePaquetes.add(rbPaqBasico);
@@ -546,9 +532,10 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
 
     private void limpiarVentana() {
         txtNombreCliente.setText("");
-        limpiarLista(listaDeMesas);
+//        limpiarLista(listaDeMesas);
         limpiarLista(listaDeProveedoresConServicios);
-        limpiarLista(listaClientes);
+//        limpiarLista(listaClientes);
+        listaClientes.clearSelection();
     }
 
     private String obtenerFecha() {
