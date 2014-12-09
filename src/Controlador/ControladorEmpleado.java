@@ -21,14 +21,14 @@ public class ControladorEmpleado implements ControladorPersona {
     @Override
     public boolean agregar(Persona empleado) throws SQLException {
 
-        return dao.agregar(empleado);
+        return dao.agregarElementoATabla(empleado);
 
     }
 
     @Override
     public boolean eliminar(int idEmpleado) throws SQLException {
 
-        return dao.eliminar(idEmpleado);
+        return dao.eliminarElementoPorID(idEmpleado);
     }
     
      public Empleado obtenerEmpleadoPorId(int idEmpleado) throws SQLException{
@@ -68,19 +68,19 @@ public class ControladorEmpleado implements ControladorPersona {
      * @throws SQLException
      */
     @Override
-    public LinkedList buscarCoincidencias(String nombrePersona) throws SQLException {
+    public LinkedList obtenerCoincidenciasPorNombre(String nombrePersona) throws SQLException {
 
-        return dao.buscarCoincidencias(nombrePersona);
+        return dao.obtenerCoincidenciasDeBD(nombrePersona);
     }
 
     @Override
     public boolean modificar(Persona persona) throws SQLException {
 
-        return dao.modificar(persona);
+        return dao.modificarElemento(persona);
     }
 
     @Override
-    public Empleado buscarPorNombre(String nombrePersona) throws SQLException {
+    public Empleado obtenerPersonaPorNombre(String nombrePersona) throws SQLException {
 
         return dao.buscarPorNombre(nombrePersona);
 

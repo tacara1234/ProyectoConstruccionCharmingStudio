@@ -16,7 +16,7 @@ public class ControladorProveedores implements ControladorPersona {
     DAOProveedores dao = new DAOProveedores();
 
     @Override
-    public Proveedor buscarPorNombre(String nombrePersona) throws SQLException {
+    public Proveedor obtenerPersonaPorNombre(String nombrePersona) throws SQLException {
 
         return dao.buscarPorNombre(nombrePersona);
 
@@ -28,27 +28,27 @@ public class ControladorProveedores implements ControladorPersona {
         //creamos un objeto de tipo proveedor:
         Proveedor prov = (Proveedor) proveedor;
 
-        return dao.agregar(prov);
+        return dao.agregarElementoATabla(prov);
 
     }
 
     @Override
     public boolean eliminar(int Proveedor) throws SQLException {
 
-        return dao.eliminar(Proveedor);
+        return dao.eliminarElementoPorID(Proveedor);
 
     }
 
     @Override
     public boolean modificar(Persona persona) throws SQLException {
 
-        return dao.modificar(persona);
+        return dao.modificarElemento(persona);
     }
 
     @Override
-    public LinkedList buscarCoincidencias(String nombrePersona) throws SQLException {
+    public LinkedList obtenerCoincidenciasPorNombre(String nombrePersona) throws SQLException {
 
-        return dao.buscarCoincidencias(nombrePersona);
+        return dao.obtenerCoincidenciasDeBD(nombrePersona);
 
     }
 
@@ -91,7 +91,7 @@ public class ControladorProveedores implements ControladorPersona {
     public LinkedList<Proveedor> obtenerTodosLosProveedoresConSusServicios() throws SQLException {
 
         DAOProveedores daoProv = new DAOProveedores();
-        LinkedList<Proveedor> proveedoresConServicios = daoProv.buscarCoincidencias("");
+        LinkedList<Proveedor> proveedoresConServicios = daoProv.obtenerCoincidenciasDeBD("");
 
         return proveedoresConServicios;
     }

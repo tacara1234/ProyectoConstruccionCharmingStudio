@@ -33,7 +33,7 @@ public class DAOProveedores extends GestorBD {
      * @throws java.sql.SQLException
      */
     @Override
-    public boolean agregar(Persona persona) throws SQLException {
+    public boolean agregarElementoATabla(Persona persona) throws SQLException {
 
         boolean seAgregoProveedor = false;
         Proveedor proveedor = (Proveedor) persona;
@@ -98,7 +98,7 @@ public class DAOProveedores extends GestorBD {
 
     private boolean existeUsuario(Proveedor proveedor) throws SQLException {
 
-        LinkedList<Proveedor> listaDeProveedores = buscarCoincidencias(proveedor.getNombrePersona());
+        LinkedList<Proveedor> listaDeProveedores = obtenerCoincidenciasDeBD(proveedor.getNombrePersona());
         boolean existeUsuario = false;
         if (listaDeProveedores != null) {
             for (Proveedor proveedorEnBD : listaDeProveedores) {
@@ -166,7 +166,7 @@ public class DAOProveedores extends GestorBD {
      * @throws java.sql.SQLException
      */
     @Override
-    public boolean eliminar(int idProveedor) throws SQLException {
+    public boolean eliminarElementoPorID(int idProveedor) throws SQLException {
         boolean seEliminoProveedor = false;
         Statement sentenciaEliminaProveedor = Conexion.createStatement();
 
@@ -194,7 +194,7 @@ public class DAOProveedores extends GestorBD {
      * @throws java.sql.SQLException
      */
     @Override
-    public LinkedList buscarCoincidencias(String nombrePersona) throws SQLException {
+    public LinkedList obtenerCoincidenciasDeBD(String nombrePersona) throws SQLException {
 
         Statement sentenciaDeBusquedaDeProveedores = Conexion.createStatement();
         ResultSet BusquedaDeProveedores = sentenciaDeBusquedaDeProveedores.executeQuery("SELECT * "
@@ -252,7 +252,7 @@ public class DAOProveedores extends GestorBD {
      * @throws java.sql.SQLException
      */
     @Override
-    public boolean modificar(Persona Persona) throws SQLException {
+    public boolean modificarElemento(Persona Persona) throws SQLException {
         //el parámetro solo es de entrada:
         Proveedor proveedorA_modificar = (Proveedor) Persona;
 
@@ -275,7 +275,7 @@ public class DAOProveedores extends GestorBD {
             sePudoModificarInfoProveedor = true;
         }
 
-        //devuelve si se pudo o no, modificar el cliente:
+        //devuelve si se pudo o no, modificarElemento el cliente:
         return sePudoModificarInfoProveedor;
     }
 

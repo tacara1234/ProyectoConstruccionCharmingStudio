@@ -101,7 +101,7 @@ public class ControladorEventos {
     public LinkedList<Cliente> obtenerInformacionClientes(String nombre) throws SQLException {
 
         ControladorCliente controlador = new ControladorCliente();
-        LinkedList<Cliente> listaClientes = controlador.buscarCoincidencias(nombre);
+        LinkedList<Cliente> listaClientes = controlador.obtenerCoincidenciasPorNombre(nombre);
 
         return listaClientes;
     }
@@ -241,7 +241,7 @@ public class ControladorEventos {
             String colMesaDeDulces = "";
             for (EventosSociales evento : listaDeEventos) {
 
-                Cliente ClienteDelEvento = ctrlCliente.obtenerClientePorId(evento.getIdCliente());
+                Cliente ClienteDelEvento = ctrlCliente.obtenerClientePorID(evento.getIdCliente());
                 String nombreClienteDelEvento = ClienteDelEvento.getNombrePersona();
 
                 Empleado ResponsableDelEvento = ctrlEmpleado.obtenerEmpleadoPorId(evento.getIdEmpleado());

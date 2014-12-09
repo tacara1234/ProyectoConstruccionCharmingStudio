@@ -237,7 +237,7 @@ public class VtnClientes extends javax.swing.JFrame {
 
         try {
             /*El controlador, devuelve una lista con los clientes que coincidieron con la búsqueda:*/
-            LinkedList<Cliente> listaDeClientes = ctrlBuscarClientes.buscarCoincidencias(this.txtNombreCliente.getText());
+            LinkedList<Cliente> listaDeClientes = ctrlBuscarClientes.obtenerCoincidenciasPorNombre(this.txtNombreCliente.getText());
             llenarTablaDeDatos(listaDeClientes);
 
         } catch (SQLException ex) {

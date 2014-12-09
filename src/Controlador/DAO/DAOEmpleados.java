@@ -31,7 +31,7 @@ public class DAOEmpleados extends GestorBD {
      * @throws java.sql.SQLException
      */
     @Override
-    public boolean agregar(Persona persona) throws SQLException {
+    public boolean agregarElementoATabla(Persona persona) throws SQLException {
         Empleado empleado = (Empleado) persona;
 
         Statement sentencia = Conexion.createStatement();
@@ -86,7 +86,7 @@ public class DAOEmpleados extends GestorBD {
      * @throws java.sql.SQLException
      */
     @Override
-    public boolean eliminar(int idEmpleado) throws SQLException {
+    public boolean eliminarElementoPorID(int idEmpleado) throws SQLException {
         boolean seEliminoEmpleado = false;
 
         Statement sentencia = Conexion.createStatement();
@@ -99,7 +99,7 @@ public class DAOEmpleados extends GestorBD {
 
     private boolean existeEmpleado(Empleado empleado) throws SQLException {
 
-        LinkedList<Empleado> listaDeEmpleados = buscarCoincidencias(empleado.getNombrePersona());;
+        LinkedList<Empleado> listaDeEmpleados = obtenerCoincidenciasDeBD(empleado.getNombrePersona());;
         boolean existeUsuario = false;
         if (listaDeEmpleados != null) {
             for (Empleado empleadoEnBD : listaDeEmpleados) {
@@ -173,7 +173,7 @@ public class DAOEmpleados extends GestorBD {
      * @throws java.sql.SQLException
      */
     @Override
-    public LinkedList buscarCoincidencias(String nombrePersona) throws SQLException {
+    public LinkedList obtenerCoincidenciasDeBD(String nombrePersona) throws SQLException {
         Statement sentenciaDeBusquedaDeEmpleados = Conexion.createStatement();
         ResultSet busquedaEmpleado = sentenciaDeBusquedaDeEmpleados.executeQuery("SELECT * "
                 + "FROM charmingstudio.empleado WHERE Nombre LIKE '%" + nombrePersona + "%'");
@@ -201,13 +201,13 @@ public class DAOEmpleados extends GestorBD {
     }
 
     /**
-     * Funcion que se encarga de eliminar algún empleado. NO SE HA IMPLEMENTADO.
+     * Funcion que se encarga de eliminarElementoPorID algún empleado. NO SE HA IMPLEMENTADO.
      *
      * @return
      * @throws java.sql.SQLException
      */
     @Override
-    public boolean modificar(Persona persona) throws SQLException {
+    public boolean modificarElemento(Persona persona) throws SQLException {
         //el parámetro solo es de entrada:
         Empleado empleadoA_modificar = (Empleado) persona;
 
@@ -227,7 +227,7 @@ public class DAOEmpleados extends GestorBD {
             sePudoModificarInfoEmpleado = true;
         }
 
-        //devuelve si se pudo o no, modificar el empleado:
+        //devuelve si se pudo o no, modificarElemento el empleado:
         return sePudoModificarInfoEmpleado;
 
     }

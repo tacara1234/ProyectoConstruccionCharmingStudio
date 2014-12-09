@@ -4,8 +4,25 @@
  */
 package Vista;
 
+import Controlador.ControladorProveedores;
+import Controlador.ControladorReporProveedores;
+import Modelo.Proveedor;
+import java.awt.Color;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  *
@@ -13,8 +30,9 @@ import java.util.Set;
  */
 public class VtnReporProveedores extends javax.swing.JFrame {
 
-        private static VtnReporProveedores instanciaDeVtnReporProveedores = new VtnReporProveedores();
-
+    ControladorReporProveedores ctrlRepor = new ControladorReporProveedores();
+    ControladorProveedores ctrlProv = new ControladorProveedores();
+    private static VtnReporProveedores instanciaDeVtnReporProveedores = new VtnReporProveedores();
 
     /**
      * Creates new form VtnReporProveedores
@@ -23,11 +41,10 @@ public class VtnReporProveedores extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
     }
-    
-     public static VtnReporProveedores getInstanciaDeVtnReporProveedores() {
+
+    public static VtnReporProveedores getInstanciaDeVtnReporProveedores() {
         return instanciaDeVtnReporProveedores;
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -38,29 +55,78 @@ public class VtnReporProveedores extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
+        panelGrafica = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaReporteProvs = new javax.swing.JTable();
+        btnGrafica = new javax.swing.JButton();
+        btnExportar = new javax.swing.JButton();
+        btnGenerar = new javax.swing.JButton();
+        cbServicio = new javax.swing.JComboBox();
         btnRegresarVtnReportes = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Reporte Proveedores");
 
-        jButton1.setText("Exportar a Excel");
+        javax.swing.GroupLayout panelGraficaLayout = new javax.swing.GroupLayout(panelGrafica);
+        panelGrafica.setLayout(panelGraficaLayout);
+        panelGraficaLayout.setHorizontalGroup(
+            panelGraficaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 446, Short.MAX_VALUE)
+        );
+        panelGraficaLayout.setVerticalGroup(
+            panelGraficaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 295, Short.MAX_VALUE)
+        );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaReporteProvs.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Servicio", "Proveedor", "Email", "Direccion", "Telefono", "Precio"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, true, false, true, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tablaReporteProvs);
+
+        btnGrafica.setText("Graficar");
+        btnGrafica.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGraficaActionPerformed(evt);
+            }
+        });
+
+        btnExportar.setText("Exportar a PDF");
+        btnExportar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportarActionPerformed(evt);
+            }
+        });
+
+        btnGenerar.setText("Generar datos");
+        btnGenerar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGenerarActionPerformed(evt);
+            }
+        });
+
+        cbServicio.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Banquetera", "Carpa", "Iluminacion", "Lugar", "Musica" }));
+        cbServicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbServicioActionPerformed(evt);
+            }
+        });
 
         btnRegresarVtnReportes.setText("Regresar");
         btnRegresarVtnReportes.addActionListener(new java.awt.event.ActionListener() {
@@ -76,16 +142,31 @@ public class VtnReporProveedores extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnRegresarVtnReportes)
+                .addGap(88, 88, 88))
             .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jButton1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnRegresarVtnReportes))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(23, 23, 23)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(cbServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(31, 31, 31)
+                                        .addComponent(btnGrafica))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnGenerar)
+                                        .addGap(80, 80, 80)
+                                        .addComponent(btnExportar))))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(56, 56, 56)
+                        .addComponent(panelGrafica, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -94,29 +175,153 @@ public class VtnReporProveedores extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(btnRegresarVtnReportes))
+                    .addComponent(btnExportar)
+                    .addComponent(btnGenerar))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cbServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnGrafica))
+                .addGap(18, 18, 18)
+                .addComponent(panelGrafica, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnRegresarVtnReportes)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnGraficaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGraficaActionPerformed
+        try {
+            String servicioSeleccionado = cbServicio.getSelectedItem().toString();
+            LinkedList<Proveedor> proveedores =
+                    ctrlProv.obtenerProveedoresDelServicio(servicioSeleccionado);
+            DefaultCategoryDataset bardataset = new DefaultCategoryDataset();
+
+
+            for (Proveedor proveedor : proveedores) {
+                //bardataset.setValue(ctrlRepor.devuelveServicio(proveedor, cbServicio.getSelectedItem().toString()).getCosto(),
+                //   "Proveedor", proveedor.getNombrePersona());
+                bardataset.setValue(proveedor.getServicioEspecifico(servicioSeleccionado).getCosto(),
+                        "Proveedor", proveedor.getNombrePersona());
+            }
+
+            JFreeChart barchart = ChartFactory.createBarChart(
+                    "Proveedores de " + servicioSeleccionado, //Title
+                    "Proveedor", // X-axis Label
+                    "Costo", // Y-axis Label
+                    bardataset, // Dataset
+                    PlotOrientation.VERTICAL, //Plot orientation
+                    false, // Show legend
+                    true, // Use tooltips
+                    false // Generate URLs
+                    );
+            barchart.getTitle().setPaint(Color.BLUE);    // Set the colour of the title
+            barchart.setBackgroundPaint(Color.BLACK);    // Set the background colour of the chart
+            CategoryPlot cp = barchart.getCategoryPlot();  // Get the Plot object for a bar graph
+            cp.setBackgroundPaint(Color.BLACK);       // Set the plot background colour
+            cp.setRangeGridlinePaint(Color.RED);      // Set the colour of the plot gridlines
+
+            JPanel chartPanel = new ChartPanel(barchart);
+            chartPanel.setSize(panelGrafica.getSize());
+            panelGrafica.removeAll();
+            panelGrafica.add(chartPanel);
+            panelGrafica.getParent().validate();
+            panelGrafica.updateUI();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(VtnReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnGraficaActionPerformed
+
+    private void btnExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarActionPerformed
+        try {
+            ctrlRepor.generaPDF();
+            Process p = Runtime
+                    .getRuntime()
+                    .exec("rundll32 url.dll,FileProtocolHandler tablas.pdf");
+            p.waitFor();
+        } catch (IOException ex) {
+            Logger.getLogger(VtnReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(VtnReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnExportarActionPerformed
+
+    private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
+        llenarTablaDeDatos();
+    }//GEN-LAST:event_btnGenerarActionPerformed
+
+    private void cbServicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbServicioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbServicioActionPerformed
+
     private void btnRegresarVtnReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarVtnReportesActionPerformed
-     // TODO add your handling code here:
-     VtnReportes vtnRegreso = VtnReportes.getInstanciaDeVtnReportes();
-     vtnRegreso.setVisible(true);
-     cerrarEstaVentana();   
-     
+        // TODO add your handling code here:
+        VtnReportes vtnRegreso = VtnReportes.getInstanciaDeVtnReportes();
+        vtnRegreso.setVisible(true);
+        cerrarEstaVentana();
+
     }//GEN-LAST:event_btnRegresarVtnReportesActionPerformed
     private void cerrarEstaVentana() {
         //borrarDatos();
         this.dispose();
     }
+    private final int banquetera = 0;
+    private final int carpa = 1;
+    private final int iluminacion = 2;
+    private final int lugar = 3;
+    private final int musica = 4;
 
+    private void llenarTablaDeDatos() {
+        //Declaramos las columnas:
+        Object columnasDeDatos[] = new Object[6];
+
+        //obtenemos el modelo default de la tabla:
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();
+
+        limpiarTabla();
+        try {
+            LinkedList<Proveedor> proveedores = ctrlRepor.mejoresPrecios();
+
+            agregaFila( proveedores.get(banquetera), "Banquetera", modeloDeLaTabla);
+            agregaFila( proveedores.get(carpa), "Carpa", modeloDeLaTabla);
+            agregaFila( proveedores.get(iluminacion), "Iluminacion", modeloDeLaTabla);
+            agregaFila( proveedores.get(lugar), "Lugar", modeloDeLaTabla);
+            agregaFila( proveedores.get(musica), "Musica", modeloDeLaTabla);
+
+            //establecemos a nuestra tabla, el modelo que tenía:
+            this.tablaReporteProvs.setModel(modeloDeLaTabla);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(VtnReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void agregaFila( Proveedor proveedor, String servicio, DefaultTableModel modeloDeLaTabla) {
+
+        Object columnasDeDatos[] = new Object[6];
+        columnasDeDatos[0] = servicio;
+        columnasDeDatos[1] = proveedor.getNombrePersona();
+        columnasDeDatos[2] = proveedor.getCorreoPersona();
+        columnasDeDatos[3] = proveedor.getDireccionPersona();
+        columnasDeDatos[4] = proveedor.getTelefonoPersona();
+        columnasDeDatos[5] = Float.toString(proveedor.getServicioEspecifico(servicio).getCosto());
+
+        modeloDeLaTabla.addRow(columnasDeDatos);
+    }
+
+    private void limpiarTabla() {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();
+        for (int i = 0; i < tablaReporteProvs.getRowCount(); i++) {
+            modeloDeLaTabla.removeRow(0);
+            i -= 1;
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -153,10 +358,14 @@ public class VtnReporProveedores extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnExportar;
+    private javax.swing.JButton btnGenerar;
+    private javax.swing.JButton btnGrafica;
     private javax.swing.JButton btnRegresarVtnReportes;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox cbServicio;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JPanel panelGrafica;
+    private javax.swing.JTable tablaReporteProvs;
     // End of variables declaration//GEN-END:variables
 }
