@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
@@ -199,36 +200,11 @@ public class VtnReporProveedores extends javax.swing.JFrame {
             String servicioSeleccionado = cbServicio.getSelectedItem().toString();
             LinkedList<Proveedor> proveedores =
                     ctrlProv.obtenerProveedoresDelServicio(servicioSeleccionado);
-            DefaultCategoryDataset bardataset = new DefaultCategoryDataset();
-
-
-            for (Proveedor proveedor : proveedores) {
-                //bardataset.setValue(ctrlRepor.devuelveServicio(proveedor, cbServicio.getSelectedItem().toString()).getCosto(),
-                //   "Proveedor", proveedor.getNombrePersona());
-                bardataset.setValue(proveedor.getServicioEspecifico(servicioSeleccionado).getCosto(),
-                        "Proveedor", proveedor.getNombrePersona());
-            }
-
-            JFreeChart barchart = ChartFactory.createBarChart(
-                    "Proveedores de " + servicioSeleccionado, //Title
-                    "Proveedor", // X-axis Label
-                    "Costo", // Y-axis Label
-                    bardataset, // Dataset
-                    PlotOrientation.VERTICAL, //Plot orientation
-                    false, // Show legend
-                    true, // Use tooltips
-                    false // Generate URLs
-                    );
-            barchart.getTitle().setPaint(Color.BLUE);    // Set the colour of the title
-            barchart.setBackgroundPaint(Color.BLACK);    // Set the background colour of the chart
-            CategoryPlot cp = barchart.getCategoryPlot();  // Get the Plot object for a bar graph
-            cp.setBackgroundPaint(Color.BLACK);       // Set the plot background colour
-            cp.setRangeGridlinePaint(Color.RED);      // Set the colour of the plot gridlines
-
-            JPanel chartPanel = new ChartPanel(barchart);
-            chartPanel.setSize(panelGrafica.getSize());
+            JFreeChart graficaBarras=ctrlRepor.graficaServicioEspecífico(servicioSeleccionado, proveedores);
+            JPanel panelBarras = new ChartPanel(graficaBarras);
+            panelBarras.setSize(panelGrafica.getSize());
             panelGrafica.removeAll();
-            panelGrafica.add(chartPanel);
+            panelGrafica.add(panelBarras);
             panelGrafica.getParent().validate();
             panelGrafica.updateUI();
 
@@ -240,10 +216,12 @@ public class VtnReporProveedores extends javax.swing.JFrame {
     private void btnExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarActionPerformed
         try {
             ctrlRepor.generaPDF();
-            Process p = Runtime
+            JOptionPane.showMessageDialog(null, "Generando PDF...");
+            
+            Process proceso = Runtime
                     .getRuntime()
-                    .exec("rundll32 url.dll,FileProtocolHandler tablas.pdf");
-            p.waitFor();
+                    .exec("rundll32 url.dll,FileProtocolHandler reporteProveedores.pdf");
+            proceso.waitFor();
         } catch (IOException ex) {
             Logger.getLogger(VtnReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
@@ -277,22 +255,17 @@ public class VtnReporProveedores extends javax.swing.JFrame {
     private final int musica = 4;
 
     private void llenarTablaDeDatos() {
-        //Declaramos las columnas:
-        Object columnasDeDatos[] = new Object[6];
-
-        //obtenemos el modelo default de la tabla:
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();
-
+        
         limpiarTabla();
         try {
-            LinkedList<Proveedor> proveedores = ctrlRepor.mejoresPrecios();
+            LinkedList<Proveedor> proveedores = ctrlRepor.listaMejoresProveedores();
 
-            agregaFila( proveedores.get(banquetera), "Banquetera", modeloDeLaTabla);
-            agregaFila( proveedores.get(carpa), "Carpa", modeloDeLaTabla);
-            agregaFila( proveedores.get(iluminacion), "Iluminacion", modeloDeLaTabla);
-            agregaFila( proveedores.get(lugar), "Lugar", modeloDeLaTabla);
-            agregaFila( proveedores.get(musica), "Musica", modeloDeLaTabla);
-
+            agregaFila( proveedores.get(banquetera), "Banquetera");
+            agregaFila( proveedores.get(carpa), "Carpa");
+            agregaFila( proveedores.get(iluminacion), "Iluminacion");
+            agregaFila( proveedores.get(lugar), "Lugar");
+            agregaFila( proveedores.get(musica), "Musica");
+            DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();
             //establecemos a nuestra tabla, el modelo que tenía:
             this.tablaReporteProvs.setModel(modeloDeLaTabla);
 
@@ -302,8 +275,8 @@ public class VtnReporProveedores extends javax.swing.JFrame {
 
     }
 
-    public void agregaFila( Proveedor proveedor, String servicio, DefaultTableModel modeloDeLaTabla) {
-
+    public void agregaFila( Proveedor proveedor, String servicio) {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();
         Object columnasDeDatos[] = new Object[6];
         columnasDeDatos[0] = servicio;
         columnasDeDatos[1] = proveedor.getNombrePersona();
