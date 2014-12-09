@@ -7,9 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
-import javax.swing.JOptionPane;
 
 /**
+ * Clase encargada de hacer la conexión con la Base de datos y manipular las
+ * tablas correspondientes a los clientes.
+ *
  * @author Lalo
  * @version 1.0
  * @created 19-sep-2014 02:34:05 p.m.
@@ -18,6 +20,10 @@ public class DAOClientes extends GestorBD {
 
     private Connection Conexion;
 
+    /**
+     * Crea una nueva instancia de esta clase, y a su vez una nueva conexión con
+     * la Base de datos.
+     */
     @SuppressWarnings({"static-access", "static-access"})
     public DAOClientes() {
         try {
@@ -27,22 +33,22 @@ public class DAOClientes extends GestorBD {
     }
 
     /**
-     * Este método se encarga de agregar un cliente específicamente a la base de
-     * datos.
-     *
-     * @return verdadero o falso, dependiendo de si se pudo agregar o no a la
+     * Este método se encarga de agregar un Elemento A la Tabla cliente en la
      * base de datos.
+     *
+     * @return verdadero o falso, dependiendo de si se pudo agregar el Elemento
+     * o no a la base de datos.
      * @throws java.sql.SQLException, en caso de que la conexión con la base de
      * datos no se logre o cualquier otra excepción relacionada con la base de
      * datos.
      */
     @Override
-    public boolean agregar(Persona persona) throws SQLException {
+    public boolean agregarElementoATabla(Persona persona) throws SQLException {
 
         Cliente cliente = (Cliente) persona;
         Statement sentencia = Conexion.createStatement();
         boolean seAgregoCliente = false;
-        if (!existeUsuario(cliente)) {
+        if (!existeElemento(cliente)) {
             sentencia.executeUpdate("INSERT INTO charmingstudio.cliente (`Nombre`, "
                     + "`Direccion`, `Telefono`, `Correo`)" + "VALUES("
                     + "'" + cliente.getNombrePersona() + "',"
@@ -55,31 +61,35 @@ public class DAOClientes extends GestorBD {
     }
 
     /**
-     * Método que se encarga de verificar si una persona está en la base de
-     * datos,regresa un booleano que está en verdadero cuando dicho cliente está
-     * en la BD o un falso cuando no se encuentra en la BD.
+     * Método que se encarga de verificar si un objeto persona está en la base
+     * de datos; regresa un booleano que está en verdadero cuando dicho cliente
+     * está en la BD o un falso cuando no se encuentra en la BD.
      *
-     * @param idCliente
-     * @return
+     * @param cliente es el objeto a comprobar su existencia en la BD.
+     * @return verdadero o falso, dependiendo si dicha información se encuentra
+     * almacenada en la BD.
      * @throws java.sql.SQLException, en caso de que la conexión con la base de
      * datos no se logre o cualquier otra excepción relacionada con la base de
      */
-    private boolean existeUsuario(Cliente cliente) throws SQLException {
+    private boolean existeElemento(Cliente cliente) throws SQLException {
 
-        LinkedList<Cliente> listaDeClientes = buscarCoincidencias(cliente.getNombrePersona());;
+        LinkedList<Cliente> listaDeClientes = obtenerCoincidenciasDeBD(cliente.getNombrePersona());
         boolean existeUsuario = false;
-        if (listaDeClientes != null) {
-            for (Cliente clienteEnBD : listaDeClientes) {
 
-                if (compararClientes(clienteEnBD, cliente)) {
-                    //si se cumple, entonces encontramos una coincidencia:
-                    existeUsuario = true;
-                    //rompemos el ciclo cuando encontramos coincidencia
-                    //pues no tiene caso de que siga recorriendo la lista de clientes.
-                    break;
-                }
+        if (listaDeClientes == null) {
+            return existeUsuario;
+        }
+
+        //entonces la lista no es nula:
+        for (Cliente clienteEnBD : listaDeClientes) {
+            if (compararClientes(clienteEnBD, cliente)) {
+                //si se cumple, entonces encontramos una coincidencia:
+                existeUsuario = true;
+                //rompemos el ciclo cuando encontramos coincidencia
+                //pues no tiene caso de que siga recorriendo la lista de clientes.
+                break;
             }
-        }/*el else fue considerado, pero no es usado.*/
+        }
 
         return existeUsuario;
     }
@@ -87,13 +97,13 @@ public class DAOClientes extends GestorBD {
     /**
      * Esta función se encarga de comparar todos los campos de 2 clientes.
      *
-     * @return boolean, true si son iguales en almenos un campo, falso de otro
+     * @return boolean: true si son iguales en al menos un campo, falso de otro
      * modo.
      */
-    private boolean compararClientes(Cliente clienteEncontradoEnBD, Cliente clienteA_modificar) {
+    private boolean compararClientes(Cliente clienteEncontradoEnBD, Cliente nuevoCliente) {
         //primero obtenemos ambos nombres:
         String nombrePrimerCliente = clienteEncontradoEnBD.getNombrePersona();
-        String nombreSegundoCliente = clienteA_modificar.getNombrePersona();
+        String nombreSegundoCliente = nuevoCliente.getNombrePersona();
 
         if (nombrePrimerCliente.equalsIgnoreCase(nombreSegundoCliente)) {
             return true;
@@ -101,7 +111,7 @@ public class DAOClientes extends GestorBD {
 
         //obtenemos las direcciones:
         String direccionPrimerCliente = clienteEncontradoEnBD.getDireccionPersona();
-        String direccionSegundoCliente = clienteA_modificar.getDireccionPersona();
+        String direccionSegundoCliente = nuevoCliente.getDireccionPersona();
 
         if (direccionPrimerCliente.equalsIgnoreCase(direccionSegundoCliente)) {
             return true;
@@ -109,7 +119,7 @@ public class DAOClientes extends GestorBD {
 
         //obtenemos los teléfonos:
         String telefonoPrimerCliente = clienteEncontradoEnBD.getTelefonoPersona();
-        String telefonoSegundoCliente = clienteA_modificar.getTelefonoPersona();
+        String telefonoSegundoCliente = nuevoCliente.getTelefonoPersona();
 
         if (telefonoPrimerCliente.equalsIgnoreCase(telefonoSegundoCliente)) {
             return true;
@@ -117,7 +127,7 @@ public class DAOClientes extends GestorBD {
 
         //obtenemos los correos::
         String correoPrimerCliente = clienteEncontradoEnBD.getCorreoPersona();
-        String correoSegundoCliente = clienteA_modificar.getCorreoPersona();
+        String correoSegundoCliente = nuevoCliente.getCorreoPersona();
 
         if (correoPrimerCliente.equalsIgnoreCase(correoSegundoCliente)) {
             return true;
@@ -128,7 +138,8 @@ public class DAOClientes extends GestorBD {
     }
 
     /**
-     * Método que se encarga de eliminar a una persona desde la base de datos.
+     * Método que se encarga de eliminarElementoPorID a una persona desde la
+     * base de datos.
      *
      * @param idCliente
      * @return
@@ -136,7 +147,7 @@ public class DAOClientes extends GestorBD {
      * datos no se logre o cualquier otra excepción relacionada con la base de
      */
     @Override
-    public boolean eliminar(int idCliente) throws SQLException {
+    public boolean eliminarElementoPorID(int idCliente) throws SQLException {
         boolean seEliminoCliente = false;
         Statement sentencia = Conexion.createStatement();
         sentencia.executeUpdate("DELETE FROM charmingstudio.cliente WHERE idCliente= '" + idCliente + "'");
@@ -149,35 +160,34 @@ public class DAOClientes extends GestorBD {
      * Función que se encarga de buscar Coincidencias a uno o varios clientes,
      * dependiendo de los nombres, de la base de datos.
      *
-     * @param nombrePersona que es el nombre de la persona a
-     * buscarCoincidencias.
+     * @param nombrePersona que es el nombre de la persona a encontrar en la BD.
      * @return la lista de personas que coincidan con el nombre, si solo es una
      * regresa la lista con un solo cliente.
      * @throws java.sql.SQLException, en caso de que la conexión con la base de
      * datos no se logre o cualquier otra excepción relacionada con la base de
      */
     @Override
-    public LinkedList buscarCoincidencias(String nombrePersona) throws SQLException {
+    public LinkedList obtenerCoincidenciasDeBD(String nombrePersona) throws SQLException {
 
         Statement sentenciaDeBusquedaDeClientes = Conexion.createStatement();
-        ResultSet BusquedaDeClientes = sentenciaDeBusquedaDeClientes.
+        ResultSet resultadoBusquedaDeClientes = sentenciaDeBusquedaDeClientes.
                 executeQuery("SELECT * FROM charmingstudio.cliente WHERE "
                         + "Nombre LIKE '%" + nombrePersona + "%'");
 
         /*En este caso, se espera que la búsqueda no siempre sea nula, por
          lo que nos interesa el negativo de las sentencia:*/
-        if (!BusquedaDeClientes.wasNull()) {
+        if (!resultadoBusquedaDeClientes.wasNull()) {
 
             LinkedList<Cliente> clientes = new LinkedList<>();
 
-            while (BusquedaDeClientes.next()) {
+            while (resultadoBusquedaDeClientes.next()) {
 
                 //agregamos c/cliente a la lista:
-                clientes.add(new Cliente(BusquedaDeClientes.getInt(1),
-                        BusquedaDeClientes.getString(2),
-                        BusquedaDeClientes.getString(3),
-                        BusquedaDeClientes.getString(4),
-                        BusquedaDeClientes.getString(5)));
+                clientes.add(new Cliente(resultadoBusquedaDeClientes.getInt("idCliente"),
+                        resultadoBusquedaDeClientes.getString("Nombre"),
+                        resultadoBusquedaDeClientes.getString("Direccion"),
+                        resultadoBusquedaDeClientes.getString("Telefono"),
+                        resultadoBusquedaDeClientes.getString("Correo")));
 
             }
             return clientes;
@@ -185,7 +195,20 @@ public class DAOClientes extends GestorBD {
         return null;
     }
 
-    public Cliente buscarEspecificamente(String nombreCliente) throws SQLException {
+    /**
+     * Método encargado de encontrar y devolver un elemento de la BD que
+     * coincida con el nombre que se le pasa, si hay 2 elementos en la BD con el
+     * mismo nombre, devolverá aquél que tenga el identificador de cliente más
+     * cercano al 0.
+     *
+     * @param nombreCliente en formatod e String, para que el sistema manejador
+     * de la BD haga la búsqueda.
+     * @return un objeto de tipo cliente que contenga la información encontrada
+     * en la BD.
+     * @throws SQLException en caso de que no se haya podido establecer la
+     * conexión con la BD.
+     */
+    public Cliente obtenerElementoPorNombre(String nombreCliente) throws SQLException {
         Statement sentenciaBuscaIdCliente = Conexion.createStatement();
         ResultSet busquedaIdCliente = sentenciaBuscaIdCliente.executeQuery("SELECT * FROM "
                 + "charmingstudio.cliente WHERE Nombre ='" + nombreCliente + "'");
@@ -206,13 +229,13 @@ public class DAOClientes extends GestorBD {
      * de datos, posteriormente realiza las actualizaciones de la información.
      *
      * @param persona que es el objeto cliente con las modificaciones ya hechas.
-     * @return verdadero o falso, dependiendo de si se pudo modificar la
+     * @return verdadero o falso, dependiendo de si se pudo modificarElemento la
      * información o no.
      * @throws java.sql.SQLException, en caso de que la conexión con la base de
      * datos no se logre o cualquier otra excepción relacionada con la base de
      */
     @Override
-    public boolean modificar(Persona persona) throws SQLException {
+    public boolean modificarElemento(Persona persona) throws SQLException {
         //el parámetro solo es de entrada:
         Cliente clienteA_modificar = (Cliente) persona;
 
@@ -226,16 +249,20 @@ public class DAOClientes extends GestorBD {
                         + ",`Correo`= '" + clienteA_modificar.getCorreoPersona()
                         + "' WHERE `idCliente`='" + clienteA_modificar.getIdPersona() + "'");
 
-        boolean sePudoModificarInfoCliente = false;
-        if (actualizaInfoEmpleado != 0) {
-            sePudoModificarInfoCliente = true;
-        }
-
-        //devuelve si se pudo o no, modificar el cliente:
-        return sePudoModificarInfoCliente;
+        //devuelve si se pudo o no, modificarElemento el cliente:
+        return (actualizaInfoEmpleado != 0);
     }
 
-    public LinkedList buscarTodosLosClientes() throws SQLException {
+    /**
+     * Devuelva una lista con la información de todas las tuplas que hay en la
+     * Tabla Cliente.
+     *
+     * @return la lista de Tuplas (convertidas en Objetos) con la información de
+     * los Clientes.
+     * @throws SQLException en caso de que no se haya podido establecer la
+     * conexión con la BD.
+     */
+    public LinkedList obtenerTodosLosElementosDeTabla() throws SQLException {
 
         Statement sentenciaDeBusquedaDeClientes = Conexion.createStatement();
         ResultSet BusquedaDeClientes = sentenciaDeBusquedaDeClientes.
@@ -262,30 +289,27 @@ public class DAOClientes extends GestorBD {
 
         return null;
     }
-    
-        
-    private static final int columnaIdCliente= 1;
-    private static final int columnaNombre = 2;
-    private static final int columnaDireccion = 3;
-    private static final int columnaTelefono = 4;
-    private static final int columnaCorreo = 5;
 
-    public Cliente buscarClientePorId(int idCliente) throws SQLException {
+    /**
+     * Devuelve un objeto de la base de datos, con la información de un Cliente.
+     *
+     * @param idCliente es el identificador del cliente a buscar en la BD.
+     * @return el objeto Cliente con la información almacenada en la BD.
+     * @throws SQLException en caso de que no se pueda establecer la conexión
+     * con la BD.
+     */
+    public Cliente obtenerElementoPorID(int idCliente) throws SQLException {
 
         Statement sentenciaBuscaliente = Conexion.createStatement();
         ResultSet busquedaCliente = sentenciaBuscaliente.executeQuery("SELECT * FROM "
                 + "charmingstudio.cliente WHERE idCliente ='" + idCliente + "'");
         busquedaCliente.next();
 
-        Cliente unCliente = new Cliente(busquedaCliente.getInt(columnaIdCliente),
-                busquedaCliente.getString(columnaNombre),
-                busquedaCliente.getString(columnaDireccion),
-                busquedaCliente.getString(columnaTelefono),
-                busquedaCliente.getString(columnaCorreo));
-        /*
-         LinkedList<Servicio> servicios = encontrarServiciosDelProveedor(unProveedor.getIdPersona());
-         unProveedor.setServiciosQueProvee(servicios);
-         */
+        Cliente unCliente = new Cliente(busquedaCliente.getInt("idCliente"),
+                busquedaCliente.getString("Nombre"),
+                busquedaCliente.getString("Direccion"),
+                busquedaCliente.getString("Telefono"),
+                busquedaCliente.getString("Correo"));
         return unCliente;
     }
 

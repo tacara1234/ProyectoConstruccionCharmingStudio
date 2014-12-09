@@ -200,7 +200,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
 
         try {
             /*El controlador, devuelve una lista con los empleados que coincidieron con la búsqueda:*/
-            LinkedList<Empleado> listaDeEmpleados = ctrlBuscarEmpleados.buscarCoincidencias(this.txtNombreEmpleado.getText());
+            LinkedList<Empleado> listaDeEmpleados = ctrlBuscarEmpleados.obtenerCoincidenciasPorNombre(this.txtNombreEmpleado.getText());
             llenarTablaDeDatos(listaDeEmpleados);
 
         } catch (SQLException ex) {

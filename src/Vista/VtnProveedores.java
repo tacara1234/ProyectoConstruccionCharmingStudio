@@ -186,7 +186,7 @@ public class VtnProveedores extends javax.swing.JFrame {
         try {
             /*El controlador, devuelve una lista con los provs que coincidieron con la búsqueda:*/
             LinkedList<Proveedor> listaDeProveedores
-                    = ctrlBuscaProveedores.buscarCoincidencias(nombreProveedor);
+                    = ctrlBuscaProveedores.obtenerCoincidenciasPorNombre(nombreProveedor);
             llenarTablaDeDatos(listaDeProveedores);
 
         } catch (SQLException ex) {
