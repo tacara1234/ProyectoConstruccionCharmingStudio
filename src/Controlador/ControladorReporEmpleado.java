@@ -29,38 +29,44 @@ public class ControladorReporEmpleado {
         
     }
 
-    
+    /**
+     * Genera el reporte, inicializa las variables que se usaran y llama a exporta reportes que se
+     * encarga de escribir en el Excel.
+     * @param modeloConDatos
+     * @return 
+     */
     public boolean generaReporte(TableModel modeloConDatos) {
+        boolean exportadoCorrectamente = false;
         FileOutputStream out = null;
         try {
             // TODO add your handling code here:
             Workbook wb = new HSSFWorkbook();
             Sheet sheet = wb.createSheet("new sheet");
-            Row row = null;
-            Cell cell = null;
             TableModel auxModeloConDatos = modeloConDatos;
             
-            exportaReportes(sheet, auxModeloConDatos);
+            exportadoCorrectamente = exportaReportes(sheet, auxModeloConDatos);
               
-            out = new FileOutputStream("reporteEmpleados.xls");
+            out = new FileOutputStream("ReporteEmpleados.xls");
             wb.write(out);
             out.close();
+            return exportadoCorrectamente;
         } catch (FileNotFoundException ex) {
             Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return false;
+        return exportadoCorrectamente;
     }
 
     /**
-     *
+     * Funcion que se encarga de llamar a otras funciones que estan divididas, una llena los encabezados
+     * del Excel, y la otra lo pobla de datos.
      * @param sheet
      * @param tableModel
      * @return 
      */
     
-    public boolean exportaReportes(Sheet sheet, TableModel tableModel) {
+    private boolean exportaReportes(Sheet sheet, TableModel tableModel) {
         boolean exportadoCorrectamente = false;
         crearEncabezados(sheet,tableModel);
         poblarExcel(sheet, tableModel);
@@ -69,6 +75,13 @@ public class ControladorReporEmpleado {
         return exportadoCorrectamente;
     }
 
+    /**
+     * Funcion que obtiene una tabla vacía, y llama al controlador de empleados para buscar
+     * a los empleados con las ventas, llena el modelo de la tabla con esos datos, y se los
+     * regresa a la vista para que pueda desplegarlo.
+     * @param modelo
+     * @return 
+     */
     public DefaultTableModel obtenerModeloConDatos (JTable modelo){
         ControladorEmpleado unControlador = new ControladorEmpleado();
 
