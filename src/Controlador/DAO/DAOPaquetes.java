@@ -19,6 +19,9 @@ public class DAOPaquetes {
 
     Connection Conexion;
 
+    /**
+     *Establece una nueva conexión con la BD.
+     */
     public DAOPaquetes() {
         try {
             Conexion = ConexionBaseDatos.getInstancia().getConexionBD();
@@ -60,7 +63,7 @@ public class DAOPaquetes {
      * Se encarga de encontrar todos los proveedores con sus servicios a partir
      * del ID del paquete que se le pase.
      *
-     * @param idPaquete
+     * @param idPaquete A ENCONTRAR EN LA BD.
      * @return lista simple, con la información de los proveedores (SOLO LOS IDs).
      * Por ejemplo:
      * en la posición 1 estaría: 1 1 1
@@ -69,20 +72,23 @@ public class DAOPaquetes {
      */
     public LinkedList obtenerElementosDePaquete(int idPaquete) throws SQLException {
         Statement obtencionProveedores = Conexion.createStatement();
-        ResultSet infoPaquete = obtencionProveedores.executeQuery("SELECT FROM"
+        ResultSet informacionPaquete = obtencionProveedores.executeQuery("SELECT FROM"
                 + " charmingstudio.arma WHERE idPaquete = '" + idPaquete + "'");
 
         LinkedList listaProveedores = new LinkedList();
-        while (infoPaquete.next()) {
+        
+        while (informacionPaquete.next()) {
             //obtiene el id del paquete:
-            listaProveedores.add(infoPaquete.getInt(1));
+            listaProveedores.add(informacionPaquete.getInt(COLUMNA_ID_PAQUETE));
             //obtiene el id del proveedor:
-            listaProveedores.add(infoPaquete.getInt(2));
+            listaProveedores.add(informacionPaquete.getInt(COLUMNA_ID_PROVEEDOR));
             //obtiene el id del servicio:
-            listaProveedores.add(infoPaquete.getInt(3));
+            listaProveedores.add(informacionPaquete.getInt(COLUMNA_ID_SERVICIO));
         }
 
         return listaProveedores;
     }
-
+    private static final int COLUMNA_ID_PAQUETE = 1;
+    private static final int COLUMNA_ID_PROVEEDOR = 2;
+    private static final int COLUMNA_ID_SERVICIO= 3;
 }

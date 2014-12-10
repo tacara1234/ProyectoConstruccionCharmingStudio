@@ -1,6 +1,6 @@
 package Controlador.DAO;
 
-import Modelo.EventosSociales;
+import Modelo.EventoSocial;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,8 +28,8 @@ public class DAOEventos {
     }
 
     /**
-     * Agrega la información de un nuevo evento, a la tabla de eventos en la BD y devuelve el ID
-     * que el sistema manejador de la BD le asignó.
+     * Agrega la información de un nuevo evento, a la tabla de eventos en la BD
+     * y devuelve el ID que el sistema manejador de la BD le asignó.
      *
      * @param idCliente es el identificador del cliente asociado al evento.
      * @param idMesasDulces es el identificador de la mesa de dulces que será
@@ -59,46 +59,6 @@ public class DAOEventos {
 
         return idEvento;
     }
-    private static final int columnaId = 1;
-    private static final int columnaIdCliente = 2;
-    private static final int columnaIdMD = 3;
-    private static final int columnaFecha = 4;
-    private static final int columnaPrecioTotal = 5;
-    private static final int columnaIdEmpleado = 6;
-
-    /**
-     * Método encargado de devolver la información de todos los eventos que se
-     * encuentran en la BD.
-     *
-     * @return una lista con los objetos eventos encontrados en la BD
-     * @throws SQLException en caso de que no se establezca la conexión con la
-     * BD.
-     */
-    public LinkedList obtenerTodosLosEventos() throws SQLException {
-
-        Statement sentenciaDeBusquedaDeEventos = Conexion.createStatement();
-        ResultSet BusquedaDeEventos = sentenciaDeBusquedaDeEventos.
-                executeQuery("SELECT *  FROM charmingstudio.eventos");
-
-        if (BusquedaDeEventos.wasNull()) {
-            return null;
-        }
-
-        LinkedList<EventosSociales> eventos = new LinkedList<>();
-
-        while (BusquedaDeEventos.next()) {
-
-            //agregamos c/evento a la lista:
-            eventos.add(new EventosSociales(BusquedaDeEventos.getInt(columnaId),
-                    BusquedaDeEventos.getInt(columnaIdCliente),
-                    BusquedaDeEventos.getInt(columnaIdMD),
-                    BusquedaDeEventos.getString(columnaFecha),
-                    BusquedaDeEventos.getFloat(columnaPrecioTotal),
-                    BusquedaDeEventos.getInt(columnaIdEmpleado)));
-        }
-        return eventos;
-
-    }
 
     private int obtenerID_Evento(int idCliente, int idMesasDulces,
             float PrecioTotal, int idEmpleado, String strFecha) throws SQLException {
@@ -114,6 +74,47 @@ public class DAOEventos {
 
         resultadoBusquedaID.next();
         return resultadoBusquedaID.getInt("idEvento");
+    }
+
+    private static final int columnaId = 1;
+    private static final int columnaIdCliente = 2;
+    private static final int columnaIdMD = 3;
+    private static final int columnaFecha = 4;
+    private static final int columnaPrecioTotal = 5;
+    private static final int columnaIdEmpleado = 6;
+
+    /**
+     * Método encargado de devolver la información de todos los eventos que se
+     * encuentran en la BD.
+     *
+     * @return una lista con los objetos eventos encontrados en la BD
+     * @throws SQLException en caso de que no se establezca la conexión con la
+     * BD.
+     */
+    public LinkedList obtenerTodosLosElementosDeTablaEvento() throws SQLException {
+
+        Statement sentenciaDeBusquedaDeEventos = Conexion.createStatement();
+        ResultSet BusquedaDeEventos = sentenciaDeBusquedaDeEventos.
+                executeQuery("SELECT *  FROM charmingstudio.eventos");
+
+        if (BusquedaDeEventos.wasNull()) {
+            return null;
+        }
+
+        LinkedList<EventoSocial> eventos = new LinkedList<>();
+
+        while (BusquedaDeEventos.next()) {
+
+            //agregamos c/evento a la lista:
+            eventos.add(new EventoSocial(BusquedaDeEventos.getInt(columnaId),
+                    BusquedaDeEventos.getInt(columnaIdCliente),
+                    BusquedaDeEventos.getInt(columnaIdMD),
+                    BusquedaDeEventos.getString(columnaFecha),
+                    BusquedaDeEventos.getFloat(columnaPrecioTotal),
+                    BusquedaDeEventos.getInt(columnaIdEmpleado)));
+        }
+        return eventos;
+
     }
 
     /**

@@ -1,13 +1,13 @@
 package Modelo;
 
-import java.util.Date;
-
 /**
+ * Clase que modelará lo relacionado a un evento social en la vida real.
+ *
  * @author Lalo
  * @version 1.0
  * @created 19-sep-2014 01:34:14 p.m.
  */
-public class EventosSociales {
+public class EventoSocial {
 
     private int idEvento;
     private int idCliente;
@@ -16,8 +16,18 @@ public class EventosSociales {
     private int idEmpleado;
     private float PrecioTotal;
 
-
-    public EventosSociales(int idEvento, int idCliente, int idMD, String fecha,
+    /**
+     *Inicializa un objeto de tipo Evento.
+     * 
+     * @param idEvento es el identificador único del evento a guardar.
+     * @param idCliente es el identificador del cliente asociado a este evento
+     * @param idMD es el identificador asociado a la mesa de dulces a usar en el evento,
+     * en caso de que no haya se establece en 0.
+     * @param fecha es la fecha en que se llevará a cabo el evento.
+     * @param evtPrecioTotal es el precio que la empresa cobrará por sus servicios.
+     * @param idEmpleado es el identificador del empleado responsable a organizar el evento.
+     */
+    public EventoSocial(int idEvento, int idCliente, int idMD, String fecha,
             float evtPrecioTotal, int idEmpleado) {
         this.idCliente = idCliente;
         this.idEvento = idEvento;
@@ -113,9 +123,15 @@ public class EventosSociales {
         this.PrecioTotal = precio;
     }
 
+    /** 
+     * Obtiene la información asociada a esta clase.
+     * @return
+     */
     @Override
     public String toString() {
-        return "EventosSociales{" + "idEvento=" + idEvento + ", idCliente=" + idCliente + ", idMD=" + idMD + ", Fecha=" + Fecha + ", idEmpleado=" + idEmpleado + ", PrecioTotal=" + PrecioTotal + '}';
+        return "Evento Social \n" + "idEvento=" + idEvento + ", idCliente=" + idCliente + 
+                ", idMD=" + idMD + ", Fecha=" + Fecha + ", idEmpleado=" + idEmpleado +
+                ", PrecioTotal=" + PrecioTotal ;
     }
 
 }

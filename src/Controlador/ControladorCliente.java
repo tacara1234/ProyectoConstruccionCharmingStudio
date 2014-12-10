@@ -125,7 +125,7 @@ public class ControladorCliente implements ControladorPersona {
      */
     public LinkedList obtenerTodosLosClientes() throws SQLException {
 
-        return dao.obtenerTodosLosElementosDeTabla();
+        return dao.obtenerTodosLosElementosDeTablaCliente();
 
     }
 

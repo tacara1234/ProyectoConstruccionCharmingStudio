@@ -1,6 +1,7 @@
 package Modelo;
 
 /**
+ * Clase que modela a una persona en la vida real.
  * @author Lalo
  * @version 1.0
  * @created 19-sep-2014 01:15:46 p.m.

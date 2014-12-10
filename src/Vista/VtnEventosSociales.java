@@ -5,7 +5,7 @@
 package Vista;
 
 import Controlador.ControladorEventos;
-import Modelo.EventosSociales;
+import Modelo.EventoSocial;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -201,7 +201,7 @@ public class VtnEventosSociales extends javax.swing.JFrame {
         }
     }
         
-    private EventosSociales obtenerInformacionDeRenglonSelecccionado() {
+    private EventoSocial obtenerInformacionDeRenglonSelecccionado() {
         //obtiene el número del renglón seleccionado en la tabla.
         int numDeRenglonSeleccionado = this.listaEventos.getSelectedRow();
 
@@ -237,7 +237,7 @@ public class VtnEventosSociales extends javax.swing.JFrame {
         
 
         //regresamos el EventoSocial.
-        return new EventosSociales(id, idCliente, idMD, fecha.toString(), precio, idEmpleado);
+        return new EventoSocial(id, idCliente, idMD, fecha.toString(), precio, idEmpleado);
 
     }
 

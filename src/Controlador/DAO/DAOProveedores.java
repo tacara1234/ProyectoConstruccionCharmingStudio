@@ -54,48 +54,9 @@ public class DAOProveedores extends GestorBD {
 
     }
 
-    private void Agregar_A_Tabla(Proveedor proveedor) throws SQLException {
-
-        Statement sentenciaAgregaProveedor = Conexion.createStatement();
-        sentenciaAgregaProveedor.executeUpdate("INSERT INTO charmingstudio.proveedor "
-                + "(`Nombre`, `Direccion`, `Telefono`, `Correo`)" + "VALUES("
-                + "'" + proveedor.getNombrePersona() + "',"
-                + "'" + proveedor.getDireccionPersona() + "',"
-                + "'" + proveedor.getTelefonoPersona() + "',"
-                + "'" + proveedor.getCorreoPersona() + "')");
-    }
-
-    private void agregarPreciosDeServicioDelProveedor(LinkedList<Servicio> serviciosProveidos, int idProveedor) {
-        try {
-            int claveServ = 0;
-            float costoServ = 0;
-            Statement sentenciaAgregaProveedor = Conexion.createStatement();
-            for (Servicio servicio : serviciosProveidos) {
-                claveServ = servicio.getId();
-                costoServ = servicio.getCosto();
-                sentenciaAgregaProveedor.executeUpdate("INSERT INTO charmingstudio.provee "
-                        + "(`idProveedor`, `idServicios`, `costo`)" + "VALUES("
-                        + "'" + idProveedor + "',"
-                        + "'" + claveServ + "',"
-                        + "'" + costoServ + "')");
-            }
-        } catch (SQLException ex) {
-
-        }
-    }
-
-    private static final int columnaIdProveedor = 1;
-
-    private int encontrarIdDeProveedor(String nombreProveedor) throws SQLException {
-        //Ahora encontramos el id del proveedor, que acabamos de insertar en la BD.
-        Statement sentenciaBuscaIdProveedor = Conexion.createStatement();
-        ResultSet idProveedor = sentenciaBuscaIdProveedor.executeQuery("SELECT idProveedor "
-                + "FROM charmingstudio.proveedor WHERE"
-                + " Nombre='" + nombreProveedor + "'");
-        idProveedor.next();
-        return idProveedor.getInt(columnaIdProveedor);
-    }
-
+    /**
+     * Comprueba que no exista el proveedor que se le pasa en la BD.
+     */
     private boolean existeUsuario(Proveedor proveedor) throws SQLException {
 
         LinkedList<Proveedor> listaDeProveedores = obtenerCoincidenciasDeBD(proveedor.getNombrePersona());
@@ -118,6 +79,55 @@ public class DAOProveedores extends GestorBD {
         }//fin for
 
         return existeUsuario;
+    }
+/*Agrega el objeto proveedor que se la pasa a la BD.**/
+    private void Agregar_A_Tabla(Proveedor proveedor) throws SQLException {
+
+        Statement sentenciaAgregaProveedor = Conexion.createStatement();
+        sentenciaAgregaProveedor.executeUpdate("INSERT INTO charmingstudio.proveedor "
+                + "(`Nombre`, `Direccion`, `Telefono`, `Correo`)" + "VALUES("
+                + "'" + proveedor.getNombrePersona() + "',"
+                + "'" + proveedor.getDireccionPersona() + "',"
+                + "'" + proveedor.getTelefonoPersona() + "',"
+                + "'" + proveedor.getCorreoPersona() + "')");
+    }
+/**Agrega los precios que ofrecen los proveedores a la BD.*/
+    private void agregarPreciosDeServicioDelProveedor(LinkedList<Servicio> serviciosProveidos, int idProveedor) {
+        try {
+
+            Statement sentenciaAgregaProveedor = Conexion.createStatement();
+
+            for (Servicio servicio : serviciosProveidos) {
+
+                int claveServ = servicio.getId();
+                float costoServ = servicio.getCosto();
+
+                sentenciaAgregaProveedor.executeUpdate("INSERT INTO charmingstudio.provee "
+                        + "(`idProveedor`, `idServicios`, `costo`)" + "VALUES("
+                        + "'" + idProveedor + "',"
+                        + "'" + claveServ + "',"
+                        + "'" + costoServ + "')");
+
+            }
+        } catch (SQLException ex) {
+
+        }
+    }
+
+    private static final int columnaIdProveedor = 1;
+
+    private int encontrarIdDeProveedor(String nombreProveedor) throws SQLException {
+        
+        Statement sentenciaBuscaIdProveedor = Conexion.createStatement();
+        
+        ResultSet resultadoBusquedaProveedor
+                = sentenciaBuscaIdProveedor.executeQuery("SELECT idProveedor "
+                        + "FROM charmingstudio.proveedor WHERE"
+                        + " Nombre='" + nombreProveedor + "'");
+        resultadoBusquedaProveedor.next();
+        
+        
+        return resultadoBusquedaProveedor.getInt(columnaIdProveedor);
     }
 
     private boolean compararProveedores(Proveedor proveedorEncontradoEnBD, Proveedor proveedorA_modificar) {
@@ -162,9 +172,9 @@ public class DAOProveedores extends GestorBD {
     /**
      * Elimina a un proveedor de la BD, a partir del ID del proveedor.
      *
-     * @param idProveedor
-     * @return
-     * @throws java.sql.SQLException
+     * @param idProveedor que se eliminará de la BD.
+     * @return verdadero o falso, dependiendo de si se pudo o no eliminar de la BD.
+     * @throws java.sql.SQLException en caso de que no realice la conexión con la BD.
      */
     @Override
     public boolean eliminarElementoPorID(int idProveedor) throws SQLException {
@@ -210,8 +220,9 @@ public class DAOProveedores extends GestorBD {
         LinkedList<Proveedor> proveedores = new LinkedList<>();
         Proveedor unProveedor;
         int idProveedor;
+        
         while (BusquedaDeProveedores.next()) {
-            //Creamos el nuevo empleado.
+            //Creamos el nuevo proveedor.
             unProveedor = new Proveedor(BusquedaDeProveedores.getInt(columnaIdProveedor),
                     BusquedaDeProveedores.getString(columnaNombre),
                     BusquedaDeProveedores.getString(columnaDireccion),

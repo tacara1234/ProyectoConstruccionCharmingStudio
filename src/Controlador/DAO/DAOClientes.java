@@ -48,7 +48,7 @@ public class DAOClientes extends GestorBD {
         Cliente cliente = (Cliente) persona;
         Statement sentencia = Conexion.createStatement();
         boolean seAgregoCliente = false;
-        if (!existeElemento(cliente)) {
+        if (!comprobarExistenciaElemento(cliente)) {
             sentencia.executeUpdate("INSERT INTO charmingstudio.cliente (`Nombre`, "
                     + "`Direccion`, `Telefono`, `Correo`)" + "VALUES("
                     + "'" + cliente.getNombrePersona() + "',"
@@ -71,7 +71,7 @@ public class DAOClientes extends GestorBD {
      * @throws java.sql.SQLException, en caso de que la conexión con la base de
      * datos no se logre o cualquier otra excepción relacionada con la base de
      */
-    private boolean existeElemento(Cliente cliente) throws SQLException {
+    private boolean comprobarExistenciaElemento(Cliente cliente) throws SQLException {
 
         LinkedList<Cliente> listaDeClientes = obtenerCoincidenciasDeBD(cliente.getNombrePersona());
         boolean existeUsuario = false;
@@ -262,7 +262,7 @@ public class DAOClientes extends GestorBD {
      * @throws SQLException en caso de que no se haya podido establecer la
      * conexión con la BD.
      */
-    public LinkedList obtenerTodosLosElementosDeTabla() throws SQLException {
+    public LinkedList obtenerTodosLosElementosDeTablaCliente() throws SQLException {
 
         Statement sentenciaDeBusquedaDeClientes = Conexion.createStatement();
         ResultSet BusquedaDeClientes = sentenciaDeBusquedaDeClientes.

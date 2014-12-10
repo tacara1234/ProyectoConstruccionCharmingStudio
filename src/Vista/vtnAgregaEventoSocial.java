@@ -62,17 +62,25 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         comboDia.setSelectedIndex(dia - 1);
         comboMes.setSelectedIndex(mes);
 
-        comboAnio.addItem(anio - 1);
         comboAnio.addItem(anio);
+        //se aumenta en 1, para mostar el siguiente año:
         comboAnio.addItem(anio + 1);
+        //se aumenta en 2 al año, para que se pueda agregar eventos
+        //que serán realizados dentro de 2 años.
+        comboAnio.addItem(anio + 2);
+
         comboAnio.setSelectedItem(anio);
     }
 
     private void llenarListaDeMesasDeDulces() {
         try {
             limpiarLista(listaDeMesas);
+
             ControladorEventos unControlador = new ControladorEventos();
-            DefaultTableModel modeloConDatos = unControlador.llenarListaMesaDulces((DefaultTableModel) this.listaDeMesas.getModel());
+
+            DefaultTableModel modeloConDatos = unControlador.
+                    obtenerListaActualizadaDeMesaDeDulces((DefaultTableModel) this.listaDeMesas.getModel());
+
             this.listaDeMesas.setModel(modeloConDatos);
 
         } catch (SQLException ex) {
@@ -437,7 +445,8 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
             ControladorEventos controlDeEventos = new ControladorEventos();
             String nombre = this.txtNombreCliente.getText();
 
-            DefaultTableModel modeloConDatos = controlDeEventos.llenarListaCliente(nombre, (DefaultTableModel) this.listaClientes.getModel());
+            DefaultTableModel modeloConDatos = controlDeEventos.
+                    llenarListaCliente(nombre, (DefaultTableModel) this.listaClientes.getModel());
 
             this.listaClientes.setModel(modeloConDatos);
 
@@ -447,22 +456,22 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnBuscarClienteActionPerformed
 
+    private int numeroPermitidoDeProveedores_A_Seleccionar = 0;
+
     private void rbPaqBasicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbPaqBasicoActionPerformed
         // TODO add your handling code here:
-        //Solo está implementado con el paquete básico:
-        limpiarLista(listaDeProveedoresConServicios);
-        llenarListaProveedores("Basico");
-
+        llenarListaProveedoresDePaquete("Basico");
+        numeroPermitidoDeProveedores_A_Seleccionar = 2;
 
     }//GEN-LAST:event_rbPaqBasicoActionPerformed
 
-    private void llenarListaProveedores(String tipoPaquete) {
+    private void llenarListaProveedoresDePaquete(String tipoPaquete) {
         try {
             limpiarLista(listaDeProveedoresConServicios);
             //obtenemos el controlador que nos ayudará a encontrar los proveedores:
             ControladorEventos unControlador = new ControladorEventos();
 
-            DefaultTableModel modeloConDatos = unControlador.llenarListaProveedores(tipoPaquete,
+            DefaultTableModel modeloConDatos = unControlador.obtenerListaActualizadaDeProveedores(tipoPaquete,
                     (DefaultTableModel) listaDeProveedoresConServicios.getModel());
 
             this.listaDeProveedoresConServicios.setModel(modeloConDatos);
@@ -474,9 +483,10 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
     }
     private void btnAgregarEventoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarEventoActionPerformed
         //obtenemos lo necesario de la vista:
-        if (this.listaDeProveedoresConServicios.getSelectedRowCount() > 5) {
+        if (this.listaDeProveedoresConServicios.getSelectedRowCount() > numeroPermitidoDeProveedores_A_Seleccionar) {
 
-            JOptionPane.showMessageDialog(null, "No puede seleccionar múltipes renglones",
+            JOptionPane.showMessageDialog(null, "No puede seleccionar múltipes renglones"
+                    + "\n" + "¡Verifica el paquete que haz seleccionado!",
                     "Error", JOptionPane.INFORMATION_MESSAGE);
 
             return;
@@ -502,13 +512,22 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         float precioTotal = obtenerPrecio();
         int idPaquete = obtenerTipoPaquete();
 
-        //creamos el controlador de eventos.
-        try {
+        agregarEvento(idCliente, idEmpleado, idMesa, proveedores, idPaquete, precioTotal, fecha);
+
+        limpiarVentana();
+    }//GEN-LAST:event_btnAgregarEventoActionPerformed
+
+    private void agregarEvento(int idCliente, int idEmpleado, int idMesa,
+            Object[] proveedores, int idPaquete,
+            float precioTotal, String fecha) {
+        
+        try {    
             ControladorEventos unControlador = new ControladorEventos();
 
             boolean seAgregoEvento = unControlador.agregarEvento(idCliente,
                     idEmpleado, idMesa, proveedores, idPaquete,
                     precioTotal, fecha);
+            
             if (seAgregoEvento) {
                 mostrarMensajeEnPantalla("Evento Agregado");
             } else {
@@ -518,8 +537,8 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         } catch (SQLException ex) {
             mostrarMensajeEnPantalla("Error con la BD este evento ya existe ");
         }
-        limpiarVentana();
-    }//GEN-LAST:event_btnAgregarEventoActionPerformed
+    }
+
 
     private void btnRegresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresoActionPerformed
         // TODO add your handling code here:
@@ -537,14 +556,14 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
 
     private void rbPaqIntermedioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbPaqIntermedioActionPerformed
         // TODO add your handling code here:
-        limpiarLista(listaDeProveedoresConServicios);
-        llenarListaProveedores("Intermedio");
+        llenarListaProveedoresDePaquete("Intermedio");
+        numeroPermitidoDeProveedores_A_Seleccionar = 3;
     }//GEN-LAST:event_rbPaqIntermedioActionPerformed
 
     private void rbPaqCompletoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbPaqCompletoActionPerformed
         // TODO add your handling code here:
-        limpiarLista(listaDeProveedoresConServicios);
-        llenarListaProveedores("Completo");
+        llenarListaProveedoresDePaquete("Completo");
+        numeroPermitidoDeProveedores_A_Seleccionar = 5;
     }//GEN-LAST:event_rbPaqCompletoActionPerformed
 
     private void limpiarVentana() {
@@ -602,7 +621,7 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
 
     private int obtenerClaveMesaSeleccionada() {
         if (listaDeMesas.getSelectedRow() < VALOR_INVALIDO) {
-            JOptionPane.showMessageDialog(null, "Error", "no seleccionó algún Empleado de la tabla", 1);
+            mostrarMensajeEnPantalla("no seleccionó algún Empleado de la tabla");
             return ERROR_EN_LA_SELECCION;
         }
         int renglonSeleccionado = listaDeMesas.getSelectedRow();

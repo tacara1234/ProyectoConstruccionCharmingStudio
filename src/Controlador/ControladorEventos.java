@@ -7,7 +7,7 @@ package Controlador;
 import Controlador.DAO.DAOEventos;
 import Modelo.Cliente;
 import Modelo.Empleado;
-import Modelo.EventosSociales;
+import Modelo.EventoSocial;
 import Modelo.MesaDeDulces;
 import Modelo.Proveedor;
 import Modelo.Servicio;
@@ -209,7 +209,7 @@ public class ControladorEventos {
      */
     public DefaultTableModel obtenerTodosLosEventos(DefaultTableModel modelo, int tipoDeLlenado) throws SQLException {
         //¿QUÉ SIGNIFICA EL 1?
-        LinkedList<EventosSociales> listaDeEventos = dao.obtenerTodosLosEventos();
+        LinkedList<EventoSocial> listaDeEventos = dao.obtenerTodosLosElementosDeTablaEvento();
         if (tipoDeLlenado == 1) {
             return llenarListaDeDatosCompleta(listaDeEventos, modelo);
         } else {
@@ -220,7 +220,7 @@ public class ControladorEventos {
     }
     private static final int numColumnasParaReporte = 3;
 
-    private DefaultTableModel llenarListaDeDatosParaReporte(LinkedList<EventosSociales> listaDeEventos,
+    private DefaultTableModel llenarListaDeDatosParaReporte(LinkedList<EventoSocial> listaDeEventos,
             DefaultTableModel modelo) throws SQLException {
 
         //Declaramos las columnas:
@@ -228,7 +228,7 @@ public class ControladorEventos {
 
         if (listaDeEventos != null) {
 
-            for (EventosSociales evento : listaDeEventos) {
+            for (EventoSocial evento : listaDeEventos) {
                 //QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?
                 columnasDeDatos[0] = evento.getIdEvento();
                 columnasDeDatos[1] = evento.getFecha();
@@ -247,7 +247,7 @@ public class ControladorEventos {
     private static final int numColumnasDeDatosCompletos = 6;
     
     /*QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?*/
-    private DefaultTableModel llenarListaDeDatosCompleta(LinkedList<EventosSociales> listaDeEventos,
+    private DefaultTableModel llenarListaDeDatosCompleta(LinkedList<EventoSocial> listaDeEventos,
             DefaultTableModel modelo) throws SQLException {
         //Declaramos las columnas:
         Object columnasDeDatos[] = new Object[numColumnasDeDatosCompletos];
@@ -260,7 +260,7 @@ public class ControladorEventos {
         if (listaDeEventos != null) {
             //agregamos a cada columna los datos que le corresponden:
 
-            for (EventosSociales evento : listaDeEventos) {
+            for (EventoSocial evento : listaDeEventos) {
 
                 Cliente ClienteDelEvento = ctrlCliente.obtenerClientePorID(evento.getIdCliente());
                 String nombreClienteDelEvento = ClienteDelEvento.getNombrePersona();
@@ -310,7 +310,7 @@ public class ControladorEventos {
      * @return el modelo con los datos en él.
      * @throws SQLException en caso de no establecer conexión con la BD.
      */
-    public DefaultTableModel llenarListaProveedores(String tipoPaquete, DefaultTableModel modeloLista) throws SQLException {
+    public DefaultTableModel obtenerListaActualizadaDeProveedores(String tipoPaquete, DefaultTableModel modeloLista) throws SQLException {
         LinkedList<Proveedor> ListaProveedores = new LinkedList<>();
 
         ListaProveedores = obtenerProveedoresSegunPaquete(tipoPaquete);
@@ -417,7 +417,7 @@ public class ControladorEventos {
      * @return el modelo con los datos en él.
      * @throws SQLException en caso de no establecer conexión con la BD.
      */
-    public DefaultTableModel llenarListaMesaDulces(DefaultTableModel modeloLista) throws SQLException {
+    public DefaultTableModel obtenerListaActualizadaDeMesaDeDulces(DefaultTableModel modeloLista) throws SQLException {
         LinkedList<MesaDeDulces> mesas = encontrarMesasDeDulces();
 
         Object[] renglonDeDatos = new Object[numColumnasDeMesas];
@@ -462,14 +462,14 @@ public class ControladorEventos {
      */
     public boolean ExisteElEvento(int idCliente, int idMesaDulces, String fecha, int idEmpleado) throws SQLException {
 
-        LinkedList<EventosSociales> listaDeEventos = dao.obtenerTodosLosEventos();
+        LinkedList<EventoSocial> listaDeEventos = dao.obtenerTodosLosElementosDeTablaEvento();
 
         if (listaDeEventos == null) {
             return false;//no existe el evento.
         }
 
         boolean existe = false;
-        for (EventosSociales evento : listaDeEventos) {
+        for (EventoSocial evento : listaDeEventos) {
             String fechaEvt = convertirFechaEnTexto(evento);
             //Ver si se puede hacer mas corta o refactorizar de alguna manera
             if (idCliente == evento.getIdCliente()
@@ -483,7 +483,7 @@ public class ControladorEventos {
         return existe;
     }
 
-    private String convertirFechaEnTexto(EventosSociales evento) {
+    private String convertirFechaEnTexto(EventoSocial evento) {
         Format formatter = new SimpleDateFormat("yyyy-MM-dd");
         String fechaEvt = formatter.format(evento.getFecha());
 
