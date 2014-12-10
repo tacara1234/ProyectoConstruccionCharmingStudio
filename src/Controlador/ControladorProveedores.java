@@ -133,10 +133,6 @@ public class ControladorProveedores implements ControladorPersona {
         return proveedoresDeServicioCompleto;
     }
 
-    public static void main(String[] args) throws SQLException {
-        ControladorProveedores c = new ControladorProveedores();
-        System.out.println(c.obtenerTodosLosProveedoresDeServicioCompleto());
-    }
     
     private LinkedList<Proveedor> combinarServicios(LinkedList<Proveedor> proveedoresDePrimerServicio,
             LinkedList<Proveedor> proveedoresDeSegundoServicio) {

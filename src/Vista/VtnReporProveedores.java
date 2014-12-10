@@ -200,7 +200,7 @@ public class VtnReporProveedores extends javax.swing.JFrame {
             String servicioSeleccionado = cbServicio.getSelectedItem().toString();
             LinkedList<Proveedor> proveedores =
                     ctrlProv.obtenerProveedoresDelServicio(servicioSeleccionado);
-            JFreeChart graficaBarras=ctrlRepor.graficarServicioEspecífico(servicioSeleccionado, proveedores);
+            JFreeChart graficaBarras=ctrlRepor.graficarServicioEspecifico(servicioSeleccionado, proveedores);
             JPanel panelBarras = new ChartPanel(graficaBarras);
             panelBarras.setSize(panelGrafica.getSize());
             panelGrafica.removeAll();
@@ -230,7 +230,9 @@ public class VtnReporProveedores extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExportarActionPerformed
 
     private void btnGenerarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarActionPerformed
-        llenarTablaDeDatos();
+        limpiarTabla();
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();
+        this.tablaReporteProvs.setModel(ctrlRepor.llenarTablaDeVentana(modeloDeLaTabla));
     }//GEN-LAST:event_btnGenerarActionPerformed
 
     private void cbServicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbServicioActionPerformed
@@ -254,39 +256,7 @@ public class VtnReporProveedores extends javax.swing.JFrame {
     private final int lugar = 3;
     private final int musica = 4;
 
-    private void llenarTablaDeDatos() {
-        
-        limpiarTabla();
-        try {
-            LinkedList<Proveedor> proveedores = ctrlRepor.obtenerMejoresProveedores();
-
-            agregaFila( proveedores.get(banquetera), "Banquetera");
-            agregaFila( proveedores.get(carpa), "Carpa");
-            agregaFila( proveedores.get(iluminacion), "Iluminacion");
-            agregaFila( proveedores.get(lugar), "Lugar");
-            agregaFila( proveedores.get(musica), "Musica");
-            DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();
-            //establecemos a nuestra tabla, el modelo que tenía:
-            this.tablaReporteProvs.setModel(modeloDeLaTabla);
-
-        } catch (SQLException ex) {
-            Logger.getLogger(VtnReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
-    public void agregaFila( Proveedor proveedor, String servicio) {
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();
-        Object columnasDeDatos[] = new Object[6];
-        columnasDeDatos[0] = servicio;
-        columnasDeDatos[1] = proveedor.getNombrePersona();
-        columnasDeDatos[2] = proveedor.getCorreoPersona();
-        columnasDeDatos[3] = proveedor.getDireccionPersona();
-        columnasDeDatos[4] = proveedor.getTelefonoPersona();
-        columnasDeDatos[5] = Float.toString(proveedor.getServicioEspecifico(servicio).getCosto());
-
-        modeloDeLaTabla.addRow(columnasDeDatos);
-    }
+    
 
     private void limpiarTabla() {
         DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaReporteProvs.getModel();

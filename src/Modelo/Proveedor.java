@@ -58,7 +58,7 @@ public class Proveedor extends Persona {
     }
     
     
-    public Servicio getServicioEspecifico(String servicioABuscar){
+    public Servicio obtenerServicioPorNombre(String servicioABuscar){
         for(Servicio servicio:this.obtenerServiciosQueProvee()){
             if(servicio.getServNombre().equals(servicioABuscar)){
                 return servicio;

@@ -2,6 +2,7 @@ package Controlador;
 
 import Modelo.Proveedor;
 import Modelo.Servicio;
+import Vista.VtnReporProveedores;
 import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -23,6 +24,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -51,7 +53,8 @@ public class ControladorReporProveedores {
         Document documentoPDF = new Document();
 
         try {
-            PdfWriter writer = PdfWriter.getInstance(documentoPDF, new FileOutputStream("reporteProveedores.pdf"));
+            PdfWriter writer = PdfWriter.getInstance(documentoPDF,
+                    new FileOutputStream("reporteProveedores.pdf"));
             documentoPDF.open();
 
             Font fuente = FontFactory.getFont("Times", 24);
@@ -71,7 +74,7 @@ public class ControladorReporProveedores {
 
             PdfPTable tablaProveedores = new PdfPTable(numColumnas);
             LinkedList<Proveedor> mejoresProveedores = obtenerMejoresProveedores();
-            llenarTabla(tablaProveedores, mejoresProveedores);
+            llenarTablaPDF(tablaProveedores, mejoresProveedores);
             documentoPDF.add(tablaProveedores);
 
             PdfContentByte contenidoPdf = writer.getDirectContent();
@@ -98,7 +101,7 @@ public class ControladorReporProveedores {
      * @param mejoresProveedores lista de los proveedores con los mejores
      * precios
      */
-    public void llenarTabla(PdfPTable tablaProveedores, LinkedList<Proveedor> mejoresProveedores) {
+    public void llenarTablaPDF(PdfPTable tablaProveedores, LinkedList<Proveedor> mejoresProveedores) {
         // addCell() agrega una celda a la tabla, el cambio de fila
         // ocurre automaticamente al llenar la fila
         tablaProveedores.addCell("Servicio");
@@ -107,12 +110,6 @@ public class ControladorReporProveedores {
         tablaProveedores.addCell("Direccion");
         tablaProveedores.addCell("Correo");
         tablaProveedores.addCell("Costo");
-
-        int banquetera = 0;
-        int carpa = 1;
-        int iluminacion = 2;
-        int lugar = 3;
-        int musica = 4;
 
         agregarProveedorATabla(tablaProveedores, mejoresProveedores.get(banquetera), "Banquetera");
         agregarProveedorATabla(tablaProveedores, mejoresProveedores.get(carpa), "Carpa");
@@ -135,7 +132,7 @@ public class ControladorReporProveedores {
         tabla.addCell(proveedor.getTelefonoPersona());
         tabla.addCell(proveedor.getDireccionPersona());
         tabla.addCell(proveedor.getCorreoPersona());
-        float costo = proveedor.getServicioEspecifico(servicio).getCosto();
+        float costo = proveedor.obtenerServicioPorNombre(servicio).getCosto();
         tabla.addCell(Float.toString(costo));
 
     }
@@ -148,7 +145,8 @@ public class ControladorReporProveedores {
      */
     public LinkedList<Proveedor> obtenerMejoresProveedores() throws SQLException {
 
-        LinkedList<Proveedor> proveedores = ctrlProveedor.obtenerTodosLosProveedoresConSusServicios();
+        LinkedList<Proveedor> proveedores =
+                ctrlProveedor.obtenerTodosLosProveedoresConSusServicios();
 
         Proveedor mejorBanquetera = buscarProveedorConMenorPrecio(proveedores, "Banquetera");
         Proveedor mejorCarpa = buscarProveedorConMenorPrecio(proveedores, "Carpa");
@@ -184,11 +182,11 @@ public class ControladorReporProveedores {
             }
         }
 
-        Servicio encontrado = masBarato.getServicioEspecifico(servicio);
+        Servicio encontrado = masBarato.obtenerServicioPorNombre(servicio);
 
         for (Proveedor proveedor : proveedores) {
             if (proveedor.tieneServicio(servicio)) {
-                Servicio aComparar = proveedor.getServicioEspecifico(servicio);
+                Servicio aComparar = proveedor.obtenerServicioPorNombre(servicio);
                 if (aComparar.getCosto() < encontrado.getCosto()) {
                     masBarato = proveedor;
                     encontrado = aComparar;
@@ -201,7 +199,8 @@ public class ControladorReporProveedores {
 
     private JFreeChart graficarTodosLosProveedores() throws SQLException {
 
-        LinkedList<Proveedor> proveedores = ctrlProveedor.obtenerTodosLosProveedoresConSusServicios();
+        LinkedList<Proveedor> proveedores = 
+                ctrlProveedor.obtenerTodosLosProveedoresConSusServicios();
         DefaultCategoryDataset datosBarras = new DefaultCategoryDataset();
 
         for (Proveedor proveedor : proveedores) {
@@ -228,11 +227,11 @@ public class ControladorReporProveedores {
      * @param proveedores proveedores del servicio
      * @return el modelo de la gráfica
      */
-    public JFreeChart graficarServicioEspecífico(String servicio, LinkedList<Proveedor> proveedores) {
+    public JFreeChart graficarServicioEspecifico(String servicio, LinkedList<Proveedor> proveedores) {
         DefaultCategoryDataset datosBarras = new DefaultCategoryDataset();
 
         for (Proveedor proveedor : proveedores) {
-            datosBarras.setValue(proveedor.getServicioEspecifico(servicio).getCosto(),
+            datosBarras.setValue(proveedor.obtenerServicioPorNombre(servicio).getCosto(),
                     "Proveedor", proveedor.getNombrePersona());
         }
 
@@ -243,5 +242,53 @@ public class ControladorReporProveedores {
                 datosBarras); //datos
 
         return graficaBarras;
+    }
+    
+    
+    private final int banquetera = 0;
+    private final int carpa = 1;
+    private final int iluminacion = 2;
+    private final int lugar = 3;
+    private final int musica = 4;
+    
+    public DefaultTableModel llenarTablaDeVentana(DefaultTableModel modeloDeLaTabla) {
+        
+        try {
+            LinkedList<Proveedor> proveedores = obtenerMejoresProveedores();
+
+            agregaFila(modeloDeLaTabla, proveedores.get(banquetera), "Banquetera");
+            agregaFila(modeloDeLaTabla, proveedores.get(carpa), "Carpa");
+            agregaFila(modeloDeLaTabla, proveedores.get(iluminacion), "Iluminacion");
+            agregaFila(modeloDeLaTabla, proveedores.get(lugar), "Lugar");
+            agregaFila(modeloDeLaTabla, proveedores.get(musica), "Musica");
+            
+            return modeloDeLaTabla;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(VtnReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    private final int numColumnas=6;
+    private final int columnaServicio=0;
+    private final int columnaNombre=1;
+    private final int columnaCorreo=2;
+    private final int columnaDireccion=3;
+    private final int columnaTelefono=4;
+    private final int columnaPrecio=5;
+    
+    public void agregaFila(DefaultTableModel modeloDeLaTabla, Proveedor proveedor, String servicio) {
+        
+        Object columnasDeDatos[] = new Object[numColumnas];
+        columnasDeDatos[columnaServicio] = servicio;
+        columnasDeDatos[columnaNombre] = proveedor.getNombrePersona();
+        columnasDeDatos[columnaCorreo] = proveedor.getCorreoPersona();
+        columnasDeDatos[columnaDireccion] = proveedor.getDireccionPersona();
+        columnasDeDatos[columnaTelefono] = proveedor.getTelefonoPersona();
+        columnasDeDatos[columnaPrecio] = Float.toString(proveedor.obtenerServicioPorNombre(servicio).getCosto());
+
+        modeloDeLaTabla.addRow(columnasDeDatos);
     }
 }
