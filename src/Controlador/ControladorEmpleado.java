@@ -45,12 +45,16 @@ public class ControladorEmpleado implements ControladorPersona {
      */
     public String[] obtenerInformacionBasicaEmpleados() throws SQLException {
         LinkedList<Empleado> empleados = dao.obtenerTodosLosEmpleados();
-        String[] infoBasicaEmpleados = copiarInformacion(empleados);
+        String[] infoBasicaEmpleados = convertirListaDeInformacionAstr(empleados);
 
         return infoBasicaEmpleados;
     }
-
-    private String[] copiarInformacion(LinkedList<Empleado> listaEmpleados) {
+    /**
+     * Convierte la informacion basica de la lista de los empleados a string
+     * @param listaEmpleados es la lista que contiene la informacion de la lista a convertire
+     * @return los datos basicos de los empleados en string
+     */
+    private String[] convertirListaDeInformacionAstr(LinkedList<Empleado> listaEmpleados) {
         String[] datosBasicosEmpleados = new String[listaEmpleados.size()];
         int fila = 0;
         for (Empleado unEmpleado : listaEmpleados) {
@@ -109,24 +113,36 @@ public class ControladorEmpleado implements ControladorPersona {
         return null;
    }
     
-     private DefaultTableModel llenarListaDeEmpleados(LinkedList<Empleado> listaDeEmpleados,JTable tabla) {
+    
+    
+    private static final int columnaID = 0;
+    private static final int columnaNombre = 1;
+    private static final int columnaDireccion = 2;
+    private static final int columnaTelefono = 3;
+    
+    private static final int columnaCorreo = 4;
+    private static final int columnaDesempenio = 5;
+    private static final int columnaSueldo = 6;
+    private static final int totalColumnas = 7;
+    
+     private DefaultTableModel llenarListaDeEmpleados(LinkedList<Empleado> listaDeEmpleados,JTable lista) {
         //Declaramos las columnas:
-        Object columnasDeDatos[] = new Object[7];
+        Object columnasDeDatos[] = new Object[totalColumnas];
 
         //obtenemos el modelo default de la tabla:
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) tabla.getModel();
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) lista.getModel();
 
-        limpiarLista(tabla);
+        limpiarLista(lista);
         if (listaDeEmpleados != null) {
             //agregamos a cada columna los datos que le corresponden:
             for (Empleado empleado : listaDeEmpleados) {
-                columnasDeDatos[0] = empleado.getIdPersona();
-                columnasDeDatos[1] = empleado.getNombrePersona();
-                columnasDeDatos[2] = empleado.getDireccionPersona();
-                columnasDeDatos[3] = empleado.getTelefonoPersona();
-                columnasDeDatos[4] = empleado.getCorreoPersona();
-                columnasDeDatos[5] = empleado.getEmpDesempenio();
-                columnasDeDatos[6] = empleado.getEmpSueldo();
+                columnasDeDatos[columnaID] = empleado.getIdPersona();
+                columnasDeDatos[columnaNombre] = empleado.getNombrePersona();
+                columnasDeDatos[columnaDireccion] = empleado.getDireccionPersona();
+                columnasDeDatos[columnaTelefono] = empleado.getTelefonoPersona();
+                columnasDeDatos[columnaCorreo] = empleado.getCorreoPersona();
+                columnasDeDatos[columnaDesempenio] = empleado.getEmpDesempenio();
+                columnasDeDatos[columnaSueldo] = empleado.getEmpSueldo();
 
                 //agregamos los datos de cada columna en cada renglón:
                 modeloDeLaTabla.addRow(columnasDeDatos);
@@ -134,14 +150,13 @@ public class ControladorEmpleado implements ControladorPersona {
         } else {
             /*El else no es necesario, pero fue considerado.*/
         }
-        //establecemos a nuestra tabla, el modelo que tenía:
-        //tabla.setModel(modeloDeLaTabla);
+
         return modeloDeLaTabla;
     }
      
-         private void limpiarLista(JTable tabla) {
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) tabla.getModel();
-        for (int i = 0; i < tabla.getRowCount(); i++) {
+         private void limpiarLista(JTable lista) {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) lista.getModel();
+        for (int i = 0; i < lista.getRowCount(); i++) {
             modeloDeLaTabla.removeRow(0);
             i -= 1;
         }

@@ -1,8 +1,19 @@
 package Controlador;
 
-import java.util.Date;
+import Vista.VtnReporGanancias;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  * @author Lalo
@@ -24,9 +35,10 @@ public class ControladorReporGanancias {
      */
     public float calcularGananciasTotales(DefaultTableModel datosTabla) {
         float gananciasTotales = 0;
-        for (int indice = 0; indice < datosTabla.getRowCount(); indice++) {
+        int numeroDeFilas = datosTabla.getRowCount();
+        for (int fila = 0; fila < numeroDeFilas; fila++) {
 
-            gananciasTotales = gananciasTotales + (float) datosTabla.getValueAt(indice, 2);
+            gananciasTotales = gananciasTotales + (float) datosTabla.getValueAt(fila, 2);
         }
         return gananciasTotales;
     }
@@ -71,9 +83,9 @@ public class ControladorReporGanancias {
 
         float gananciaMayor = obtenerGananciaMayor(gananaciasDelMes);
 
-        for (int i = 0; i < 12; i++) {
-            if (gananciaMayor == gananaciasDelMes[i]) {
-                mesConMasGanancias = obtenerMesPorNumero(i + 1);
+        for (int numeroDeMes = 0; numeroDeMes < 12; numeroDeMes++) {
+            if (gananciaMayor == gananaciasDelMes[numeroDeMes]) {
+                mesConMasGanancias = obtenerMesPorNumero(numeroDeMes + 1);
             }
         }
 
@@ -90,7 +102,6 @@ public class ControladorReporGanancias {
     public String CalcularMesConMenosGanancias(DefaultTableModel datosTabla) {
 
         float[] gananciasDelmes = new float[12];
-        //datosTabla.getValueAt(i, 1);
         String mesConMenosGanancias = "";
         gananciasDelmes[0] = obtenerGananciasDelMes(datosTabla, enero);
         gananciasDelmes[1] = obtenerGananciasDelMes(datosTabla, febrero);
@@ -104,13 +115,12 @@ public class ControladorReporGanancias {
         gananciasDelmes[9] = obtenerGananciasDelMes(datosTabla, octubre);
         gananciasDelmes[10] = obtenerGananciasDelMes(datosTabla, noviembre);
         gananciasDelmes[11] = obtenerGananciasDelMes(datosTabla, diciembre);
-        //System.out.println("ventas dic" + diciembreVentas);
 
         float gananciaMenor = obtenerGananciaMenor(gananciasDelmes);
 
-        for (int i = 0; i < 12; i++) {
-            if (gananciaMenor == gananciasDelmes[i]) {
-                mesConMenosGanancias = obtenerMesPorNumero(i + 1);
+        for (int numeroDeMes = 0; numeroDeMes < 12; numeroDeMes++) {
+            if (gananciaMenor == gananciasDelmes[numeroDeMes]) {
+                mesConMenosGanancias = obtenerMesPorNumero(numeroDeMes + 1);
             }
         }
 
@@ -162,10 +172,10 @@ public class ControladorReporGanancias {
      */
     private float obtenerGananciaMayor(float[] ganancias) {
         float gananciaMayor = ganancias[0];
-        //float resultado = 0;
-        for (int i = 1; i < ganancias.length; i++) {
-            if (ganancias[i] > gananciaMayor) {
-                gananciaMayor = ganancias[i];
+
+        for (int numeroDeGanancia = 1; numeroDeGanancia < ganancias.length; numeroDeGanancia++) {
+            if (ganancias[numeroDeGanancia] > gananciaMayor) {
+                gananciaMayor = ganancias[numeroDeGanancia];
             }
         }
         return gananciaMayor;
@@ -174,25 +184,24 @@ public class ControladorReporGanancias {
     /**
      * Obtiene la ganancia mas pequeña de todos los meses
      *
-     * @param ganancias on las ganancias de todos los meses
+     * @param ganancias son las ganancias de todos los meses
      * @return la menor ganancia
      */
     private float obtenerGananciaMenor(float[] ganancias) {
-        boolean band = false;
-        float gananciaMenor = -1;        //float resultado = 0;
-        for (int i = 0; i < ganancias.length; i++) {
-            if (ganancias[i] == 0) {
-
-            } else {
-                if (band == false) {
-                    gananciaMenor = ganancias[i];
-                    band = true;
-                } else {
-                    if (gananciaMenor > ganancias[i]) {
-                        gananciaMenor = ganancias[i];
+        boolean sinGanancia = true;
+        float gananciaMenor = -1;
+        for (int numeroDeGanancia = 0; numeroDeGanancia < ganancias.length; numeroDeGanancia++) {
+            if (ganancias[numeroDeGanancia] != 0) {
+                if (sinGanancia) {
+                    gananciaMenor = ganancias[numeroDeGanancia];
+                    sinGanancia = false;
+                }else {
+                    if (gananciaMenor > ganancias[numeroDeGanancia]) {
+                        gananciaMenor = ganancias[numeroDeGanancia];
                     }
                 }
             }
+
         }
         return gananciaMenor;
     }
@@ -206,18 +215,153 @@ public class ControladorReporGanancias {
      * @return las ganancia total de ese mes
      */
     private float obtenerGananciasDelMes(DefaultTableModel datosTabla, int mes) {
-        //DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
         float gananciaTotalDelMes = 0;
-        for (int indice = 0; indice < datosTabla.getRowCount(); indice++) {
-            StringTokenizer token = new StringTokenizer((String) datosTabla.getValueAt(indice, 1).toString(), "-");
-            token.nextToken();
-            int mesAcomparar = Integer.parseInt(token.nextToken());
+        int numeroDeFilas = datosTabla.getRowCount();
+        for (int indice = 0; indice < numeroDeFilas; indice++) {
+            String fecha = (String) datosTabla.getValueAt(indice, 1).toString();
+            StringTokenizer separa = new StringTokenizer(fecha, "-");
+            separa.nextToken();
+            int mesAcomparar = Integer.parseInt(separa.nextToken());
             if (mes == mesAcomparar) {
-                gananciaTotalDelMes = gananciaTotalDelMes + (float) datosTabla.getValueAt(indice, 2);
+                float gananciaDelEvento = (float) datosTabla.getValueAt(indice, 2);
+                gananciaTotalDelMes = gananciaTotalDelMes + gananciaDelEvento;
             }
         }
 
         return gananciaTotalDelMes;
     }
 
+    /**
+     * Genera el reporte en base a los datos que se obtienen de la vista
+     *
+     * @param modeloConDatos es el modelo donde se encuentra la informacion
+     * @param mejorMes es el dato del mejor mes
+     * @param peorMes es el dato del peor mes
+     * @param gananciaTotal es el dato de la ganancia total
+     * @return si se genera correctamente el reporte (true)
+     */
+    public boolean generaReporte(TableModel modeloConDatos, String mejorMes, String peorMes, String gananciaTotal) {
+        boolean exportadoCorrectamente = false;
+        FileOutputStream out = null;
+        try {
+            // TODO add your handling code here:
+
+            Workbook wb = new HSSFWorkbook();
+            Sheet sheet = wb.createSheet("Reporte Completo");
+
+            DefaultTableModel modelo = (DefaultTableModel) modeloConDatos;
+            exportadoCorrectamente = llenarDatosDeReporte(sheet, modelo, mejorMes, peorMes, gananciaTotal);
+
+            out = new FileOutputStream("ReporteGanancias.xls");
+            wb.write(out);
+            out.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VtnReporGanancias.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VtnReporGanancias.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return exportadoCorrectamente;
+
+    }
+
+    /**
+     * Llena todos los datos que tendra el reporte
+     *
+     * @param sheet la hoja del excel que tendra los datos
+     * @param tableModel el modelo de la vista que tiene los datos
+     * @param mejorMes el dato del mejor mes
+     * @param peorMes el dato del peor mes
+     * @param gananciaTotal el dato de la ganancia total
+     * @return si se lleno el reporte de manera correcta
+     */
+    private boolean llenarDatosDeReporte(Sheet sheet, DefaultTableModel tableModel, String mejorMes, String peorMes, String gananciaTotal) {
+        boolean pobladoCorrectamente = false;
+        crearTitulo(sheet);
+        crearEncabezados(sheet, tableModel);
+        llenarExcelDeDatos(sheet, tableModel, mejorMes, peorMes, gananciaTotal);
+        pobladoCorrectamente = true;
+
+        return pobladoCorrectamente;
+    }
+
+    /**
+     * Llena los datos del excel
+     *
+     * @param sheet es la hoja de excel que se llenara
+     * @param tableModel es el modelo de la vista que tiene los datos
+     * @param mejorMes el dato del mejor mes
+     * @param peorMes el dato del peor mes
+     * @param gananciaTotal el dato de la ganancia total
+     */
+    private void llenarExcelDeDatos(Sheet sheet, TableModel tableModel, String mejorMes, String peorMes, String gananciaTotal) {
+        Row filaDatosDeLista;
+        Cell celdaDatosDelista;
+        int filaDeDatosDeLista = 2;
+        int numeroDeFilas = tableModel.getRowCount();
+        int numeroDeColumnas = tableModel.getColumnCount();
+        for (int fila = 1; fila < numeroDeFilas + 1; fila++) {
+            filaDatosDeLista = sheet.createRow(filaDeDatosDeLista);
+            
+            for (int j = 0; j < numeroDeColumnas; j++) {
+                celdaDatosDelista = filaDatosDeLista.createCell(j);
+                String dinero = (j > 1) ? "$" : "";
+                celdaDatosDelista.setCellValue(dinero + String.valueOf(tableModel.getValueAt(fila - 1, j)));
+            }
+            filaDeDatosDeLista++;
+        }
+
+        Row filaDeMejorMes = sheet.createRow(tableModel.getRowCount() + 3);
+        Row filaDePeorMes = sheet.createRow(tableModel.getRowCount() + 4);
+        Row filaDeGananciaTotal = sheet.createRow(tableModel.getRowCount() + 6);
+
+        Cell celdaDeDescripcion = filaDeMejorMes.createCell(1);
+        Cell celdaDeMejorMes = filaDeMejorMes.createCell(2);
+        Cell celdaDePeorMes = filaDePeorMes.createCell(2);
+        Cell celdaDeGananciaTotal = filaDeGananciaTotal.createCell(2);
+
+        celdaDeDescripcion = filaDeMejorMes.createCell(1);
+        celdaDeDescripcion.setCellValue("Mejor Mes:");
+        celdaDeMejorMes.setCellValue(mejorMes);
+
+        celdaDeDescripcion = filaDePeorMes.createCell(1);
+        celdaDeDescripcion.setCellValue("Peor Mes:");
+        celdaDePeorMes.setCellValue(peorMes);
+
+        celdaDeDescripcion = filaDeGananciaTotal.createCell(0);
+        celdaDeDescripcion.setCellValue("Ganancia Total:");
+        celdaDeGananciaTotal.setCellValue(gananciaTotal);
+
+    }
+
+    /**
+     * Crea el título reporte
+     *
+     * @param sheet es la hoja de excel donde se establecerá el título
+     */
+    private void crearTitulo(Sheet sheet) {
+        Row filaDelTitulo = sheet.createRow(0);
+        Cell celdaDelTitulo = filaDelTitulo.createCell(0);
+
+        celdaDelTitulo.setCellValue("Reporte Completo");
+
+    }
+
+    /**
+     * Crea los encabezados del
+     *
+     * @param sheet
+     * @param tableModel
+     */
+    private void crearEncabezados(Sheet sheet, TableModel tableModel) {
+
+        Row filaDeEncabezadosDeLista = sheet.createRow(1);
+        Cell celdaDeEncabezadosDeLista = null;
+        int numeroDeColumnas = tableModel.getColumnCount();
+        
+        for (int columna = 0; columna < numeroDeColumnas; columna++) {
+            celdaDeEncabezadosDeLista = filaDeEncabezadosDeLista.createCell(columna);
+            celdaDeEncabezadosDeLista.setCellValue(tableModel.getColumnName(columna));
+        }
+    }
 }

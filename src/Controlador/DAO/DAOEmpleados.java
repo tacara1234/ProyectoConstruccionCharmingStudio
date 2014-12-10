@@ -71,10 +71,7 @@ public class DAOEmpleados extends GestorBD {
                 busquedaEmpleado.getString(columnaCorreo),
                 busquedaEmpleado.getFloat(columnaDesempeno),
                 busquedaEmpleado.getFloat(columnaSueldo));
-        /*
-         LinkedList<Servicio> servicios = encontrarServiciosDelProveedor(unProveedor.getIdPersona());
-         unProveedor.setServiciosQueProvee(servicios);
-         */
+  
         return unEmpleado;
     }
 
