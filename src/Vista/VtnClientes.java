@@ -21,7 +21,7 @@ public class VtnClientes extends javax.swing.JFrame {
     //usamos constantes, que se usará en los JOptionPane:
     private static final int SI = 0;
     private static final int MOSTRAR_DOS_OPCIONES = 0;
-    
+
     //usamos el patrón de diseño Singleton: 
     private static VtnClientes instanciaDeVtnClientes = new VtnClientes();
 
@@ -54,7 +54,7 @@ public class VtnClientes extends javax.swing.JFrame {
         btnEliminarCliente = new javax.swing.JButton();
         btnRegresarVtnPrincipal = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaClientes = new javax.swing.JTable();
+        listaClientes = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -101,7 +101,7 @@ public class VtnClientes extends javax.swing.JFrame {
             }
         });
 
-        tablaClientes.setModel(new javax.swing.table.DefaultTableModel(
+        listaClientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -117,8 +117,10 @@ public class VtnClientes extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane1.setViewportView(tablaClientes);
-        tablaClientes.getColumnModel().getColumn(0).setPreferredWidth(0);
+        jScrollPane1.setViewportView(listaClientes);
+        if (listaClientes.getColumnModel().getColumnCount() > 0) {
+            listaClientes.getColumnModel().getColumn(0).setPreferredWidth(0);
+        }
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Clientes");
@@ -129,32 +131,34 @@ public class VtnClientes extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(52, 52, 52)
-                                .addComponent(btnAgregarCliente))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(26, 26, 26)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(txtNombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(btnBuscarCliente)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(btnModificarCliente)
-                                                .addGap(33, 33, 33)
-                                                .addComponent(btnEliminarCliente)))))))
-                        .addGap(0, 385, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnRegresarVtnPrincipal))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(189, 189, 189)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(77, 77, 77)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(txtNombreCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnBuscarCliente)
+                                .addGap(9, 9, 9))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(101, 101, 101))))
+                    .addComponent(btnAgregarCliente)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(118, 118, 118)
+                        .addComponent(btnModificarCliente)
+                        .addGap(33, 33, 33)
+                        .addComponent(btnEliminarCliente)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,13 +199,10 @@ public class VtnClientes extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAgregarClienteActionPerformed
 
     private void btnEliminarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarClienteActionPerformed
-        
-        /*Obtenemos el cliente seleccionado de la tabla:*/
-        Cliente clienteQueSeEliminara = obtenerInformacionDeRenglonSelecccionado();
-        
+
         //checamos si se seleccionó algún cliente de la tabla,
         //es decir, si no es nulo.
-        if (clienteQueSeEliminara != null) {
+        if (verificarSiRenglonEnListaEstaSeleccionado()) {
             //le preguntamos al cliente si de verdad, desea eliminar el 
             //cliente seleccionado:
             int opcionEliminar = JOptionPane.showConfirmDialog(null,
@@ -214,71 +215,44 @@ public class VtnClientes extends javax.swing.JFrame {
                 //creamos el controlador de clientes:
                 ControladorCliente controlCliente = new ControladorCliente();
 
-                
-            try {
-                controlCliente.eliminar(clienteQueSeEliminara.getIdPersona());
-                mostrarMensajeEnPantalla("Cliente eliminado");
-            } catch (SQLException ex) {
-                mostrarMensajeEnPantalla("Cliente no eliminado. Error: " + ex.getLocalizedMessage());
+                try {
+                    controlCliente.eliminar(obtenerIDdeClienteEnRenglonSeleccionado());
+                    mostrarMensajeEnPantalla("Cliente eliminado");
+                } catch (SQLException ex) {
+                    mostrarMensajeEnPantalla("Cliente no eliminado. Error: " + ex.getLocalizedMessage());
+                }
             }
-            }
-        }else{
-            mostrarMensajeEnPantalla("No ha seleccionado algún cliente de la tabla");
-        }
+        } //El else fue considerado pero no seleccionado.
 
     }//GEN-LAST:event_btnEliminarClienteActionPerformed
 
     private void btnBuscarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarClienteActionPerformed
         // TODO add your handling code here:
 
-        /*Declaramos el controlador que busca los clientes
-         en la base de datos:                              */
-        ControladorCliente ctrlBuscarClientes = new ControladorCliente();
-
         try {
-            /*El controlador, devuelve una lista con los clientes que coincidieron con la búsqueda:*/
+
+            limpiarListaEnVentana();
+
+            /*Declaramos el controlador que llenará la lista de los clientes
+             con la información de la base de datos:                              */
+            ControladorCliente ctrlBuscarClientes = new ControladorCliente();
+
             String nombreCliente = this.txtNombreCliente.getText();
-            LinkedList<Cliente> listaDeClientes = ctrlBuscarClientes.obtenerCoincidenciasPorNombre(nombreCliente);
-            llenarTablaDeDatos(listaDeClientes);
+
+            DefaultTableModel ModeloConDatosDeClientes = ctrlBuscarClientes.
+                    obtenerModeloConDatosDeClientes((DefaultTableModel) this.listaClientes.getModel(), nombreCliente);
+
+            this.listaClientes.setModel(ModeloConDatosDeClientes);
 
         } catch (SQLException ex) {
-
             //si hay Excepción, mostramos el mensaje en pantalla:
             mostrarMensajeEnPantalla("Hubo un error: " + ex.getLocalizedMessage());
         }
     }//GEN-LAST:event_btnBuscarClienteActionPerformed
 
-    private void llenarTablaDeDatos(LinkedList<Cliente> listaDeClientes) {
-        //Declaramos las columnas:
-        Object columnasDeDatos[] = new Object[5];
-
-        //obtenemos el modelo default de la tabla:
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaClientes.getModel();
-
-        limpiarTabla();
-
-        if (listaDeClientes != null) {
-            //agregamos a cada columna los datos que le corresponden:
-            for (Cliente cliente : listaDeClientes) {
-                columnasDeDatos[0] = cliente.getIdPersona();
-                columnasDeDatos[1] = cliente.getNombrePersona();
-                columnasDeDatos[2] = cliente.getDireccionPersona();
-                columnasDeDatos[3] = cliente.getTelefonoPersona();
-                columnasDeDatos[4] = cliente.getCorreoPersona();
-
-                //agregamos los datos de cada columna en cada renglón:
-                modeloDeLaTabla.addRow(columnasDeDatos);
-            }
-        }//se considera el else pero no es necesario                                           
-        
-        //establecemos a nuestra tabla, el modelo que tenía:
-        this.tablaClientes.setModel(modeloDeLaTabla);
-
-    }
-
-    private void limpiarTabla() {
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaClientes.getModel();
-        for (int i = 0; i < tablaClientes.getRowCount(); i++) {
+    private void limpiarListaEnVentana() {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaClientes.getModel();
+        for (int i = 0; i < listaClientes.getRowCount(); i++) {
             modeloDeLaTabla.removeRow(0);
             i -= 1;
         }
@@ -288,42 +262,40 @@ public class VtnClientes extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         //creamos un cliente temporal, a partir del renglón seleccionado en la tabla:
-        Cliente clienteTemporal = obtenerInformacionDeRenglonSelecccionado();
-
         /*Si el cliente temporal fue nulo, entonces no se seleccionó
          alguno de la tabla, por eso nos interesa más cuando no
          sea nulo, es el caso más común:*/
-        if (clienteTemporal != null) {
+        if (verificarSiRenglonEnListaEstaSeleccionado()) {
             //obtenemos la instancia de la ventana: 
             VtnAgrega_oModificaCliente vtnModificaCliente
                     = VtnAgrega_oModificaCliente.getInstanciaVtnAgregaoModificaCliente();
-            
+
             //Obtenemos el id del cliente que se seleccionó en la tabla:
-            String id = Integer.toString(clienteTemporal.getIdPersona());
+            String id = String.valueOf(obtenerIDdeClienteEnRenglonSeleccionado());
             /*El id del cliente que aparece en la tabla, lo ponemos 
              en el JTextField de la siguiente Ventana: */
             vtnModificaCliente.getTxtIdCliente().setText(id);
-            
+
             //Obtenemos el nombre del cliente que se seleccionó en la tabla:
-            String nombre = clienteTemporal.getNombrePersona();
+            String nombre = obtenerNombredeClienteEnRenglonSeleccionado();
             /*El nombre del cliente que aparece en la tabla, lo ponemos 
              en el JTextField de la siguiente Ventana: */
             vtnModificaCliente.getTxtNombreCliente().setText(nombre);
 
             //Obtenemos la direccción del cliente que se seleccionó en la tabla:
-            String direccion = clienteTemporal.getDireccionPersona();
+            String direccion = obtenerDirecciondeClienteEnRenglonSeleccionado();
             /*La dirección del cliente que aparece en la tabla, lo ponemos 
              en el JTextField que le corresponde, de la siguiente Ventana: */
             vtnModificaCliente.getTxtDireccionCliente().setText(direccion);
 
             //Obtenemos el teléfono del cliente que se seleccionó en la tabla:
-            String telefono = clienteTemporal.getTelefonoPersona();
+            String telefono = obtenerTelefonodeClienteEnRenglonSeleccionado();
             /*El teléfono del cliente que aparece en la tabla, lo ponemos 
              en el JTextField que le corresponde, de la siguiente Ventana: */
             vtnModificaCliente.getTxtTelefonoCliente().setText(telefono);
 
             //Obtenemos el correo del cliente que se seleccionó en la tabla:
-            String correo = clienteTemporal.getCorreoPersona();
+            String correo = obtenerCorreodeClienteEnRenglonSeleccionado();
             /*El correo del cliente que aparece en la tabla, lo ponemos 
              en el JTextField que le corresponde, de la siguiente Ventana: */
             vtnModificaCliente.getTxtCorreoCliente().setText(correo);
@@ -335,35 +307,84 @@ public class VtnClientes extends javax.swing.JFrame {
             vtnModificaCliente.setSeModificaraCliente(true);
             //hacemos visible la ventana:
             vtnModificaCliente.setVisible(true);
-            
+
             //cerramos esta ventana:
             cerrarEstaVentana();
-        } else {
-            //quiere decir que el usuario no ha seleccionado algún cliente
-            //la tabla:
-            mostrarMensajeEnPantalla("No seleccionaste algún cliente de la tabla.");
-        }
+        } //el else fue considerado pero no usado.
 
     }//GEN-LAST:event_btnModificarClienteActionPerformed
 
-    private Cliente obtenerInformacionDeRenglonSelecccionado() {
-        //obtiene el número del renglón seleccionado en la tabla.
-        int numDeRenglonSeleccionado = this.tablaClientes.getSelectedRow();
-        /*Si es negativo, quiere decir que ningún renglón ha sido seleccionado:*/
-        if (numDeRenglonSeleccionado < 0) {
-            return null;
-        }
-        //declaramos las constantes, de las columnas donde está la información:
-        int columnaId = 0, columnaNombre = 1, columnaDireccion = 2,
-                columnaTelefono = 3, columnaCorreo = 4;
-        //obtenemos la información del renglón seleccionado.
-        int id = (int) tablaClientes.getValueAt(numDeRenglonSeleccionado, columnaId);
-        String nombre = (String) tablaClientes.getValueAt(numDeRenglonSeleccionado, columnaNombre);
-        String direccion = (String) tablaClientes.getValueAt(numDeRenglonSeleccionado, columnaDireccion);
-        String telefono = (String) tablaClientes.getValueAt(numDeRenglonSeleccionado, columnaTelefono);
-        String correo = (String) tablaClientes.getValueAt(numDeRenglonSeleccionado, columnaCorreo);
+    private boolean verificarSiRenglonEnListaEstaSeleccionado() {
+        int numDeRenglonSeleccionado = this.listaClientes.getSelectedRow();
 
-        return new Cliente(id, nombre, direccion, telefono, correo);
+        /*Si es positivo, quiere decir que se seleccionó un renglón: */
+        if (numDeRenglonSeleccionado >= 0) {
+            return true;
+        } else {
+            mostrarMensajeEnPantalla("No seleccionó algún Cliente de la tabla!!");
+            return false;
+        }
+
+    }
+    private static final int VALOR_INVALIDO = 0;
+
+    private int obtenerIDdeClienteEnRenglonSeleccionado() {
+
+        if (verificarSiRenglonEnListaEstaSeleccionado()) {
+            int numDeRenglonSeleccionado = this.listaClientes.getSelectedRow();
+            int columnaId = 0;
+            int id = (int) listaClientes.getValueAt(numDeRenglonSeleccionado, columnaId);
+            return id;
+        }
+        return VALOR_INVALIDO;
+    }
+
+    private static final String CADENA_INVALIDA = "";
+
+    private String obtenerNombredeClienteEnRenglonSeleccionado() {
+
+        if (verificarSiRenglonEnListaEstaSeleccionado()) {
+            int numDeRenglonSeleccionado = this.listaClientes.getSelectedRow();
+            int columnaNombre = 1;
+            String nombre = (String) listaClientes.getValueAt(numDeRenglonSeleccionado, columnaNombre);
+            return nombre;
+        }//el else fue considerado pero no necesario.
+        return CADENA_INVALIDA;
+    }
+
+    private String obtenerDirecciondeClienteEnRenglonSeleccionado() {
+
+        if (verificarSiRenglonEnListaEstaSeleccionado()) {
+            int numDeRenglonSeleccionado = this.listaClientes.getSelectedRow();
+            int columnaDireccion = 2;
+            String direccion = (String) listaClientes.getValueAt(numDeRenglonSeleccionado, columnaDireccion);
+            return direccion;
+        }//el else fue considerado pero no necesario.
+        return CADENA_INVALIDA;
+    }
+
+    private String obtenerTelefonodeClienteEnRenglonSeleccionado() {
+
+        if (verificarSiRenglonEnListaEstaSeleccionado()) {
+            int numDeRenglonSeleccionado = this.listaClientes.getSelectedRow();
+            int columnaTelefono = 3;
+            String telefono = (String) listaClientes.getValueAt(numDeRenglonSeleccionado, columnaTelefono);
+            return telefono;
+        }//el else fue considerado pero no necesario.
+
+        return CADENA_INVALIDA;
+    }
+
+    private String obtenerCorreodeClienteEnRenglonSeleccionado() {
+
+        if (verificarSiRenglonEnListaEstaSeleccionado()) {
+            int numDeRenglonSeleccionado = this.listaClientes.getSelectedRow();
+            int columnaCorreo = 4;
+            String correo = (String) listaClientes.getValueAt(numDeRenglonSeleccionado, columnaCorreo);
+            return correo;
+        }//el else fue considerado pero no es usado.
+
+        return CADENA_INVALIDA;
     }
 
 
@@ -376,7 +397,7 @@ public class VtnClientes extends javax.swing.JFrame {
 
     private void borrarCampos() {
         this.txtNombreCliente.setText("");
-        limpiarTabla();
+        limpiarListaEnVentana();
 
     }
 
@@ -431,7 +452,7 @@ public class VtnClientes extends javax.swing.JFrame {
     private javax.swing.JButton btnRegresarVtnPrincipal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tablaClientes;
+    private javax.swing.JTable listaClientes;
     private javax.swing.JTextField txtNombreCliente;
     // End of variables declaration//GEN-END:variables
 }
