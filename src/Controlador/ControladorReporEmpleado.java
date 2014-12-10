@@ -13,7 +13,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -44,7 +43,7 @@ public class ControladorReporEmpleado {
             Sheet sheet = wb.createSheet("new sheet");
             TableModel auxModeloConDatos = modeloConDatos;
             
-            exportadoCorrectamente = exportaReportes(sheet, auxModeloConDatos);
+            exportadoCorrectamente = pobarDatosDeReporte(sheet, auxModeloConDatos);
               
             out = new FileOutputStream("ReporteEmpleados.xls");
             wb.write(out);
@@ -66,10 +65,9 @@ public class ControladorReporEmpleado {
      * @return 
      */
     
-    private boolean exportaReportes(Sheet sheet, TableModel tableModel) {
+    private boolean pobarDatosDeReporte(Sheet sheet, TableModel tableModel) {
         boolean exportadoCorrectamente = false;
-        crearEncabezados(sheet,tableModel);
-        poblarExcel(sheet, tableModel);
+        poblarExcel(sheet,tableModel);
         exportadoCorrectamente = true;
         
         return exportadoCorrectamente;
@@ -116,25 +114,23 @@ public class ControladorReporEmpleado {
         return null;
     }
     
-    private void crearEncabezados(Sheet sheet, TableModel tableModel) {
+    private void poblarExcel(Sheet sheet, TableModel tableModel) {
         Row row = sheet.createRow(0);
         Cell cell = null;
             for (int i = 0; i < tableModel.getColumnCount(); i++) {
                 cell =  row.createCell(i);
                 cell.setCellValue(tableModel.getColumnName(i));
             }
-    }
-
-    private void poblarExcel(Sheet sheet, TableModel tableModel) {
-        Row row;
-        Cell cell;
-        for (int i = 1; i < tableModel.getRowCount()+1; i++) {
+            
+            for (int i = 1; i < tableModel.getRowCount()+1; i++) {
                 row = sheet.createRow(i);
                 for (int j = 0; j <  tableModel.getColumnCount(); j++) {
                     cell =  row.createCell(j);
                     String dinero = (j>1)? "$":"";
                     cell.setCellValue(dinero + (String)tableModel.getValueAt(i-1, j));
                 }
-            } 
+            }
     }
+
+    
 }

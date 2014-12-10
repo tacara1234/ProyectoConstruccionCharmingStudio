@@ -18,7 +18,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
     /**
      * Creates new form VtnReporEmpleados
      */
-    public VtnReporEmpleados() {
+    private VtnReporEmpleados() {
         initComponents();
         setLocationRelativeTo(null);
         listarEmpleados();
@@ -133,7 +133,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRegresarVtnReportesActionPerformed
 
     private void btnExportarExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarExcelActionPerformed
-        limpiarTabla();
+
         ControladorReporEmpleado unControlador = new ControladorReporEmpleado();
         boolean exportadoCorrectamente = unControlador.generaReporte(this.reporteTablaEmpleados.getModel());
         if(exportadoCorrectamente){
@@ -141,6 +141,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
         }else{
             JOptionPane.showMessageDialog(null, "Hubo un error. Contacta al administrador.");
         }
+        
     }//GEN-LAST:event_btnExportarExcelActionPerformed
 
     /**
