@@ -37,36 +37,68 @@ public class Servicio {
         this.costo = costo;
     }
 
+    /**
+     *Crea servicio sin clave asignada
+     * @param nombre
+     * @param costo
+     */
     public Servicio(String nombre, float costo) {
         this.id = 0;
         this.servNombre = nombre;
         this.costo = costo;
     }
 
+    /**
+     *Constructor vacío
+     */
     public Servicio() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
+    /**
+     *Devuelve costo del servicio
+     * @return
+     */
     public float getCosto() {
         return costo;
     }
 
+    /**
+     *Establece costo del servicio
+     * @param costo
+     */
     public void setCosto(float costo) {
         this.costo = costo;
     }
 
+    /**
+     *obtiene nombre del servicio
+     * @return
+     */
     public String getServNombre() {
         return servNombre;
     }
 
+    /**
+     *establece nombre  del servicio
+     * @param servNombre
+     */
     public void setServNombre(String servNombre) {
         this.servNombre = servNombre;
     }
 
+    /**
+     *Obtiene id del servicio
+     * @return
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     *establece id del servicio
+     * @param id
+     */
     public void setId(int id) {
         this.id = id;
     }

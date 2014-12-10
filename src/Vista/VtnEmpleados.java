@@ -70,7 +70,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Id", "Nombre", "Direccion", "Telefono", "Correo", "Desempeño", "Sueldo"
+                "Id", "Nombre", "Correo", "Telefono", "Direccion", "Desempeño", "Sueldo"
             }
         ));
         listaEmpleados.addVetoableChangeListener(new java.beans.VetoableChangeListener() {

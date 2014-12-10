@@ -42,7 +42,7 @@ public class Proveedor extends Persona {
     
     /**
      *Método que agrega un servicio en específico, para el proveedor.
-     * @param unServicio, que es el nuevo que se agregará.
+     * @param unServicio 
      */
     public void agregarUnServicio(Servicio unServicio){
         
@@ -58,6 +58,11 @@ public class Proveedor extends Persona {
     }
     
     
+    /**
+     *Obtiene un servicio especifico del proveedor
+     * @param servicioABuscar
+     * @return servicio encontrado
+     */
     public Servicio obtenerServicioPorNombre(String servicioABuscar){
         for(Servicio servicio:this.obtenerServiciosQueProvee()){
             if(servicio.getServNombre().equals(servicioABuscar)){
@@ -67,6 +72,11 @@ public class Proveedor extends Persona {
         return null;
     }
     
+    /**
+     *Verifica si tiene el servicio seleccionado
+     * @param servicioABuscar
+     * @return true o false
+     */
     public boolean tieneServicio(String servicioABuscar){
         for(Servicio servicio:this.obtenerServiciosQueProvee()){
             if(servicio.getServNombre().equals(servicioABuscar)){
