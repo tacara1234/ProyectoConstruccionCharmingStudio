@@ -31,9 +31,11 @@ public class DAOPaquetes {
      * Este método se encarga de insertar un nuevo paquete en la BD, la tabla
      * que le corresponde es "arma".
      *
+     * @param idEvento
      * @param idPaquete
      * @param idProveedor
      * @param idServicio
+     * @param strFecha
      * @return verdadero o falso, dependiendo de si se pudo o no, insertar el
      * elemento.
      * @throws java.sql.SQLException
@@ -42,12 +44,7 @@ public class DAOPaquetes {
             int idProveedor, int idServicio, String strFecha) throws SQLException {
 
         Statement sentenciaDeInsercion = Conexion.createStatement();
-
         
-        /*
-        INSERT INTO `arma` (`idPaquetes`, `idProveedor`, `idServicios`, 
-        `Eventos_idEvento`, `Eventos_Fecha`) VALUES ('1', '1', '1', '1', '2014-11-23')
-        */
         boolean seAgregoElemento = sentenciaDeInsercion.execute("INSERT INTO "
                 + "charmingstudio.arma (`idPaquetes`, `idProveedor`, "
                 + "`idServicios`,`Eventos_idEvento`)" + "VALUES("
