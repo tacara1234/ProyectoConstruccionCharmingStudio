@@ -29,7 +29,7 @@ public class Proveedor extends Persona {
     /**
      * @return the provServicios
      */
-    public LinkedList<Servicio> getServiciosQueProvee() {
+    public LinkedList<Servicio> obtenerServiciosQueProvee() {
         return provServicios;
     }
 
@@ -59,7 +59,7 @@ public class Proveedor extends Persona {
     
     
     public Servicio getServicioEspecifico(String servicioABuscar){
-        for(Servicio servicio:this.getServiciosQueProvee()){
+        for(Servicio servicio:this.obtenerServiciosQueProvee()){
             if(servicio.getServNombre().equals(servicioABuscar)){
                 return servicio;
             }
@@ -68,7 +68,7 @@ public class Proveedor extends Persona {
     }
     
     public boolean tieneServicio(String servicioABuscar){
-        for(Servicio servicio:this.getServiciosQueProvee()){
+        for(Servicio servicio:this.obtenerServiciosQueProvee()){
             if(servicio.getServNombre().equals(servicioABuscar)){
                 return true;
             }
@@ -78,7 +78,7 @@ public class Proveedor extends Persona {
     
     @Override
     public String toString() {
-        return "Proveedor: " + super.toString() + "Servicios que provee:" + getServiciosQueProvee();
+        return "Proveedor: " + super.toString() + "Servicios que provee:" + obtenerServiciosQueProvee();
     }
 
 }

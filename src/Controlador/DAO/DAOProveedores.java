@@ -40,12 +40,12 @@ public class DAOProveedores extends GestorBD {
 
         if (!existeUsuario(proveedor)) {
 
-            agregarProveedorA_suTabla(proveedor);
+            Agregar_A_Tabla(proveedor);
             /*En la sentencia anterior, el proveedor se agregó a la BD
              y el SMBD le asignó un ID, por lo que ahora necesitamos 
              encontrar dicho ID:                        */
             int idProveedor = encontrarIdDeProveedor(proveedor.getNombrePersona());
-            agregarPreciosDeServicioDelProveedor(proveedor.getServiciosQueProvee(), idProveedor);
+            agregarPreciosDeServicioDelProveedor(proveedor.obtenerServiciosQueProvee(), idProveedor);
 
             seAgregoProveedor = true;
         }//fin if
@@ -54,7 +54,7 @@ public class DAOProveedores extends GestorBD {
 
     }
 
-    private void agregarProveedorA_suTabla(Proveedor proveedor) throws SQLException {
+    private void Agregar_A_Tabla(Proveedor proveedor) throws SQLException {
 
         Statement sentenciaAgregaProveedor = Conexion.createStatement();
         sentenciaAgregaProveedor.executeUpdate("INSERT INTO charmingstudio.proveedor "
@@ -100,21 +100,22 @@ public class DAOProveedores extends GestorBD {
 
         LinkedList<Proveedor> listaDeProveedores = obtenerCoincidenciasDeBD(proveedor.getNombrePersona());
         boolean existeUsuario = false;
-        if (listaDeProveedores != null) {
-            for (Proveedor proveedorEnBD : listaDeProveedores) {
-                if (compararProveedores(proveedorEnBD, proveedor)) {
-                    //si se cumple, entonces encontramos una coincidencia:
-                    existeUsuario = true;
-                    //rompemos el ciclo en caso de que haya más de un cliente
-                    //con los mismos datos:
-                    break;
-                } else {
-                    /*el else fue considerado, pero no es usado.*/
-                }
-            }//fin for
-        } else {
-            /*el else fue considerado, pero no es usado.*/
+
+        if (listaDeProveedores == null) {
+            return existeUsuario;
         }
+
+        for (Proveedor proveedorEnBD : listaDeProveedores) {
+            if (compararProveedores(proveedorEnBD, proveedor)) {
+                //si se cumple, entonces encontramos una coincidencia:
+                existeUsuario = true;
+                //rompemos el ciclo en caso de que haya más de un cliente
+                //con los mismos datos:
+                break;
+            } else {
+                /*el else fue considerado, pero no es usado.*/
+            }
+        }//fin for
 
         return existeUsuario;
     }
@@ -259,7 +260,7 @@ public class DAOProveedores extends GestorBD {
         //en caso de que no haya el usuario en la BD. 
         Statement sentenciaDeActualizacionDeProveedor = Conexion.createStatement();
 
-        actualizarPreciosDeProveedor(proveedorA_modificar.getServiciosQueProvee(),
+        actualizarPreciosDeProveedor(proveedorA_modificar.obtenerServiciosQueProvee(),
                 proveedorA_modificar.getIdPersona());
 
         int actualizaInfoProveedor

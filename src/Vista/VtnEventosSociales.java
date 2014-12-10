@@ -221,23 +221,23 @@ public class VtnEventosSociales extends javax.swing.JFrame {
 
         //obtenemos la información del renglón seleccionado.
         int id = (int) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaId);
-        String idYcliente = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdCliente);
+        String strIdCliente = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdCliente);
         String idYmd = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdMD);
         Date fecha = (Date) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaFecha);
         float precio = (float) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaPrecio);
         String idYempleado = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdEmpleado);
 
-        StringTokenizer token1 = new StringTokenizer(idYcliente, " ");
+        StringTokenizer token1 = new StringTokenizer(strIdCliente, " ");
         StringTokenizer token2 = new StringTokenizer(idYmd, " ");
         StringTokenizer token3 = new StringTokenizer(idYempleado, " ");
         int idCliente = Integer.parseInt(token1.nextToken());
         int idMD = Integer.parseInt(token2.nextToken());
         int idEmpleado = Integer.parseInt(token3.nextToken());
 
-
+        
 
         //regresamos el EventoSocial.
-        return new EventosSociales(id, idCliente, idMD, fecha, precio, idEmpleado);
+        return new EventosSociales(id, idCliente, idMD, fecha.toString(), precio, idEmpleado);
 
     }
 

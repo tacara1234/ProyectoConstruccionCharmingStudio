@@ -1,6 +1,5 @@
 package Controlador;
 
-
 import Modelo.Proveedor;
 import Modelo.Servicio;
 import com.itextpdf.awt.PdfGraphics2D;
@@ -35,16 +34,17 @@ import org.jfree.data.category.DefaultCategoryDataset;
  */
 public class ControladorReporProveedores {
 
-    ControladorProveedores ctrlProveedor = new ControladorProveedores();
+    ControladorProveedores ctrlProveedor;
 
     /**
-     *Constructor vacío
+     * Constructor que inicializa un objeto de este tipo.
      */
     public ControladorReporProveedores() {
+        ctrlProveedor = new ControladorProveedores();
     }
 
     /**
-     *Esta función se encarga de crear el pdf del reporte
+     * Esta función se encarga de crear el pdf del reporte.
      */
     public void crearPDF() {
 
@@ -61,14 +61,16 @@ public class ControladorReporProveedores {
             documentoPDF.add(titulo);
             documentoPDF.add(Chunk.NEWLINE);//linea vacia
             documentoPDF.add(Chunk.NEWLINE);
+
             Paragraph texto = new Paragraph();
             texto.add("Proveedores con mejores precios");
             documentoPDF.add(texto);
             documentoPDF.add(Chunk.NEWLINE);
 
             int numColumnas = 6;
+
             PdfPTable tablaProveedores = new PdfPTable(numColumnas);
-            LinkedList<Proveedor> mejoresProveedores = listaMejoresProveedores();
+            LinkedList<Proveedor> mejoresProveedores = obtenerMejoresProveedores();
             llenarTabla(tablaProveedores, mejoresProveedores);
             documentoPDF.add(tablaProveedores);
 
@@ -78,23 +80,23 @@ public class ControladorReporProveedores {
             PdfTemplate templateBarras = contenidoPdf.createTemplate(ancho, alto);
             Graphics2D grafico2d = new PdfGraphics2D(templateBarras, ancho, alto);
             Rectangle2D rectangulo2d = new Rectangle2D.Double(0, 0, ancho, alto);
-            graficaTodosLosProveedores().draw(grafico2d, rectangulo2d);
+            graficarTodosLosProveedores().draw(grafico2d, rectangulo2d);
             grafico2d.dispose();
             contenidoPdf.addTemplate(templateBarras, 20, 50);
 
             documentoPDF.close();
 
-        } catch (DocumentException | FileNotFoundException ex) {
-            Logger.getLogger(ControladorReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
+        } catch (DocumentException | FileNotFoundException | SQLException ex) {
             Logger.getLogger(ControladorReporProveedores.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
-     *Llena la tabla que se introducirá al pdf.
+     * Llena la tabla que se introducirá al pdf.
+     *
      * @param tablaProveedores tabla del pdf
-     * @param mejoresProveedores lista de los proveedores con los mejores precios
+     * @param mejoresProveedores lista de los proveedores con los mejores
+     * precios
      */
     public void llenarTabla(PdfPTable tablaProveedores, LinkedList<Proveedor> mejoresProveedores) {
         // addCell() agrega una celda a la tabla, el cambio de fila
@@ -112,20 +114,21 @@ public class ControladorReporProveedores {
         int lugar = 3;
         int musica = 4;
 
-        agregaProveedorATabla(tablaProveedores, mejoresProveedores.get(banquetera), "Banquetera");
-        agregaProveedorATabla(tablaProveedores, mejoresProveedores.get(carpa), "Carpa");
-        agregaProveedorATabla(tablaProveedores, mejoresProveedores.get(iluminacion), "Iluminacion");
-        agregaProveedorATabla(tablaProveedores, mejoresProveedores.get(lugar), "Lugar");
-        agregaProveedorATabla(tablaProveedores, mejoresProveedores.get(musica), "Musica");
+        agregarProveedorATabla(tablaProveedores, mejoresProveedores.get(banquetera), "Banquetera");
+        agregarProveedorATabla(tablaProveedores, mejoresProveedores.get(carpa), "Carpa");
+        agregarProveedorATabla(tablaProveedores, mejoresProveedores.get(iluminacion), "Iluminacion");
+        agregarProveedorATabla(tablaProveedores, mejoresProveedores.get(lugar), "Lugar");
+        agregarProveedorATabla(tablaProveedores, mejoresProveedores.get(musica), "Musica");
     }
 
     /**
-     *Agrega cada proveedor a una fila de la tabla
+     * Agrega cada proveedor a una fila de la tabla
+     *
      * @param tabla tabla del pdf
      * @param proveedor provedor que se agregará
      * @param servicio el servicio del proveedor
      */
-    public void agregaProveedorATabla(PdfPTable tabla, Proveedor proveedor, String servicio) {
+    public void agregarProveedorATabla(PdfPTable tabla, Proveedor proveedor, String servicio) {
 
         tabla.addCell(servicio);
         tabla.addCell(proveedor.getNombrePersona());
@@ -138,19 +141,20 @@ public class ControladorReporProveedores {
     }
 
     /**
-     *Esta funcion crea una lista con el mejor proveedor de cada servicio.
+     * Esta funcion crea una lista con el mejor proveedor de cada servicio.
+     *
      * @return LinkedList con los proveedores
      * @throws SQLException
      */
-    public LinkedList<Proveedor> listaMejoresProveedores() throws SQLException {
+    public LinkedList<Proveedor> obtenerMejoresProveedores() throws SQLException {
 
         LinkedList<Proveedor> proveedores = ctrlProveedor.obtenerTodosLosProveedoresConSusServicios();
 
-        Proveedor mejorBanquetera = buscaProveedorMenorPrecio(proveedores, "Banquetera");
-        Proveedor mejorCarpa = buscaProveedorMenorPrecio(proveedores, "Carpa");
-        Proveedor mejorIluminacion = buscaProveedorMenorPrecio(proveedores, "Iluminacion");
-        Proveedor mejorLugar = buscaProveedorMenorPrecio(proveedores, "Lugar");
-        Proveedor mejorMusica = buscaProveedorMenorPrecio(proveedores, "Musica");
+        Proveedor mejorBanquetera = buscarProveedorConMenorPrecio(proveedores, "Banquetera");
+        Proveedor mejorCarpa = buscarProveedorConMenorPrecio(proveedores, "Carpa");
+        Proveedor mejorIluminacion = buscarProveedorConMenorPrecio(proveedores, "Iluminacion");
+        Proveedor mejorLugar = buscarProveedorConMenorPrecio(proveedores, "Lugar");
+        Proveedor mejorMusica = buscarProveedorConMenorPrecio(proveedores, "Musica");
 
         LinkedList<Proveedor> mejoresPrecios = new LinkedList();
         mejoresPrecios.add(mejorBanquetera);
@@ -163,12 +167,14 @@ public class ControladorReporProveedores {
     }
 
     /**
-     *Busca entre todos los mejores el que tenga el menor precio del servicio seleccionado
+     * Busca entre todos los proveedores, el que tenga el menor precio del servicio
+     * seleccionado.
+     *
      * @param proveedores LinkedList con los proveedores
      * @param servicio servicio del cual se buscará el mejor precio
      * @return el proveedor con el mejor precio del servicio seleccionado
      */
-    public Proveedor buscaProveedorMenorPrecio(LinkedList<Proveedor> proveedores, String servicio) {
+    public Proveedor buscarProveedorConMenorPrecio(LinkedList<Proveedor> proveedores, String servicio) {
         Proveedor masBarato = null;
 
         for (Proveedor proveedor : proveedores) {
@@ -193,37 +199,36 @@ public class ControladorReporProveedores {
         return masBarato;
     }
 
-    private JFreeChart graficaTodosLosProveedores() throws SQLException {
-        
+    private JFreeChart graficarTodosLosProveedores() throws SQLException {
 
-            LinkedList<Proveedor> proveedores = ctrlProveedor.obtenerTodosLosProveedoresConSusServicios();
-            DefaultCategoryDataset datosBarras = new DefaultCategoryDataset();
+        LinkedList<Proveedor> proveedores = ctrlProveedor.obtenerTodosLosProveedoresConSusServicios();
+        DefaultCategoryDataset datosBarras = new DefaultCategoryDataset();
 
-            for (Proveedor proveedor : proveedores) {
-                for (Servicio servicio : proveedor.getServiciosQueProvee()) {
-                    datosBarras.setValue(servicio.getCosto(),
-                            proveedor.getNombrePersona(), servicio.getServNombre());
-                }
+        for (Proveedor proveedor : proveedores) {
+            for (Servicio servicio : proveedor.obtenerServiciosQueProvee()) {
+                datosBarras.setValue(servicio.getCosto(),
+                        proveedor.getNombrePersona(), servicio.getServNombre());
             }
+        }
 
-            JFreeChart graficaBarras = ChartFactory.createBarChart(
-                    "Proveedores", //titulo
-                    "Servicio", // eje x
-                    "Costo", // eje y
-                    datosBarras); // datos
+        JFreeChart graficaBarras = ChartFactory.createBarChart(
+                "Proveedores", //titulo
+                "Servicio", // eje x
+                "Costo", // eje y
+                datosBarras); // datos
 
-            return graficaBarras;
-        
-        
+        return graficaBarras;
+
     }
 
     /**
-     *Crea la gráfica con los precios de un servicio específico
+     * Crea la gráfica con los precios de un servicio específico
+     *
      * @param servicio servicio cuyos precios se graficarán
      * @param proveedores proveedores del servicio
      * @return el modelo de la gráfica
      */
-    public JFreeChart graficaServicioEspecífico(String servicio, LinkedList<Proveedor> proveedores) {
+    public JFreeChart graficarServicioEspecífico(String servicio, LinkedList<Proveedor> proveedores) {
         DefaultCategoryDataset datosBarras = new DefaultCategoryDataset();
 
         for (Proveedor proveedor : proveedores) {

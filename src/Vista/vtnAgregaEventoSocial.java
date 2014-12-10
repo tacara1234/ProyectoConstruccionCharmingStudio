@@ -32,7 +32,6 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
     }
 
-
     private void inicializarGrupoDeBotones() {
         grupoDePaquetes.add(rbPaqBasico);
         grupoDePaquetes.add(rbPaqIntermedio);
@@ -73,9 +72,9 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         try {
             limpiarLista(listaDeMesas);
             ControladorEventos unControlador = new ControladorEventos();
-            DefaultTableModel modeloConDatos = unControlador.llenarListaMesaDulces((DefaultTableModel)this.listaDeMesas.getModel());
+            DefaultTableModel modeloConDatos = unControlador.llenarListaMesaDulces((DefaultTableModel) this.listaDeMesas.getModel());
             this.listaDeMesas.setModel(modeloConDatos);
-            
+
         } catch (SQLException ex) {
             mostrarMensajeEnPantalla("Error con la base de datos: " + ex.getLocalizedMessage());
         }
@@ -434,11 +433,14 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         try {
             // TODO add your handling code here:
             limpiarLista(listaClientes);
+
             ControladorEventos controlDeEventos = new ControladorEventos();
             String nombre = this.txtNombreCliente.getText();
-            DefaultTableModel modeloConDatos = controlDeEventos.llenarListaEmpleado(nombre, (DefaultTableModel) this.listaClientes.getModel());
+
+            DefaultTableModel modeloConDatos = controlDeEventos.llenarListaCliente(nombre, (DefaultTableModel) this.listaClientes.getModel());
 
             this.listaClientes.setModel(modeloConDatos);
+
         } catch (SQLException ex) {
             mostrarMensajeEnPantalla("Error con la base de datos: " + ex.getLocalizedMessage());
         }
@@ -480,8 +482,20 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
             return;
         }
         int idCliente = obtenerClaveClienteSeleccionado();
+        if (idCliente == VALOR_INVALIDO) {
+            return;
+        }
+
         int idEmpleado = obtenerClaveEmpleadoSeleccionado();
+        if (idEmpleado == VALOR_INVALIDO) {
+            return;
+        }
+
         int idMesa = obtenerClaveMesaSeleccionada();
+        if (idMesa == VALOR_INVALIDO) {
+            return;
+        }
+
         String fecha = obtenerFecha();
 
         Object[] proveedores = obtenerProveedores();
@@ -504,19 +518,22 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         } catch (SQLException ex) {
             mostrarMensajeEnPantalla("Error con la BD este evento ya existe ");
         }
-
+        limpiarVentana();
     }//GEN-LAST:event_btnAgregarEventoActionPerformed
 
     private void btnRegresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresoActionPerformed
         // TODO add your handling code here:
 
+        regresarA_MenuAnterior();
+
+    }//GEN-LAST:event_btnRegresoActionPerformed
+
+    private void regresarA_MenuAnterior() {
         limpiarVentana();
         VtnEventosSociales regreso = new VtnEventosSociales();
         regreso.setVisible(true);
         this.dispose();
-
-
-    }//GEN-LAST:event_btnRegresoActionPerformed
+    }
 
     private void rbPaqIntermedioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbPaqIntermedioActionPerformed
         // TODO add your handling code here:
@@ -532,33 +549,38 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
 
     private void limpiarVentana() {
         txtNombreCliente.setText("");
-//        limpiarLista(listaDeMesas);
         limpiarLista(listaDeProveedoresConServicios);
-//        limpiarLista(listaClientes);
-        listaClientes.clearSelection();
+        limpiarLista(listaClientes);
+        limpiarLista(listaDeMesas);
+        listaEmpleados.clearSelection();
     }
 
     private String obtenerFecha() {
         int dia = Integer.parseInt((String) comboDia.getSelectedItem());
         int mes = comboMes.getSelectedIndex() + 1;
         int anio = (int) comboAnio.getSelectedItem();
-        GregorianCalendar fechaEscogida = new GregorianCalendar(anio, mes, dia);
 
+        GregorianCalendar fechaEscogida = new GregorianCalendar(anio, mes, dia);
         String fechaEnTexto = convertirFechaEnTexto(fechaEscogida);
 
         return fechaEnTexto;
     }
 
     private String convertirFechaEnTexto(GregorianCalendar fecha) {
-        String strFecha = "";
-        strFecha += fecha.get(Calendar.YEAR) + "-";
+
+        String strFecha = fecha.get(Calendar.YEAR) + "-";
         strFecha += fecha.get(Calendar.MONTH) + "-";
         strFecha += fecha.get(Calendar.DATE);
         return strFecha;
     }
+    private static final int ERROR_EN_LA_SELECCION = 0;
+    private static final int VALOR_INVALIDO = 0;
 
     private int obtenerClaveClienteSeleccionado() {
-
+        if (listaClientes.getSelectedRow() < VALOR_INVALIDO) {
+            JOptionPane.showMessageDialog(null, "Error", "no seleccionó algún cliente de la tabla", 1);
+            return ERROR_EN_LA_SELECCION;
+        }
         int renglonSeleccionado = listaClientes.getSelectedRow();
         int claveCliente = (int) listaClientes.getValueAt(renglonSeleccionado, 0);
 
@@ -566,6 +588,10 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
     }
 
     private int obtenerClaveEmpleadoSeleccionado() {
+        if (listaEmpleados.getSelectedValue() == null) {
+            JOptionPane.showMessageDialog(null, "Error", "no seleccionó algún Empleado de la tabla", 1);
+            return ERROR_EN_LA_SELECCION;
+        }
         String datosEmpleado = (String) listaEmpleados.getSelectedValue();
 
         StringTokenizer tokens = new StringTokenizer(datosEmpleado);
@@ -575,6 +601,10 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
     }
 
     private int obtenerClaveMesaSeleccionada() {
+        if (listaDeMesas.getSelectedRow() < VALOR_INVALIDO) {
+            JOptionPane.showMessageDialog(null, "Error", "no seleccionó algún Empleado de la tabla", 1);
+            return ERROR_EN_LA_SELECCION;
+        }
         int renglonSeleccionado = listaDeMesas.getSelectedRow();
         int claveMesa = (int) listaDeMesas.getValueAt(renglonSeleccionado, 0);
 
@@ -623,27 +653,25 @@ public class vtnAgregaEventoSocial extends javax.swing.JFrame {
         for (int vueltas = 0; vueltas < renglonesSeleccionados.length; vueltas++) {
             precio += (float) listaDeProveedoresConServicios.getValueAt(renglonesSeleccionados[vueltas], columnaPrecio);
         }
-        //System.out.println("Precio es" + precio);
         return precio;
     }
 
-    private static final int paqueteBasico = 1;
-    private static final int paqueteIntermedio = 2;
-    private static final int paqueteCompleto = 3;
-    private static final int paqueteInvalido = 0;
+    private static final int PAQUETE_BASICO = 1;
+    private static final int PAQUETE_INTERMEDIO = 2;
+    private static final int PAQUETE_COMPLETO = 3;
 
     private int obtenerTipoPaquete() {
         if (rbPaqBasico.isSelected()) {
-            return paqueteBasico;
+            return PAQUETE_BASICO;
         }
         if (rbPaqIntermedio.isSelected()) {
-            return paqueteIntermedio;
+            return PAQUETE_INTERMEDIO;
         }
         if (rbPaqCompleto.isSelected()) {
-            return paqueteCompleto;
+            return PAQUETE_COMPLETO;
         }
         //Si llega hasta aquí, entonces no seleccionó alguno
-        return paqueteInvalido;
+        return VALOR_INVALIDO;
     }
 
     private void limpiarLista(JTable tabla) {

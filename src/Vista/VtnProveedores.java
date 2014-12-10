@@ -243,7 +243,7 @@ public class VtnProveedores extends javax.swing.JFrame {
              en el JTextField que le corresponde, de la siguiente Ventana: */
             vtnModificaProveedor.getTxtCorreoProveedor().setText(correo);
 
-            activarServiciosDeProveedor(proveedorTemporal.getServiciosQueProvee());
+            activarServiciosDeProveedor(proveedorTemporal.obtenerServiciosQueProvee());
 
             //le ponemos el título a la ventana:
             vtnModificaProveedor.setTitle("Modificará la información de un proveedor");
@@ -389,7 +389,7 @@ public class VtnProveedores extends javax.swing.JFrame {
             columnasDeDatos[columnaTelefono] = proveedor.getTelefonoPersona();
             columnasDeDatos[columnaCorreo] = proveedor.getCorreoPersona();
 
-            columnasDeDatos = (Object[]) verificarServiciosDeProveedor(proveedor.getServiciosQueProvee(),
+            columnasDeDatos = (Object[]) verificarServiciosDeProveedor(proveedor.obtenerServiciosQueProvee(),
                     columnasDeDatos);
 
             //agregamos los datos de cada columna en cada renglón:

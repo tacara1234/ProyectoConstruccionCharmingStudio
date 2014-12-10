@@ -23,7 +23,11 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ControladorEventos {
 
-    DAOEventos dao = new DAOEventos();
+    private DAOEventos dao;
+
+    public ControladorEventos() {
+        dao = new DAOEventos();
+    }
 
     /**
      * Se encarga de guardar un nuevo registro para un evento, actualiza los
@@ -45,19 +49,25 @@ public class ControladorEventos {
             Object[] proveedores, int clavePaquete, float precioEvento,
             String fechaEvento) throws SQLException {
 
-        boolean sePudoAgregarEvento = true;
+        boolean sePudoAgregarEvento = false;
 
-        int idEvento = dao.agregarElementoA_TablaEventoSocial(claveCliente, claveMesaDulces, fechaEvento,
-                precioEvento, claveEmpleado);
+        int idEvento = dao.agregarElementoA_TablaEventoSocial(claveCliente, claveMesaDulces,
+                fechaEvento, precioEvento, claveEmpleado);
 
-        //Se actualiza la información de los paquetes en la BD:
+        //Se agrega la información de los paquetes a usar en el evento en la BD:
         agregarPaquetes(idEvento, clavePaquete, proveedores, fechaEvento);
+
+        sePudoAgregarEvento = true;
 
         return sePudoAgregarEvento;
     }
 
     /**
-     * Se encarga de actualizar la tabla de los paquetes. (arma)
+     * Se encarga de actualizar la tabla de los paquetes que se arman cuando se
+     * crea un nuevo evento. aSe recibe de la vista un arreglo que tiene la
+     * información de la siguiente manera: [idProveedor,
+     * nombreServicio,...,idProveedor, nombreServicio] ya que la vista no puede
+     * devolver objetos.
      */
     private void agregarPaquetes(int idEvento, int clavePaquete,
             Object[] proveedoresConServicios, String strFecha) throws SQLException {
@@ -84,26 +94,11 @@ public class ControladorEventos {
      * nombre que se le pase.
      */
     private int buscarIdServicioPorNombre(String nombreServicio) throws SQLException {
+
         ControladorServicios controlador = new ControladorServicios();
-        int idServicio = controlador.buscarServicioPorNombre(nombreServicio).getId();
+        Servicio unServicio = controlador.obtenerServicioPorNombre(nombreServicio);
 
-        return idServicio;
-    }
-
-    /**
-     * Método encargado de devolver la información completa de un cliente, a
-     * partir del nombre que se busque en la BD.
-     *
-     * @param nombre del cliente a encontrar en la BD.
-     * @return lista simple con la información de todos los empleados.
-     * @throws SQLException
-     */
-    public LinkedList<Cliente> obtenerInformacionClientes(String nombre) throws SQLException {
-
-        ControladorCliente controlador = new ControladorCliente();
-        LinkedList<Cliente> listaClientes = controlador.obtenerCoincidenciasPorNombre(nombre);
-
-        return listaClientes;
+        return unServicio.getId();
     }
 
     /**
@@ -154,14 +149,14 @@ public class ControladorEventos {
     }
 
     /**
-     * encuentra todos los proveedores que dan el servicio básico, que hay en la
+     * encuentra todos los proveedores que dan el Paquete básico, que hay en la
      * BD y retorna toda la información asociada a ellos (servicios, costos,
      * etc).
      *
      * @return lista simple con la información completa de los proveedores.
      * @throws SQLException
      */
-    public LinkedList<Proveedor> encontrarProveedoresDeServicioBasico() throws SQLException {
+    public LinkedList<Proveedor> encontrarProveedoresDePaqueteBasico() throws SQLException {
         LinkedList<Proveedor> proveedores = new LinkedList();
         ControladorProveedores ctrlProv = new ControladorProveedores();
 
@@ -170,7 +165,15 @@ public class ControladorEventos {
         return proveedores;
     }
 
-    public LinkedList<Proveedor> encontrarProveedoresDeServicioIntermedio() throws SQLException {
+    /**
+     * encuentra todos los proveedores que dan el paquete Intermedio, que hay en
+     * la BD y retorna toda la información asociada a ellos (servicios, costos,
+     * etc).
+     *
+     * @return lista simple con la información completa de los proveedores.
+     * @throws SQLException
+     */
+    public LinkedList<Proveedor> encontrarProveedoresDePaqueteIntermedio() throws SQLException {
         LinkedList<Proveedor> proveedores = new LinkedList();
         ControladorProveedores ctrlProv = new ControladorProveedores();
 
@@ -179,7 +182,15 @@ public class ControladorEventos {
         return proveedores;
     }
 
-    public LinkedList<Proveedor> encontrarProveedoresDeServicioCompleto() throws SQLException {
+    /**
+     * encuentra todos los proveedores que dan el paquete completo, que hay en
+     * la BD y retorna toda la información asociada a ellos (servicios, costos,
+     * etc).
+     *
+     * @return lista simple con la información completa de los proveedores.
+     * @throws SQLException
+     */
+    public LinkedList<Proveedor> encontrarProveedoresDePaqueteCompleto() throws SQLException {
         LinkedList<Proveedor> proveedores = new LinkedList();
         ControladorProveedores ctrlProv = new ControladorProveedores();
 
@@ -188,8 +199,16 @@ public class ControladorEventos {
         return proveedores;
     }
 
+    /**
+     * Faltra Javadoc.
+     *
+     * @param modelo
+     * @param tipoDeLlenado
+     * @return
+     * @throws SQLException
+     */
     public DefaultTableModel obtenerTodosLosEventos(DefaultTableModel modelo, int tipoDeLlenado) throws SQLException {
-
+        //¿QUÉ SIGNIFICA EL 1?
         LinkedList<EventosSociales> listaDeEventos = dao.obtenerTodosLosEventos();
         if (tipoDeLlenado == 1) {
             return llenarListaDeDatosCompleta(listaDeEventos, modelo);
@@ -201,21 +220,20 @@ public class ControladorEventos {
     }
     private static final int numColumnasParaReporte = 3;
 
-    private DefaultTableModel llenarListaDeDatosParaReporte(LinkedList<EventosSociales> listaDeEventos, DefaultTableModel modelo) throws SQLException {
+    private DefaultTableModel llenarListaDeDatosParaReporte(LinkedList<EventosSociales> listaDeEventos,
+            DefaultTableModel modelo) throws SQLException {
+
         //Declaramos las columnas:
         Object columnasDeDatos[] = new Object[numColumnasParaReporte];
-        ControladorCliente ctrlCliente = new ControladorCliente();
-        ControladorEmpleado ctrlEmpleado = new ControladorEmpleado();
-        ControladorMesaDeDulces ctrlMesaDulces = new ControladorMesaDeDulces();
+
         if (listaDeEventos != null) {
 
             for (EventosSociales evento : listaDeEventos) {
-
+                //QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?
                 columnasDeDatos[0] = evento.getIdEvento();
-
                 columnasDeDatos[1] = evento.getFecha();
+                columnasDeDatos[2] = evento.getPrecioTotal();
 
-                columnasDeDatos[2] = evento.getEvtPrecioTotal();
                 //agregamos los datos de cada columna en cada renglón:
                 modelo.addRow(columnasDeDatos);
             }
@@ -227,18 +245,21 @@ public class ControladorEventos {
     }
 
     private static final int numColumnasDeDatosCompletos = 6;
-
-    private DefaultTableModel llenarListaDeDatosCompleta(LinkedList<EventosSociales> listaDeEventos, DefaultTableModel modelo) throws SQLException {
+    
+    /*QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?*/
+    private DefaultTableModel llenarListaDeDatosCompleta(LinkedList<EventosSociales> listaDeEventos,
+            DefaultTableModel modelo) throws SQLException {
         //Declaramos las columnas:
         Object columnasDeDatos[] = new Object[numColumnasDeDatosCompletos];
+
+        //Controladores:
         ControladorCliente ctrlCliente = new ControladorCliente();
         ControladorEmpleado ctrlEmpleado = new ControladorEmpleado();
         ControladorMesaDeDulces ctrlMesaDulces = new ControladorMesaDeDulces();
+
         if (listaDeEventos != null) {
             //agregamos a cada columna los datos que le corresponden:
-            String colCliente = "";
-            String colEmpleado = "";
-            String colMesaDeDulces = "";
+
             for (EventosSociales evento : listaDeEventos) {
 
                 Cliente ClienteDelEvento = ctrlCliente.obtenerClientePorID(evento.getIdCliente());
@@ -250,16 +271,16 @@ public class ControladorEventos {
                 MesaDeDulces mesaDeDulcesDelEvento = ctrlMesaDulces.obtenerMDPorId(evento.getIdMD());
                 String nombreMesaDeDulcesDelEvento = mesaDeDulcesDelEvento.getNombreDeMesa();
 
-                colCliente = evento.getIdCliente() + " " + nombreClienteDelEvento;
-                colEmpleado = evento.getIdEmpleado() + " " + nombreResponsableDelEvento;
-                colMesaDeDulces = evento.getIdMD() + " " + nombreMesaDeDulcesDelEvento;
-
+                String colCliente = evento.getIdCliente() + " " + nombreClienteDelEvento;
+                String colEmpleado = evento.getIdEmpleado() + " " + nombreResponsableDelEvento;
+                String colMesaDeDulces = evento.getIdMD() + " " + nombreMesaDeDulcesDelEvento;
+                //QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?
                 columnasDeDatos[0] = evento.getIdEvento();
                 columnasDeDatos[1] = colCliente;
                 columnasDeDatos[2] = colMesaDeDulces;
                 columnasDeDatos[3] = evento.getFecha();
 
-                columnasDeDatos[4] = evento.getEvtPrecioTotal();
+                columnasDeDatos[4] = evento.getPrecioTotal();
                 columnasDeDatos[5] = colEmpleado;
 
                 //agregamos los datos de cada columna en cada renglón:
@@ -273,34 +294,39 @@ public class ControladorEventos {
     }
 
     private static final int numColumnasDeProveedores = 4;
+    private static final int columnaID_Proveedor = 0;
+    private static final int columnaNombreProveedor = 1;
+    private static final int columnaNombreServicio = 2;
+    private static final int columnaCostoServicio = 3;
 
+    /**
+     * Este método es encargado de llenar una tabla de la Vista, con la
+     * información que encuentre en la BD acerca de los proveedores.
+     *
+     * @param tipoPaquete que está asociado al evento para poder encontrar los
+     * proveedores (Pueden ser: Básico, Intermedio o Completo).
+     * @param modeloLista es el modelo de la lista (o tabla) que está en la
+     * vista.
+     * @return el modelo con los datos en él.
+     * @throws SQLException en caso de no establecer conexión con la BD.
+     */
     public DefaultTableModel llenarListaProveedores(String tipoPaquete, DefaultTableModel modeloLista) throws SQLException {
-        LinkedList<Proveedor> proveedores = new LinkedList<>();
+        LinkedList<Proveedor> ListaProveedores = new LinkedList<>();
 
-        switch (tipoPaquete) {
-            case "Basico":
-                proveedores = encontrarProveedoresDeServicioBasico();
-                break;
-            case "Intermedio":
-                proveedores = encontrarProveedoresDeServicioIntermedio();
-                break;
-            case "Completo":
-                proveedores = encontrarProveedoresDeServicioCompleto();
-                break;
-        }
+        ListaProveedores = obtenerProveedoresSegunPaquete(tipoPaquete);
 
         Object[] renglonDeDatos = new Object[numColumnasDeProveedores];
 
-        for (Proveedor unProveedor : proveedores) {
+        for (Proveedor unProveedor : ListaProveedores) {
             String nombreProveedor = unProveedor.getNombrePersona();
             int idProveedor = unProveedor.getIdPersona();
-            LinkedList<Servicio> serviciosDeProveedor = unProveedor.getServiciosQueProvee();
+            LinkedList<Servicio> serviciosDeProveedor = unProveedor.obtenerServiciosQueProvee();
 
             for (Servicio unServicio : serviciosDeProveedor) {
-                renglonDeDatos[0] = idProveedor;
-                renglonDeDatos[1] = nombreProveedor;
-                renglonDeDatos[2] = unServicio.getServNombre();
-                renglonDeDatos[3] = unServicio.getCosto();
+                renglonDeDatos[columnaID_Proveedor] = idProveedor;
+                renglonDeDatos[columnaNombreProveedor] = nombreProveedor;
+                renglonDeDatos[columnaNombreServicio] = unServicio.getServNombre();
+                renglonDeDatos[columnaCostoServicio] = unServicio.getCosto();
                 modeloLista.addRow(renglonDeDatos);
             }
         }
@@ -308,28 +334,89 @@ public class ControladorEventos {
         return modeloLista;
     }
 
+    private LinkedList<Proveedor> obtenerProveedoresSegunPaquete(String tipoPaquete) throws SQLException {
+        LinkedList<Proveedor> proveedores = new LinkedList<>();
+        switch (tipoPaquete) {
+            case "Basico":
+                proveedores = encontrarProveedoresDePaqueteBasico();
+                break;
+            case "Intermedio":
+                proveedores = encontrarProveedoresDePaqueteIntermedio();
+                break;
+            case "Completo":
+                proveedores = encontrarProveedoresDePaqueteCompleto();
+                break;
+        }
+        return proveedores;
+    }
+
     private static final int numColumnasDeClientes = 5;
 
-    public DefaultTableModel llenarListaEmpleado(String nombreEmpleado, DefaultTableModel modeloLista) throws SQLException {
-        LinkedList<Cliente> Clientes = obtenerInformacionClientes(nombreEmpleado);
+    private static final int columnaID_Cliente = 0;
+    private static final int columnaNombre = 1;
+    private static final int columnaDireccionCliente = 2;
+    private static final int columnaTelefonoCliente = 3;
+    private static final int columnaCorreoCliente = 4;
+
+    /**
+     * Este método es encargado de llenar una tabla de la Vista, con la
+     * información que encuentre en la BD acerca de los empleados.
+     *
+     * @param nombreCliente a buscar en la BD.
+     * @param modeloLista es el modelo de la lista (o tabla) que está en la
+     * vista.
+     * @return el modelo con los datos en él.
+     * @throws SQLException en caso de no establecer conexión con la BD.
+     */
+    public DefaultTableModel llenarListaCliente(String nombreCliente, DefaultTableModel modeloLista) throws SQLException {
+
+        LinkedList<Cliente> Clientes = obtenerInformacionClientesSegunNombre(nombreCliente);
 
         Object[] renglonDeDatos = new Object[numColumnasDeClientes];
 
         for (Cliente unCliente : Clientes) {
-
-            renglonDeDatos[0] = unCliente.getIdPersona();
-            renglonDeDatos[1] = unCliente.getNombrePersona();
-            renglonDeDatos[2] = unCliente.getDireccionPersona();
-            renglonDeDatos[3] = unCliente.getTelefonoPersona();
-            renglonDeDatos[4] = unCliente.getCorreoPersona();
+            renglonDeDatos[columnaID_Cliente] = unCliente.getIdPersona();
+            renglonDeDatos[columnaNombre] = unCliente.getNombrePersona();
+            renglonDeDatos[columnaDireccionCliente] = unCliente.getDireccionPersona();
+            renglonDeDatos[columnaTelefonoCliente] = unCliente.getTelefonoPersona();
+            renglonDeDatos[columnaCorreoCliente] = unCliente.getCorreoPersona();
             modeloLista.addRow(renglonDeDatos);
         }
 
         return modeloLista;
     }
 
+    /**
+     * Método encargado de devolver la información completa de un cliente, a
+     * partir del nombre que se busque en la BD.
+     *
+     * @param nombre del cliente a encontrar en la BD.
+     * @return lista simple con la información de todos los empleados.
+     * @throws SQLException
+     */
+    public LinkedList<Cliente> obtenerInformacionClientesSegunNombre(String nombre) throws SQLException {
+
+        ControladorCliente controlador = new ControladorCliente();
+        LinkedList<Cliente> listaClientes = controlador.obtenerCoincidenciasPorNombre(nombre);
+
+        return listaClientes;
+    }
+
     private static final int numColumnasDeMesas = 3;
 
+    private static final int columnaID_MesasDulces = 0;
+    private static final int columnaNombreMesa = 1;
+    private static final int columnaPrecioMesa = 2;
+
+    /**
+     * Este método es encargado de llenar una tabla de la Vista, con la
+     * información que encuentre en la BD acerca de las mesas de dulces.
+     *
+     * @param modeloLista es el modelo de la lista (o tabla) que está en la
+     * vista.
+     * @return el modelo con los datos en él.
+     * @throws SQLException en caso de no establecer conexión con la BD.
+     */
     public DefaultTableModel llenarListaMesaDulces(DefaultTableModel modeloLista) throws SQLException {
         LinkedList<MesaDeDulces> mesas = encontrarMesasDeDulces();
 
@@ -337,9 +424,9 @@ public class ControladorEventos {
 
         for (MesaDeDulces unaMesa : mesas) {
 
-            renglonDeDatos[0] = unaMesa.getIdMesaDulces();
-            renglonDeDatos[1] = unaMesa.getNombreDeMesa();
-            renglonDeDatos[2] = unaMesa.getPrecio();
+            renglonDeDatos[columnaID_MesasDulces] = unaMesa.getIdMesaDulces();
+            renglonDeDatos[columnaNombreMesa] = unaMesa.getNombreDeMesa();
+            renglonDeDatos[columnaPrecioMesa] = unaMesa.getPrecio();
 
             modeloLista.addRow(renglonDeDatos);
         }
@@ -347,25 +434,42 @@ public class ControladorEventos {
         return modeloLista;
     }
 
+    /**
+     * Método encargado de Eliminar un evento de la BD, a partir del
+     * Identificador que se le pase.
+     *
+     * @param idEvento es el identificador del evento a eliminar.
+     * @return verdadero o falso, dependiendo de si se eliminó o no la
+     * información de la BD.
+     * @throws SQLException en caso de que no se haya podido conectar con la BD.
+     */
     public boolean eliminarEvento(int idEvento) throws SQLException {
 
         return dao.eliminarEvento(idEvento);
 
     }
 
-    private String convertirFechaEnTexto(EventosSociales evento) {
-        Format formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String fechaEvt = formatter.format(evento.getFecha());
-
-        return fechaEvt;
-    }
-
+    /**
+     * Método que comprueba la existencia de un evento en la BD.
+     *
+     * @param idCliente es el identificador del cliente a comparar en la BD.
+     * @param idMesaDulces es el identificador de la Mesa de dulces a comparar
+     * en la BD.
+     * @param fecha es la fecha del evento a comparar en la BD.
+     * @param idEmpleado es el identificador del resopnsable del evento.
+     * @return verdadero o falso, dependiendo de si dicho evento existe.
+     * @throws SQLException en caso de algún error con la conexión a la BD.
+     */
     public boolean ExisteElEvento(int idCliente, int idMesaDulces, String fecha, int idEmpleado) throws SQLException {
-        boolean existe = false;
+
         LinkedList<EventosSociales> listaDeEventos = dao.obtenerTodosLosEventos();
 
-        for (EventosSociales evento : listaDeEventos) {
+        if (listaDeEventos == null) {
+            return false;//no existe el evento.
+        }
 
+        boolean existe = false;
+        for (EventosSociales evento : listaDeEventos) {
             String fechaEvt = convertirFechaEnTexto(evento);
             //Ver si se puede hacer mas corta o refactorizar de alguna manera
             if (idCliente == evento.getIdCliente()
@@ -377,5 +481,12 @@ public class ControladorEventos {
         }
 
         return existe;
+    }
+
+    private String convertirFechaEnTexto(EventosSociales evento) {
+        Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaEvt = formatter.format(evento.getFecha());
+
+        return fechaEvt;
     }
 }

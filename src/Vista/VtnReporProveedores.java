@@ -200,7 +200,7 @@ public class VtnReporProveedores extends javax.swing.JFrame {
             String servicioSeleccionado = cbServicio.getSelectedItem().toString();
             LinkedList<Proveedor> proveedores =
                     ctrlProv.obtenerProveedoresDelServicio(servicioSeleccionado);
-            JFreeChart graficaBarras=ctrlRepor.graficaServicioEspecífico(servicioSeleccionado, proveedores);
+            JFreeChart graficaBarras=ctrlRepor.graficarServicioEspecífico(servicioSeleccionado, proveedores);
             JPanel panelBarras = new ChartPanel(graficaBarras);
             panelBarras.setSize(panelGrafica.getSize());
             panelGrafica.removeAll();
@@ -258,7 +258,7 @@ public class VtnReporProveedores extends javax.swing.JFrame {
         
         limpiarTabla();
         try {
-            LinkedList<Proveedor> proveedores = ctrlRepor.listaMejoresProveedores();
+            LinkedList<Proveedor> proveedores = ctrlRepor.obtenerMejoresProveedores();
 
             agregaFila( proveedores.get(banquetera), "Banquetera");
             agregaFila( proveedores.get(carpa), "Carpa");

@@ -5,12 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Lalo
@@ -21,6 +16,9 @@ public class DAOEventos {
 
     Connection Conexion;
 
+    /**
+     * Inicia una nueva conexión con la BD.
+     */
     public DAOEventos() {
         try {
             Conexion = ConexionBaseDatos.getInstancia().getConexionBD();
@@ -30,35 +28,24 @@ public class DAOEventos {
     }
 
     /**
+     * Agrega la información de un nuevo evento, a la tabla de eventos en la BD y devuelve el ID
+     * que el sistema manejador de la BD le asignó.
      *
-     * @param eventoA_Guardar
-     * @throws java.sql.SQLException
+     * @param idCliente es el identificador del cliente asociado al evento.
+     * @param idMesasDulces es el identificador de la mesa de dulces que será
+     * servida el día del evento.
+     * @param Fecha es la fecha en que se llevará a cabo dicho evento
+     * @param PrecioTotal es el precio total a cobrar por el evento.
+     * @param idEmpleado es el identificador del empleado responsable a llevar a
+     * cabo dicho evento.
+     * @return el identificador del elemento agregado a la BD.
+     * @throws SQLException en caso de que no se establezca la conexión con la
+     * BD.
      */
-    public void agregarEvento(EventosSociales eventoA_Guardar) throws SQLException {
-
-    }
-
-    /**
-     * Agrega un nuevo evento a la tabla de eventos.
-     *
-     * @param idCliente
-     * @param idMesasDulces
-     * @param Fecha
-     * @param PrecioTotal
-     * @param idEmpleado
-     * @param idPaquetes
-     * @param idProveedor
-     * @param idServicios
-     * @return
-     * @throws SQLException
-     */
-    //claveCliente, claveMesaDulces, fechaEvento,precioEvento, claveEmpleado
     public int agregarElementoA_TablaEventoSocial(int idCliente, int idMesasDulces, String Fecha,
             float PrecioTotal, int idEmpleado) throws SQLException {
 
         Statement sentenciaDeInsercion = Conexion.createStatement();
-
-        //boolean seAgregoElemento = 
         sentenciaDeInsercion.execute("INSERT INTO charmingstudio.eventos "
                 + "(`idCliente`,`idMesaDulces`,`Fecha`,`PrecioTotal`,`idEmpleado`)"
                 + "VALUES("
@@ -68,9 +55,9 @@ public class DAOEventos {
                 + "'" + PrecioTotal + "',"
                 + "'" + idEmpleado + "')");
 
-        int id = obtenerIdEvento(idCliente, idMesasDulces, PrecioTotal, idEmpleado, Fecha);
+        int idEvento = obtenerID_Evento(idCliente, idMesasDulces, PrecioTotal, idEmpleado, Fecha);
 
-        return id;
+        return idEvento;
     }
     private static final int columnaId = 1;
     private static final int columnaIdCliente = 2;
@@ -79,6 +66,14 @@ public class DAOEventos {
     private static final int columnaPrecioTotal = 5;
     private static final int columnaIdEmpleado = 6;
 
+    /**
+     * Método encargado de devolver la información de todos los eventos que se
+     * encuentran en la BD.
+     *
+     * @return una lista con los objetos eventos encontrados en la BD
+     * @throws SQLException en caso de que no se establezca la conexión con la
+     * BD.
+     */
     public LinkedList obtenerTodosLosEventos() throws SQLException {
 
         Statement sentenciaDeBusquedaDeEventos = Conexion.createStatement();
@@ -97,83 +92,49 @@ public class DAOEventos {
             eventos.add(new EventosSociales(BusquedaDeEventos.getInt(columnaId),
                     BusquedaDeEventos.getInt(columnaIdCliente),
                     BusquedaDeEventos.getInt(columnaIdMD),
-                    BusquedaDeEventos.getDate(columnaFecha),
+                    BusquedaDeEventos.getString(columnaFecha),
                     BusquedaDeEventos.getFloat(columnaPrecioTotal),
                     BusquedaDeEventos.getInt(columnaIdEmpleado)));
-            //System.out.println("precio " + BusquedaDeEventos.getFloat(columnaPrecioTotal));
         }
         return eventos;
 
     }
 
-    private int obtenerIdEvento(int idCliente, int idMesasDulces,
+    private int obtenerID_Evento(int idCliente, int idMesasDulces,
             float PrecioTotal, int idEmpleado, String strFecha) throws SQLException {
 
         Statement sentenciaDeInsercion = Conexion.createStatement();
 
-        ResultSet id = sentenciaDeInsercion.executeQuery("SELECT * FROM charmingstudio.eventos WHERE "
+        ResultSet resultadoBusquedaID = sentenciaDeInsercion.executeQuery("SELECT * FROM charmingstudio.eventos WHERE "
                 + "`idCliente` = " + idCliente
                 + " AND `idMesaDulces` = " + idMesasDulces
                 + " AND `PrecioTotal`= " + PrecioTotal
                 + " AND `idEmpleado` = " + idEmpleado
                 + " AND `Fecha`= '" + strFecha + "'");
-        /**
-         * SELECT * FROM charmingstudio.eventos WHERE `idCliente` = 1 AND
-         * `idMesaDulces` = 1 AND `PrecioTotal`= 5700 AND `idEmpleado` = 1 AND
-         * `Fecha` = '2014-11-27'
-         *
-         */
 
-        id.next();
-        System.out.println("El id es: "+id.getInt("idEvento"));
-
-        return id.getInt("idEvento");
+        resultadoBusquedaID.next();
+        return resultadoBusquedaID.getInt("idEvento");
     }
 
     /**
+     * Método encargado de eliminar la información de un evento almacenado en la
+     * BD.
      *
-     * @param fecha
-     * @param nombreEvento
-     * @return
+     * @param idEvento es el identificador del evento a eliminar.
+     * @return verdadero o falso, dependiendo de si se pudo eliminar o no la
+     * información de la BD.
+     * @throws SQLException en caso de que no se establezca la conexión con la
+     * BD.
      */
-    
     public boolean eliminarEvento(int idEvento) throws SQLException {
         boolean seEliminoEvento = false;
         Statement sentenciaEliminaEvento = Conexion.createStatement();
         sentenciaEliminaEvento.executeUpdate("DELETE FROM "
                 + "charmingstudio.eventos WHERE idEvento= '" + idEvento + "'");
-
+        //si llega hasta aquí, entonces si se eliminó el evento.
         seEliminoEvento = true;
 
         return seEliminoEvento;
-    
-    }
-    
 
-    /**
-     *
-     * @param fecha
-     * @return
-     */
-    public EventosSociales buscarEventos(Date fecha) {
-        return null;
     }
-
-    /**
-     *
-     * @param fecha
-     * @param nombreCliente
-     * @return
-     */
-    public boolean modificarEvento(Date fecha, String nombreCliente) {
-        return false;
-    }
-
-    public float calculaPrecioTotal(EventosSociales evento) throws SQLException {
-        float precioTotal = 0;
-
-        precioTotal = precioTotal + evento.getPrecioTotal();
-        return precioTotal;
-    }
-    
 }

@@ -145,9 +145,9 @@ public class ControladorProveedores implements ControladorPersona {
             for (Proveedor otroProveedor : proveedoresDeSegundoServicio) {
                 if (unProveedor.getNombrePersona().equalsIgnoreCase(otroProveedor.getNombrePersona())) {
                     //Entonces ambos proveedores son iguales.
-                    LinkedList<Servicio> servicios = otroProveedor.getServiciosQueProvee();
+                    LinkedList<Servicio> servicios = otroProveedor.obtenerServiciosQueProvee();
                     for (Servicio unServicio : servicios) {
-                        unProveedor.getServiciosQueProvee().add(unServicio);
+                        unProveedor.obtenerServiciosQueProvee().add(unServicio);
                     }
                 }
             }
