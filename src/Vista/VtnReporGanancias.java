@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -53,10 +54,10 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         ControladorEventos ctrlEventos = new ControladorEventos();
         try {
                         //Checar como llamar esto datosTabla o modelo ver como llamar al de abajo tambien
-            DefaultTableModel datosTabla = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+            DefaultTableModel datosTabla = (DefaultTableModel) this.reporteListaGanancias.getModel();
             DefaultTableModel datosTablaCompleta = ctrlEventos.obtenerTodosLosEventos(datosTabla, llenadoDeReporte);
 
-            this.reporteTablaGanancias.setModel(datosTablaCompleta);
+            this.reporteListaGanancias.setModel(datosTablaCompleta);
 
         } catch (SQLException ex) {
             Logger.getLogger(VtnEventosSociales.class.getName()).log(Level.SEVERE, null, ex);
@@ -69,7 +70,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     private void establecerMesConMasGanancias() {
 
         String mesConMasGanancias = "";
-        DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) this.reporteListaGanancias.getModel();
         ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
         mesConMasGanancias = ctrlReporGanancias.calcularMesConMasGanancias(modelo);
 
@@ -83,7 +84,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
 
         String mesConMenosGanancias = "";
         String mesConMasGanancias = "";
-        DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) this.reporteListaGanancias.getModel();
         ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
         mesConMenosGanancias = ctrlReporGanancias.CalcularMesConMenosGanancias(modelo);
         mesConMasGanancias = ctrlReporGanancias.calcularMesConMasGanancias(modelo);
@@ -100,19 +101,19 @@ public class VtnReporGanancias extends javax.swing.JFrame {
      */
     private void establecerGananciaTotal() {
         float gananciaTotal = 0;
-        DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) this.reporteListaGanancias.getModel();
         ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
         gananciaTotal = ctrlReporGanancias.calcularGananciasTotales(modelo);
 
-        this.montoTotal.setText(String.valueOf(gananciaTotal));
+        this.gananciaTotal.setText(String.valueOf(gananciaTotal));
     }
 
     /**
      * limpia la lista de datos
      */
     public void limpiarLista() {
-        DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
-        for (int i = 0; i < reporteTablaGanancias.getRowCount(); i++) {
+        DefaultTableModel modelo = (DefaultTableModel) this.reporteListaGanancias.getModel();
+        for (int i = 0; i < reporteListaGanancias.getRowCount(); i++) {
             modelo.removeRow(0);
             i -= 1;
         }
@@ -128,11 +129,11 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        reporteTablaGanancias = new javax.swing.JTable();
+        reporteListaGanancias = new javax.swing.JTable();
         btnRegresarVtnReportes = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        montoTotal = new javax.swing.JTextField();
+        gananciaTotal = new javax.swing.JTextField();
         btnReporte = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         mejorMes = new javax.swing.JTextField();
@@ -142,7 +143,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Reporte Ganancias");
 
-        reporteTablaGanancias.setModel(new javax.swing.table.DefaultTableModel(
+        reporteListaGanancias.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -150,7 +151,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
                 "Evento", "Fecha", "Precio"
             }
         ));
-        jScrollPane1.setViewportView(reporteTablaGanancias);
+        jScrollPane1.setViewportView(reporteListaGanancias);
 
         btnRegresarVtnReportes.setText("Regresar");
         btnRegresarVtnReportes.addActionListener(new java.awt.event.ActionListener() {
@@ -164,10 +165,10 @@ public class VtnReporGanancias extends javax.swing.JFrame {
 
         jLabel2.setText("Monto Total:");
 
-        montoTotal.setEditable(false);
-        montoTotal.addActionListener(new java.awt.event.ActionListener() {
+        gananciaTotal.setEditable(false);
+        gananciaTotal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                montoTotalActionPerformed(evt);
+                gananciaTotalActionPerformed(evt);
             }
         });
 
@@ -219,7 +220,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
                                 .addGap(28, 28, 28)
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(montoTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(gananciaTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 366, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE)))
@@ -235,7 +236,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(montoTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(gananciaTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(mejorMes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -260,34 +261,50 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_btnRegresarVtnReportesActionPerformed
 
-    private void montoTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_montoTotalActionPerformed
+    private void gananciaTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gananciaTotalActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_montoTotalActionPerformed
+    }//GEN-LAST:event_gananciaTotalActionPerformed
 
     private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
         // TODO add your handling code here:
-        FileOutputStream out = null;
-        try {
-            // TODO add your handling code here:
-
-            Workbook wb = new HSSFWorkbook();
-            //CreationHelper createhelper = wb.getCreationHelper();
-            Sheet sheet = wb.createSheet("Reporte Completo");
-            //Row row = null;
-            //Cell cell = null;
-            DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
-            crearTitulo(sheet);
-            crearEncabezados(sheet, (DefaultTableModel) modelo);
-            poblarExcel(sheet, (DefaultTableModel) modelo);
-
-            out = new FileOutputStream("ReporteGanancias.xls");
-            wb.write(out);
-            out.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
+        
+                ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
+                TableModel modelo = this.reporteListaGanancias.getModel();
+                String peorMes = this.peorMes.getText();
+                String mejorMes = this.mejorMes.getText();
+                String gananciaTotal = this.gananciaTotal.getText();
+        boolean exportadoCorrectamente = ctrlReporGanancias.generaReporte(this.reporteListaGanancias.getModel(),mejorMes,peorMes,gananciaTotal);
+        if(exportadoCorrectamente){
+            JOptionPane.showMessageDialog(null, "ExportadoCorrectamente. Nombre: ReporteEmpleados.xls");
+        }else{
+            JOptionPane.showMessageDialog(null, "Hubo un error. Contacta al administrador.");
         }
+        
+        
+        
+        
+//        FileOutputStream out = null;
+//        try {
+//            // TODO add your handling code here:
+//
+//            Workbook wb = new HSSFWorkbook();
+//            //CreationHelper createhelper = wb.getCreationHelper();
+//            Sheet sheet = wb.createSheet("Reporte Completo");
+//            //Row row = null;
+//            //Cell cell = null;
+//            DefaultTableModel modelo = (DefaultTableModel) this.reporteListaGanancias.getModel();
+//            crearTitulo(sheet);
+//            crearEncabezados(sheet, (DefaultTableModel) modelo);
+//            poblarExcel(sheet, (DefaultTableModel) modelo);
+//
+//            out = new FileOutputStream("ReporteGanancias.xls");
+//            wb.write(out);
+//            out.close();
+//        } catch (FileNotFoundException ex) {
+//            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (IOException ex) {
+//            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
     }//GEN-LAST:event_btnReporteActionPerformed
 
@@ -333,7 +350,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         
         celdaDeDescripcion = filaDeGananciaTotal.createCell(0);
         celdaDeDescripcion.setCellValue("Ganancia Total:");
-        celdaDeGananciaTotal.setCellValue(this.montoTotal.getText());
+        celdaDeGananciaTotal.setCellValue(this.gananciaTotal.getText());
 
     }
 
@@ -410,14 +427,14 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRegresarVtnReportes;
     private javax.swing.JButton btnReporte;
+    private javax.swing.JTextField gananciaTotal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField mejorMes;
-    private javax.swing.JTextField montoTotal;
     private javax.swing.JTextField peorMes;
-    private javax.swing.JTable reporteTablaGanancias;
+    private javax.swing.JTable reporteListaGanancias;
     // End of variables declaration//GEN-END:variables
 }

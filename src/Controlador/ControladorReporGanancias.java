@@ -1,8 +1,20 @@
 package Controlador;
 
+import Vista.VtnReporGanancias;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  * @author Lalo
@@ -90,7 +102,6 @@ public class ControladorReporGanancias {
     public String CalcularMesConMenosGanancias(DefaultTableModel datosTabla) {
 
         float[] gananciasDelmes = new float[12];
-        //datosTabla.getValueAt(i, 1);
         String mesConMenosGanancias = "";
         gananciasDelmes[0] = obtenerGananciasDelMes(datosTabla, enero);
         gananciasDelmes[1] = obtenerGananciasDelMes(datosTabla, febrero);
@@ -220,4 +231,110 @@ public class ControladorReporGanancias {
         return gananciaTotalDelMes;
     }
 
+    public boolean generaReporte(TableModel modeloConDatos, String mejorMes, String peorMes, String gananciaTotal) {
+        boolean exportadoCorrectamente = false;
+        FileOutputStream out = null;
+        try {
+            // TODO add your handling code here:
+
+            Workbook wb = new HSSFWorkbook();
+            //CreationHelper createhelper = wb.getCreationHelper();
+            Sheet sheet = wb.createSheet("Reporte Completo");
+            //Row row = null;
+            //Cell cell = null;
+            DefaultTableModel modelo = (DefaultTableModel) modeloConDatos;
+            exportadoCorrectamente = exportaReportes(sheet, modelo);
+
+            crearTitulo(sheet);
+            crearEncabezados(sheet, (DefaultTableModel) modelo);
+            poblarDatosReporte(sheet, (DefaultTableModel) modelo, mejorMes, peorMes, gananciaTotal);
+
+            out = new FileOutputStream("ReporteGanancias.xls");
+            wb.write(out);
+            out.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VtnReporGanancias.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VtnReporGanancias.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return exportadoCorrectamente;
+
+    }
+
+    private boolean exportaReportes(Sheet sheet, DefaultTableModel tableModel) {
+        boolean exportadoCorrectamente = false;
+        crearEncabezados(sheet, tableModel);
+        poblarExcel(sheet, tableModel);
+        exportadoCorrectamente = true;
+
+        return exportadoCorrectamente;
+    }
+
+    /**
+     * Llena de datos el excel que será el reporte
+     *
+     * @param sheet es la hoja del excel que se llenara
+     * @param tableModel es el modelo de la tabla que contiene los datos
+     */
+    private void poblarDatosReporte(Sheet sheet, TableModel tableModel, String mejorMes, String peorMes, String gananciaTotal) {
+        Row filaDatosDeLista;
+        Cell celdaDatosDelista;
+        int r = 2;
+        for (int i = 1; i < tableModel.getRowCount() + 1; i++) {
+            filaDatosDeLista = sheet.createRow(r);
+            for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                celdaDatosDelista = filaDatosDeLista.createCell(j);
+                String dinero = (j > 1) ? "$" : "";
+                celdaDatosDelista.setCellValue(dinero + String.valueOf(tableModel.getValueAt(i - 1, j)));
+            }
+            r++;
+        }
+
+        Row filaDeMejorMes = sheet.createRow(tableModel.getRowCount() + 3);
+        Row filaDePeorMes = sheet.createRow(tableModel.getRowCount() + 4);
+        Row filaDeGananciaTotal = sheet.createRow(tableModel.getRowCount() + 6);
+
+        Cell celdaDeDescripcion = filaDeMejorMes.createCell(1);
+        Cell celdaDeMejorMes = filaDeMejorMes.createCell(2);
+        Cell celdaDePeorMes = filaDePeorMes.createCell(2);
+        Cell celdaDeGananciaTotal = filaDeGananciaTotal.createCell(2);
+
+        celdaDeDescripcion = filaDeMejorMes.createCell(1);
+        celdaDeDescripcion.setCellValue("Mejor Mes:");
+        celdaDeMejorMes.setCellValue(mejorMes);
+
+        celdaDeDescripcion = filaDePeorMes.createCell(1);
+        celdaDeDescripcion.setCellValue("Peor Mes:");
+        celdaDePeorMes.setCellValue(peorMes);
+
+        celdaDeDescripcion = filaDeGananciaTotal.createCell(0);
+        celdaDeDescripcion.setCellValue("Ganancia Total:");
+        celdaDeGananciaTotal.setCellValue(gananciaTotal);
+
+    }
+
+    /**
+     * Crea el título reporte
+     *
+     * @param sheet es la hoja de excel donde se establecerá el título
+     */
+    private void crearTitulo(Sheet sheet) {
+        Row filaDelTitulo = sheet.createRow(0);
+        Cell celdaDelTitulo = filaDelTitulo.createCell(0);
+
+        celdaDelTitulo.setCellValue("Reporte Completo");
+
+    }
+
+    private void crearEncabezados(Sheet sheet, TableModel tableModel) {
+
+        Row filaDeEncabezadosDeLista = sheet.createRow(1);
+        Cell celdaDeEncabezadosDeLista = null;
+
+        for (int i = 0; i < tableModel.getColumnCount(); i++) {
+            celdaDeEncabezadosDeLista = filaDeEncabezadosDeLista.createCell(i);
+            celdaDeEncabezadosDeLista.setCellValue(tableModel.getColumnName(i));
+        }
+    }
 }
