@@ -13,7 +13,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -44,7 +43,7 @@ public class ControladorReporEmpleado {
             Sheet sheet = wb.createSheet("new sheet");
             TableModel auxModeloConDatos = modeloConDatos;
             
-            exportadoCorrectamente = exportaReportes(sheet, auxModeloConDatos);
+            exportadoCorrectamente = pobarDatosDeReporte(sheet, auxModeloConDatos);
               
             out = new FileOutputStream("ReporteEmpleados.xls");
             wb.write(out);
@@ -66,7 +65,7 @@ public class ControladorReporEmpleado {
      * @return 
      */
     
-    private boolean exportaReportes(Sheet sheet, TableModel tableModel) {
+    private boolean pobarDatosDeReporte(Sheet sheet, TableModel tableModel) {
         boolean exportadoCorrectamente = false;
         poblarExcel(sheet,tableModel);
         exportadoCorrectamente = true;
