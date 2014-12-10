@@ -215,7 +215,7 @@ public class VtnReporProveedores extends javax.swing.JFrame {
 
     private void btnExportarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarActionPerformed
         try {
-            ctrlRepor.generaPDF();
+            ctrlRepor.crearPDF();
             JOptionPane.showMessageDialog(null, "Generando PDF...");
             
             Process proceso = Runtime
