@@ -4,7 +4,6 @@ import Vista.VtnReporGanancias;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -173,7 +172,7 @@ public class ControladorReporGanancias {
      */
     private float obtenerGananciaMayor(float[] ganancias) {
         float gananciaMayor = ganancias[0];
-        //float resultado = 0;
+        
         for (int i = 1; i < ganancias.length; i++) {
             if (ganancias[i] > gananciaMayor) {
                 gananciaMayor = ganancias[i];
@@ -220,9 +219,10 @@ public class ControladorReporGanancias {
         //DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
         float gananciaTotalDelMes = 0;
         for (int indice = 0; indice < datosTabla.getRowCount(); indice++) {
-            StringTokenizer token = new StringTokenizer((String) datosTabla.getValueAt(indice, 1).toString(), "-");
-            token.nextToken();
-            int mesAcomparar = Integer.parseInt(token.nextToken());
+            String fecha = (String) datosTabla.getValueAt(indice, 1).toString();
+            StringTokenizer separa = new StringTokenizer(fecha, "-");
+            separa.nextToken();
+            int mesAcomparar = Integer.parseInt(separa.nextToken());
             if (mes == mesAcomparar) {
                 gananciaTotalDelMes = gananciaTotalDelMes + (float) datosTabla.getValueAt(indice, 2);
             }
@@ -231,6 +231,14 @@ public class ControladorReporGanancias {
         return gananciaTotalDelMes;
     }
 
+    /**
+     * Genera el reporte en base a los datos que se obtienen de la vista
+     * @param modeloConDatos es el modelo donde se encuentra la informacion
+     * @param mejorMes es el dato del mejor mes
+     * @param peorMes es el dato del peor mes
+     * @param gananciaTotal es el dato de la ganancia total
+     * @return si se genera correctamente el reporte (true)
+     */
     public boolean generaReporte(TableModel modeloConDatos, String mejorMes, String peorMes, String gananciaTotal) {
         boolean exportadoCorrectamente = false;
         FileOutputStream out = null;
@@ -238,16 +246,11 @@ public class ControladorReporGanancias {
             // TODO add your handling code here:
 
             Workbook wb = new HSSFWorkbook();
-            //CreationHelper createhelper = wb.getCreationHelper();
             Sheet sheet = wb.createSheet("Reporte Completo");
-            //Row row = null;
-            //Cell cell = null;
-            DefaultTableModel modelo = (DefaultTableModel) modeloConDatos;
-            exportadoCorrectamente = exportaReportes(sheet, modelo);
 
-            crearTitulo(sheet);
-            crearEncabezados(sheet, (DefaultTableModel) modelo);
-            poblarDatosReporte(sheet, (DefaultTableModel) modelo, mejorMes, peorMes, gananciaTotal);
+            DefaultTableModel modelo = (DefaultTableModel) modeloConDatos;
+            exportadoCorrectamente = llenarDatosDeReporte(sheet, modelo, mejorMes, peorMes, gananciaTotal);
+
 
             out = new FileOutputStream("ReporteGanancias.xls");
             wb.write(out);
@@ -261,34 +264,44 @@ public class ControladorReporGanancias {
         return exportadoCorrectamente;
 
     }
-
-    private boolean exportaReportes(Sheet sheet, DefaultTableModel tableModel) {
-        boolean exportadoCorrectamente = false;
+/**
+ * Llena todos los datos que tendra el reporte
+ * @param sheet la hoja del excel que tendra los datos
+ * @param tableModel el modelo de la vista que tiene los datos
+ * @param mejorMes el dato del mejor mes
+ * @param peorMes el dato del peor mes
+ * @param gananciaTotal el dato de la ganancia total
+ * @return si se lleno el reporte de manera correcta
+ */
+    private boolean llenarDatosDeReporte(Sheet sheet, DefaultTableModel tableModel, String mejorMes, String peorMes, String gananciaTotal) {
+        boolean pobladoCorrectamente = false;
         crearEncabezados(sheet, tableModel);
-        poblarExcel(sheet, tableModel);
-        exportadoCorrectamente = true;
+        llenarExcelDeDatos(sheet, tableModel, mejorMes, peorMes, gananciaTotal);
+        pobladoCorrectamente = true;
 
-        return exportadoCorrectamente;
+        return pobladoCorrectamente;
     }
 
     /**
-     * Llena de datos el excel que será el reporte
-     *
-     * @param sheet es la hoja del excel que se llenara
-     * @param tableModel es el modelo de la tabla que contiene los datos
+     * Llena los datos  del excel
+     * @param sheet es la hoja de excel que se llenara
+     * @param tableModel es el modelo de la vista que tiene los datos
+     * @param mejorMes el dato del mejor mes
+     * @param peorMes el dato del peor mes
+     * @param gananciaTotal el dato de la ganancia total
      */
-    private void poblarDatosReporte(Sheet sheet, TableModel tableModel, String mejorMes, String peorMes, String gananciaTotal) {
+    private void llenarExcelDeDatos(Sheet sheet, TableModel tableModel, String mejorMes, String peorMes, String gananciaTotal) {
         Row filaDatosDeLista;
         Cell celdaDatosDelista;
-        int r = 2;
+        int fila = 2;
         for (int i = 1; i < tableModel.getRowCount() + 1; i++) {
-            filaDatosDeLista = sheet.createRow(r);
+            filaDatosDeLista = sheet.createRow(fila);
             for (int j = 0; j < tableModel.getColumnCount(); j++) {
                 celdaDatosDelista = filaDatosDeLista.createCell(j);
                 String dinero = (j > 1) ? "$" : "";
                 celdaDatosDelista.setCellValue(dinero + String.valueOf(tableModel.getValueAt(i - 1, j)));
             }
-            r++;
+            fila++;
         }
 
         Row filaDeMejorMes = sheet.createRow(tableModel.getRowCount() + 3);
@@ -327,6 +340,11 @@ public class ControladorReporGanancias {
 
     }
 
+    /**
+     * Crea los encabezados del 
+     * @param sheet
+     * @param tableModel 
+     */
     private void crearEncabezados(Sheet sheet, TableModel tableModel) {
 
         Row filaDeEncabezadosDeLista = sheet.createRow(1);

@@ -53,7 +53,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     private void mostrarEventos() {
         ControladorEventos ctrlEventos = new ControladorEventos();
         try {
-                        //Checar como llamar esto datosTabla o modelo ver como llamar al de abajo tambien
+            //Checar como llamar esto datosTabla o modelo ver como llamar al de abajo tambien
             DefaultTableModel datosTabla = (DefaultTableModel) this.reporteListaGanancias.getModel();
             DefaultTableModel datosTablaCompleta = ctrlEventos.obtenerTodosLosEventos(datosTabla, llenadoDeReporte);
 
@@ -78,7 +78,8 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     }
 
     /**
-     * Pone el valor en la ventana de las ganancias del menos con menos ganancias
+     * Pone el valor en la ventana de las ganancias del menos con menos
+     * ganancias
      */
     private void establecerMesConMenosGanacias() {
 
@@ -97,7 +98,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     }
 
     /**
-     * Pone en la ventana la ganancia total 
+     * Pone en la ventana la ganancia total
      */
     private void establecerGananciaTotal() {
         float gananciaTotal = 0;
@@ -267,120 +268,25 @@ public class VtnReporGanancias extends javax.swing.JFrame {
 
     private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
         // TODO add your handling code here:
+
+        ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
+        TableModel modelo = this.reporteListaGanancias.getModel();
+        String peorMes = this.peorMes.getText();
+        String mejorMes = this.mejorMes.getText();
+        String gananciaTotal = this.gananciaTotal.getText();
         
-                ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
-                TableModel modelo = this.reporteListaGanancias.getModel();
-                String peorMes = this.peorMes.getText();
-                String mejorMes = this.mejorMes.getText();
-                String gananciaTotal = this.gananciaTotal.getText();
-        boolean exportadoCorrectamente = ctrlReporGanancias.generaReporte(this.reporteListaGanancias.getModel(),mejorMes,peorMes,gananciaTotal);
-        if(exportadoCorrectamente){
-            JOptionPane.showMessageDialog(null, "ExportadoCorrectamente. Nombre: ReporteEmpleados.xls");
-        }else{
+        boolean exportadoCorrectamente = ctrlReporGanancias.generaReporte(modelo, mejorMes, peorMes, gananciaTotal);
+        if (exportadoCorrectamente) {
+            JOptionPane.showMessageDialog(null, "ExportadoCorrectamente. Nombre: ReporteGanancias.xls");
+        } else {
             JOptionPane.showMessageDialog(null, "Hubo un error. Contacta al administrador.");
         }
-        
-        
-        
-        
-//        FileOutputStream out = null;
-//        try {
-//            // TODO add your handling code here:
-//
-//            Workbook wb = new HSSFWorkbook();
-//            //CreationHelper createhelper = wb.getCreationHelper();
-//            Sheet sheet = wb.createSheet("Reporte Completo");
-//            //Row row = null;
-//            //Cell cell = null;
-//            DefaultTableModel modelo = (DefaultTableModel) this.reporteListaGanancias.getModel();
-//            crearTitulo(sheet);
-//            crearEncabezados(sheet, (DefaultTableModel) modelo);
-//            poblarExcel(sheet, (DefaultTableModel) modelo);
-//
-//            out = new FileOutputStream("ReporteGanancias.xls");
-//            wb.write(out);
-//            out.close();
-//        } catch (FileNotFoundException ex) {
-//            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IOException ex) {
-//            Logger.getLogger(VtnReporEmpleados.class.getName()).log(Level.SEVERE, null, ex);
-//        }
 
     }//GEN-LAST:event_btnReporteActionPerformed
 
     private void peorMesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_peorMesActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_peorMesActionPerformed
-
-    /**
-     * Llena de datos el excel que será el reporte
-     * @param sheet es la hoja del excel que se llenara
-     * @param tableModel es el modelo de la tabla que contiene los datos
-     */
-    private void poblarExcel(Sheet sheet, TableModel tableModel) {
-        Row filaDatosDeLista;
-        Cell celdaDatosDelista;
-        int r = 2;
-        for (int i = 1; i < tableModel.getRowCount() + 1; i++) {
-            filaDatosDeLista = sheet.createRow(r);
-            for (int j = 0; j < tableModel.getColumnCount(); j++) {
-                celdaDatosDelista = filaDatosDeLista.createCell(j);
-                String dinero = (j > 1) ? "$" : "";
-                celdaDatosDelista.setCellValue(dinero + String.valueOf(tableModel.getValueAt(i - 1, j)));
-            }
-            r++;
-        }
-        
-        Row filaDeMejorMes = sheet.createRow(tableModel.getRowCount() + 3);
-        Row filaDePeorMes = sheet.createRow(tableModel.getRowCount() + 4);
-        Row filaDeGananciaTotal = sheet.createRow(tableModel.getRowCount() + 6);
-
-        Cell celdaDeDescripcion = filaDeMejorMes.createCell(1);
-        Cell celdaDeMejorMes = filaDeMejorMes.createCell(2);
-        Cell celdaDePeorMes = filaDePeorMes.createCell(2);
-        Cell celdaDeGananciaTotal = filaDeGananciaTotal.createCell(2);
-
-        celdaDeDescripcion = filaDeMejorMes.createCell(1);
-        celdaDeDescripcion.setCellValue("Mejor Mes:");
-        celdaDeMejorMes.setCellValue(this.mejorMes.getText());
-        
-        celdaDeDescripcion = filaDePeorMes.createCell(1);
-        celdaDeDescripcion.setCellValue("Peor Mes:");
-        celdaDePeorMes.setCellValue(this.peorMes.getText());
-        
-        celdaDeDescripcion = filaDeGananciaTotal.createCell(0);
-        celdaDeDescripcion.setCellValue("Ganancia Total:");
-        celdaDeGananciaTotal.setCellValue(this.gananciaTotal.getText());
-
-    }
-
-    /**
-     * Crea el título reporte
-     * @param sheet es la hoja de excel donde se establecerá el título
-     */
-    private void crearTitulo(Sheet sheet) {
-        Row filaDelTitulo = sheet.createRow(0);
-        Cell celdaDelTitulo = filaDelTitulo.createCell(0);
-        
-            celdaDelTitulo.setCellValue("Reporte Completo");
-        
-    }
-
-    /**
-     * Crea los encabezados del reporte
-     * @param sheet es la hoja donde estarán los encabezados
-     * @param tableModel es el modelo de la tabla que tiene los encabezados
-     */
-    private void crearEncabezados(Sheet sheet, TableModel tableModel) {
-
-        Row filaDeEncabezadosDeLista = sheet.createRow(1);
-        Cell celdaDeEncabezadosDeLista = null;
-
-        for (int i = 0; i < tableModel.getColumnCount(); i++) {
-            celdaDeEncabezadosDeLista = filaDeEncabezadosDeLista.createCell(i);
-            celdaDeEncabezadosDeLista.setCellValue(tableModel.getColumnName(i));
-        }
-    }
 
     /**
      * Cierra la ventana

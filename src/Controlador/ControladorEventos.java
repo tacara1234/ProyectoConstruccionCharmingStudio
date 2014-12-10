@@ -218,6 +218,10 @@ public class ControladorEventos {
         }
 
     }
+    private static final int columnaID = 0;
+    private static final int columnaFechaReporte = 1;
+    private static final int columnaPrecioTotal = 2;
+
     private static final int numColumnasParaReporte = 3;
 
     private DefaultTableModel llenarListaDeDatosParaReporte(LinkedList<EventosSociales> listaDeEventos,
@@ -229,10 +233,9 @@ public class ControladorEventos {
         if (listaDeEventos != null) {
 
             for (EventosSociales evento : listaDeEventos) {
-                //QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?
-                columnasDeDatos[0] = evento.getIdEvento();
-                columnasDeDatos[1] = evento.getFecha();
-                columnasDeDatos[2] = evento.getPrecioTotal();
+                columnasDeDatos[columnaID] = evento.getIdEvento();
+                columnasDeDatos[columnaFechaReporte] = evento.getFecha();
+                columnasDeDatos[columnaPrecioTotal] = evento.getPrecioTotal();
 
                 //agregamos los datos de cada columna en cada renglón:
                 modelo.addRow(columnasDeDatos);
@@ -244,8 +247,14 @@ public class ControladorEventos {
 
     }
 
+    private static final int columnaCliente = 1;
+    private static final int columnaMesaDeDulces = 2;
+    private static final int columnaFechaDatosCompletos = 3;
+    private static final int columnaPrecioTotalEvento = 4;
+    private static final int columnaEmpleado = 5;
     private static final int numColumnasDeDatosCompletos = 6;
-    
+
+
     /*QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?*/
     private DefaultTableModel llenarListaDeDatosCompleta(LinkedList<EventosSociales> listaDeEventos,
             DefaultTableModel modelo) throws SQLException {
@@ -275,13 +284,13 @@ public class ControladorEventos {
                 String colEmpleado = evento.getIdEmpleado() + " " + nombreResponsableDelEvento;
                 String colMesaDeDulces = evento.getIdMD() + " " + nombreMesaDeDulcesDelEvento;
                 //QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?
-                columnasDeDatos[0] = evento.getIdEvento();
-                columnasDeDatos[1] = colCliente;
-                columnasDeDatos[2] = colMesaDeDulces;
-                columnasDeDatos[3] = evento.getFecha();
+                columnasDeDatos[columnaID] = evento.getIdEvento();
+                columnasDeDatos[columnaCliente] = colCliente;
+                columnasDeDatos[columnaMesaDeDulces] = colMesaDeDulces;
+                columnasDeDatos[columnaFechaDatosCompletos] = evento.getFecha();
 
-                columnasDeDatos[4] = evento.getPrecioTotal();
-                columnasDeDatos[5] = colEmpleado;
+                columnasDeDatos[columnaPrecioTotalEvento] = evento.getPrecioTotal();
+                columnasDeDatos[columnaEmpleado] = colEmpleado;
 
                 //agregamos los datos de cada columna en cada renglón:
                 modelo.addRow(columnasDeDatos);
@@ -403,7 +412,6 @@ public class ControladorEventos {
     }
 
     private static final int numColumnasDeMesas = 3;
-
     private static final int columnaID_MesasDulces = 0;
     private static final int columnaNombreMesa = 1;
     private static final int columnaPrecioMesa = 2;

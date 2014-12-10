@@ -43,7 +43,7 @@ public class ControladorReporEmpleado {
             Sheet sheet = wb.createSheet("new sheet");
             TableModel auxModeloConDatos = modeloConDatos;
             
-            exportadoCorrectamente = pobarDatosDeReporte(sheet, auxModeloConDatos);
+            exportadoCorrectamente = llenarDatosDeReporte(sheet, auxModeloConDatos);
               
             out = new FileOutputStream("ReporteEmpleados.xls");
             wb.write(out);
@@ -65,9 +65,9 @@ public class ControladorReporEmpleado {
      * @return 
      */
     
-    private boolean pobarDatosDeReporte(Sheet sheet, TableModel tableModel) {
+    private boolean llenarDatosDeReporte(Sheet sheet, TableModel tableModel) {
         boolean exportadoCorrectamente = false;
-        poblarExcel(sheet,tableModel);
+        llenarExcelDeDatos(sheet,tableModel);
         exportadoCorrectamente = true;
         
         return exportadoCorrectamente;
@@ -114,7 +114,7 @@ public class ControladorReporEmpleado {
         return null;
     }
     
-    private void poblarExcel(Sheet sheet, TableModel tableModel) {
+    private void llenarExcelDeDatos(Sheet sheet, TableModel tableModel) {
         Row row = sheet.createRow(0);
         Cell cell = null;
             for (int i = 0; i < tableModel.getColumnCount(); i++) {

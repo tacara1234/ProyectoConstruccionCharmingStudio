@@ -95,8 +95,7 @@ public class ControladorMesaDeDulces {
         } else {
             //se considera el else pero no es necesario                                           
         }
-        //establecemos a nuestra tabla, el modelo que tenía:
-        //tabla.setModel(modeloDeLaTabla);
+ 
         return modeloDeLaTabla;
     }
 
