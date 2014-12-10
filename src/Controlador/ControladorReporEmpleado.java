@@ -80,24 +80,26 @@ public class ControladorReporEmpleado {
      * @param modelo
      * @return 
      */
+    
+    private final int numDeColumnasDeDatos = 4;
     public DefaultTableModel obtenerModeloConDatos (JTable modelo){
         ControladorEmpleado unControlador = new ControladorEmpleado();
 
         try {
             LinkedList listaDeEmpleados = unControlador.buscarTodosLosEmpleadosConVentas();
 
-            Object columnasDeDatos[] = new Object[4];
+            Object columnasDeDatos[] = new Object[numDeColumnasDeDatos];
 
             //obtenemos el modelo default de la tabla:
             DefaultTableModel modeloDeLaTabla = (DefaultTableModel) modelo.getModel();
             
             if (listaDeEmpleados != null) {
                 //agregamos a cada columna los datos que le corresponden:
-                for (int dato = 0; dato < listaDeEmpleados.size(); dato = dato + 4) {
-                    columnasDeDatos[0] = listaDeEmpleados.get(dato);
-                    columnasDeDatos[1] = listaDeEmpleados.get(dato + 1);
-                    columnasDeDatos[2] = listaDeEmpleados.get(dato + 2);
-                    columnasDeDatos[3] = listaDeEmpleados.get(dato + 3);
+                for (int indiceDelDato = 0; indiceDelDato < listaDeEmpleados.size(); indiceDelDato = indiceDelDato + 4) {
+                    columnasDeDatos[0] = listaDeEmpleados.get(indiceDelDato);
+                    columnasDeDatos[1] = listaDeEmpleados.get(indiceDelDato + 1);
+                    columnasDeDatos[2] = listaDeEmpleados.get(indiceDelDato + 2);
+                    columnasDeDatos[3] = listaDeEmpleados.get(indiceDelDato + 3);
 
                     //agregamos los datos de cada columna en cada renglón:
                     modeloDeLaTabla.addRow(columnasDeDatos);
@@ -114,20 +116,28 @@ public class ControladorReporEmpleado {
         return null;
     }
     
+    /**
+     * Pone los datos en las filas y columnas correspondientes del excel
+     * @param sheet es la hoja de excel en la cual se estan poniendo los datos
+     * @param tableModel es el modelo de la tabla de la cual se obtienen los datos
+     */
     private void llenarExcelDeDatos(Sheet sheet, TableModel tableModel) {
         Row row = sheet.createRow(0);
         Cell cell = null;
-            for (int i = 0; i < tableModel.getColumnCount(); i++) {
-                cell =  row.createCell(i);
-                cell.setCellValue(tableModel.getColumnName(i));
+        int numeroDeColumnas = tableModel.getColumnCount();
+            for (int columna = 0; columna < numeroDeColumnas; columna++) {
+                cell =  row.createCell(columna);
+                cell.setCellValue(tableModel.getColumnName(columna));
             }
-            
-            for (int i = 1; i < tableModel.getRowCount()+1; i++) {
-                row = sheet.createRow(i);
-                for (int j = 0; j <  tableModel.getColumnCount(); j++) {
-                    cell =  row.createCell(j);
-                    String dinero = (j>1)? "$":"";
-                    cell.setCellValue(dinero + (String)tableModel.getValueAt(i-1, j));
+            int numeroDeFilas = tableModel.getRowCount();
+            for (int fila = 1; fila < numeroDeFilas+1; fila++) {
+                row = sheet.createRow(fila);
+                for (int columna = 0; columna <  numeroDeColumnas; columna++) {
+                    cell =  row.createCell(columna);
+                    
+                    String signoDinero = (columna>1)? "$":"";
+                    String cantidad = (String)tableModel.getValueAt(fila-1, columna);
+                    cell.setCellValue(signoDinero + cantidad);
                 }
             }
     }

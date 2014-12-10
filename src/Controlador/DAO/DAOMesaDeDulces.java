@@ -43,49 +43,7 @@ public class DAOMesaDeDulces {
 
     }
 
-    private boolean existeMesaDeDulces(MesaDeDulces mesaDeDulces) throws SQLException {
 
-        LinkedList<MesaDeDulces> listaDeMesaDeDulces = buscarCoincidencias(mesaDeDulces.getNombreDeMesa());;
-        boolean existeMesaDeDulces = false;
-        if (listaDeMesaDeDulces != null) {
-            for (MesaDeDulces mesaDeDulcesEnBD : listaDeMesaDeDulces) {
-
-                if (compararMesaDeDulces(mesaDeDulcesEnBD, mesaDeDulces)) {
-                    //si se cumple, entonces encontramos una coincidencia:
-                    existeMesaDeDulces = true;
-                    //rompemos el ciclo en caso de que haya más de un cliente
-                    //con los mismos datos:
-                    break;
-                }
-            }
-        }/*el else fue considerado, pero no es usado.*/
-
-        return existeMesaDeDulces;
-    }
-
-    private boolean compararMesaDeDulces(MesaDeDulces mesaDeDulcesEncontradoEnBD,
-            MesaDeDulces mesaDeDulcesA_modificar) {
-        //primero obtenemos ambos nombres:
-        String nombreMesaDeDulcesEncontradoEnBD = mesaDeDulcesEncontradoEnBD.getNombreDeMesa();
-        String nombreMesaDeDulcesA_modificar = mesaDeDulcesA_modificar.getNombreDeMesa();
-        //comparamos los nombres:
-        if (nombreMesaDeDulcesEncontradoEnBD.equalsIgnoreCase(nombreMesaDeDulcesA_modificar)) {
-            return true;
-        } else {
-            //el else fue considerado, pero no es necesario.
-        }
-
-        //obtenemos los precio:
-        float precioMesaDeDulcesEncontradoEnBD = mesaDeDulcesEncontradoEnBD.getPrecio();
-        float precioMesaDeDulcesA_modificar = mesaDeDulcesA_modificar.getPrecio();
-        if (precioMesaDeDulcesEncontradoEnBD == precioMesaDeDulcesA_modificar) {
-            return true;
-        } else {
-            //el else fue considerado, pero no es necesario.
-        }
-        /*Si llega hasta aquí, entonces los clientes son distintos:*/
-        return false;
-    }
     private static final int columnaId = 1;
     private static final int columnaNombre = 2;
     private static final int columnaCosto = 3;
