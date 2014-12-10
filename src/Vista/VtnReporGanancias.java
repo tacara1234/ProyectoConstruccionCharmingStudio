@@ -41,14 +41,18 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         limpiarLista();
         mostrarEventos();
-        establecerMontoTotal();
-        establecerMesConMasVentas();
-        establecerMesConMenosVentas();
+        establecerGananciaTotal();
+        establecerMesConMasGanancias();
+        establecerMesConMenosGanacias();
     }
 
+    /**
+     * Lista los eventos en la ventana
+     */
     private void mostrarEventos() {
         ControladorEventos ctrlEventos = new ControladorEventos();
         try {
+                        //Checar como llamar esto datosTabla o modelo ver como llamar al de abajo tambien
             DefaultTableModel datosTabla = (DefaultTableModel) this.reporteTablaGanancias.getModel();
             DefaultTableModel datosTablaCompleta = ctrlEventos.obtenerTodosLosEventos(datosTabla, llenadoDeReporte);
 
@@ -59,45 +63,57 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         }
     }
 
-    private void establecerMesConMasVentas() {
+    /**
+     * Pone el valor en la ventana de las ganancias del mes con mas ganancias
+     */
+    private void establecerMesConMasGanancias() {
 
-        String mesConMasVentas = "";
+        String mesConMasGanancias = "";
         DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
         ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
-        mesConMasVentas = ctrlReporGanancias.CalcularMesConMasVentas(modelo);
+        mesConMasGanancias = ctrlReporGanancias.calcularMesConMasGanancias(modelo);
 
-        this.mejorMes.setText(mesConMasVentas);
+        this.mejorMes.setText(mesConMasGanancias);
     }
 
-    private void establecerMesConMenosVentas() {
+    /**
+     * Pone el valor en la ventana de las ganancias del menos con menos ganancias
+     */
+    private void establecerMesConMenosGanacias() {
 
-        String mesConMenosVentas = "";
-        String mesConMasVentas = "";
+        String mesConMenosGanancias = "";
+        String mesConMasGanancias = "";
         DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
         ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
-        mesConMenosVentas = ctrlReporGanancias.CalcularMesConMenosVentas(modelo);
-        mesConMasVentas = ctrlReporGanancias.CalcularMesConMasVentas(modelo);
+        mesConMenosGanancias = ctrlReporGanancias.CalcularMesConMenosGanancias(modelo);
+        mesConMasGanancias = ctrlReporGanancias.calcularMesConMasGanancias(modelo);
 
-        if (mesConMenosVentas.equalsIgnoreCase(mesConMasVentas)) {
+        if (mesConMenosGanancias.equalsIgnoreCase(mesConMasGanancias)) {
             this.peorMes.setText("No Aplica");
         } else {
-            this.peorMes.setText(mesConMenosVentas);
+            this.peorMes.setText(mesConMenosGanancias);
         }
     }
 
-    private void establecerMontoTotal() {
-        float montoTotal = 0;
+    /**
+     * Pone en la ventana la ganancia total 
+     */
+    private void establecerGananciaTotal() {
+        float gananciaTotal = 0;
         DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
         ControladorReporGanancias ctrlReporGanancias = new ControladorReporGanancias();
-        montoTotal = ctrlReporGanancias.calcularMontoTotal(modelo);
+        gananciaTotal = ctrlReporGanancias.calcularGananciasTotales(modelo);
 
-        this.montoTotal.setText(String.valueOf(montoTotal));
+        this.montoTotal.setText(String.valueOf(gananciaTotal));
     }
 
+    /**
+     * limpia la lista de datos
+     */
     public void limpiarLista() {
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.reporteTablaGanancias.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
         for (int i = 0; i < reporteTablaGanancias.getRowCount(); i++) {
-            modeloDeLaTabla.removeRow(0);
+            modelo.removeRow(0);
             i -= 1;
         }
     }
@@ -251,8 +267,6 @@ public class VtnReporGanancias extends javax.swing.JFrame {
     private void btnReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReporteActionPerformed
         // TODO add your handling code here:
         FileOutputStream out = null;
-        // Calendar calendario = Calendar.getInstance();
-        int tituloCompleto = 0;
         try {
             // TODO add your handling code here:
 
@@ -262,7 +276,7 @@ public class VtnReporGanancias extends javax.swing.JFrame {
             //Row row = null;
             //Cell cell = null;
             DefaultTableModel modelo = (DefaultTableModel) this.reporteTablaGanancias.getModel();
-            crearTitulo(sheet, (DefaultTableModel) modelo);
+            crearTitulo(sheet);
             crearEncabezados(sheet, (DefaultTableModel) modelo);
             poblarExcel(sheet, (DefaultTableModel) modelo);
 
@@ -281,6 +295,11 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_peorMesActionPerformed
 
+    /**
+     * Llena de datos el excel que será el reporte
+     * @param sheet es la hoja del excel que se llenara
+     * @param tableModel es el modelo de la tabla que contiene los datos
+     */
     private void poblarExcel(Sheet sheet, TableModel tableModel) {
         Row filaDatosDeLista;
         Cell celdaDatosDelista;
@@ -318,7 +337,11 @@ public class VtnReporGanancias extends javax.swing.JFrame {
 
     }
 
-    private void crearTitulo(Sheet sheet, TableModel tableModel) {
+    /**
+     * Crea el título reporte
+     * @param sheet es la hoja de excel donde se establecerá el título
+     */
+    private void crearTitulo(Sheet sheet) {
         Row filaDelTitulo = sheet.createRow(0);
         Cell celdaDelTitulo = filaDelTitulo.createCell(0);
         
@@ -326,6 +349,11 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         
     }
 
+    /**
+     * Crea los encabezados del reporte
+     * @param sheet es la hoja donde estarán los encabezados
+     * @param tableModel es el modelo de la tabla que tiene los encabezados
+     */
     private void crearEncabezados(Sheet sheet, TableModel tableModel) {
 
         Row filaDeEncabezadosDeLista = sheet.createRow(1);
@@ -337,6 +365,9 @@ public class VtnReporGanancias extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Cierra la ventana
+     */
     private void cerrarEstaVentana() {
         //BorrarDatos();
         this.dispose();

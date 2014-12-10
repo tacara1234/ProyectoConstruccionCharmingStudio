@@ -100,7 +100,6 @@ public class ControladorEmpleado implements ControladorPersona {
     
     public void llenarListaDeEmpleados(JTable tabla, String nombre){
         try {
-            DefaultTableModel modelo = (DefaultTableModel)tabla.getModel();
             LinkedList<Empleado> listaDeEmpleados = obtenerCoincidenciasPorNombre(nombre);
             llenarListaDeDatos(listaDeEmpleados,tabla);
         } catch (SQLException ex) {

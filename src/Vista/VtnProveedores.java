@@ -48,7 +48,7 @@ public class VtnProveedores extends javax.swing.JFrame {
         btnAgregar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         listaProveedores = new javax.swing.JTable();
-        btnBuscar = new javax.swing.JButton();
+        btnMostrarProveedores = new javax.swing.JButton();
         txtNombreProveedor = new javax.swing.JTextField();
         btnRegresar = new javax.swing.JButton();
         tituloProveedores = new javax.swing.JLabel();
@@ -75,10 +75,10 @@ public class VtnProveedores extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(listaProveedores);
 
-        btnBuscar.setText("Buscar");
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+        btnMostrarProveedores.setText("Buscar");
+        btnMostrarProveedores.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
+                btnMostrarProveedoresActionPerformed(evt);
             }
         });
 
@@ -121,7 +121,7 @@ public class VtnProveedores extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(txtNombreProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnBuscar)
+                .addComponent(btnMostrarProveedores)
                 .addGap(395, 395, 395))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -133,9 +133,7 @@ public class VtnProveedores extends javax.swing.JFrame {
                                 .addComponent(btnModificar)
                                 .addGap(54, 54, 54)
                                 .addComponent(btnEliminar))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnAgregar)
-                                .addGap(246, 246, 246))))
+                            .addComponent(btnAgregar)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(400, 400, 400)
                         .addComponent(tituloProveedores)))
@@ -149,7 +147,7 @@ public class VtnProveedores extends javax.swing.JFrame {
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNombreProveedor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscar))
+                    .addComponent(btnMostrarProveedores))
                 .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregar)
@@ -177,7 +175,7 @@ public class VtnProveedores extends javax.swing.JFrame {
         cerrarEstaVentana();
     }//GEN-LAST:event_btnAgregarActionPerformed
 
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+    private void btnMostrarProveedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMostrarProveedoresActionPerformed
 
         /*Declaramos el controlador que busca los provs
          en la base de datos:                              */
@@ -194,7 +192,7 @@ public class VtnProveedores extends javax.swing.JFrame {
             //si hay Excepción, mostramos el mensaje en pantalla:
             mostrarMensaje("Hubo un error: " + ex.getLocalizedMessage());
         }
-    }//GEN-LAST:event_btnBuscarActionPerformed
+    }//GEN-LAST:event_btnMostrarProveedoresActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
         // TODO add your handling code here:
@@ -502,9 +500,9 @@ public class VtnProveedores extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
-    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnModificar;
+    private javax.swing.JButton btnMostrarProveedores;
     private javax.swing.JButton btnRegresar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable listaProveedores;

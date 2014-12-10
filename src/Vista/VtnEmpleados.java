@@ -48,7 +48,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
         btnAgregarEmpleado = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         listaEmpleados = new javax.swing.JTable();
-        btnBuscarEmpleado = new javax.swing.JButton();
+        btnMostrarEmpleados = new javax.swing.JButton();
         txtNombreEmpleado = new javax.swing.JTextField();
         btnRegresarVtnPrincipal = new javax.swing.JButton();
         btnModificarEmpleado = new javax.swing.JButton();
@@ -80,10 +80,10 @@ public class VtnEmpleados extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(listaEmpleados);
 
-        btnBuscarEmpleado.setText("Buscar");
-        btnBuscarEmpleado.addActionListener(new java.awt.event.ActionListener() {
+        btnMostrarEmpleados.setText("Buscar");
+        btnMostrarEmpleados.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarEmpleadoActionPerformed(evt);
+                btnMostrarEmpleadosActionPerformed(evt);
             }
         });
 
@@ -132,7 +132,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(txtNombreEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnBuscarEmpleado))
+                                .addComponent(btnMostrarEmpleados))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(50, 50, 50)
                                 .addComponent(btnModificarEmpleado)
@@ -158,7 +158,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNombreEmpleado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscarEmpleado))
+                    .addComponent(btnMostrarEmpleados))
                 .addGap(34, 34, 34)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnModificarEmpleado)
@@ -193,12 +193,14 @@ public class VtnEmpleados extends javax.swing.JFrame {
         cerrarEstaVentana();
     }//GEN-LAST:event_btnAgregarEmpleadoActionPerformed
 
-    private void btnBuscarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarEmpleadoActionPerformed
+    //VERIFICAR SI ESTE LLENADOeScORRECTO
+    private void btnMostrarEmpleadosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMostrarEmpleadosActionPerformed
 
         /*Declaramos el controlador que busca los empleados
          en la base de datos:                              */
-        ControladorEmpleado ctrlBuscarEmpleados = new ControladorEmpleado();
-        ctrlBuscarEmpleados.llenarListaDeEmpleados(this.listaEmpleados,this.txtNombreEmpleado.getText());
+        String nombreEmpleado = this.txtNombreEmpleado.getText();
+        ControladorEmpleado ctrlEmpleado = new ControladorEmpleado();
+        ctrlEmpleado.llenarListaDeEmpleados(this.listaEmpleados,nombreEmpleado);
 //        try {
 //            /*El controlador, devuelve una lista con los empleados que coincidieron con la búsqueda:*/
 //            LinkedList<Empleado> listaDeEmpleados = ctrlBuscarEmpleados.buscarCoincidencias(this.txtNombreEmpleado.getText());
@@ -209,7 +211,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
 //            //si hay Excepción, mostramos el mensaje en pantalla:
 //            mostrarMensajeEnPantalla("Hubo un error: " + ex.getLocalizedMessage());
 //        }
-    }//GEN-LAST:event_btnBuscarEmpleadoActionPerformed
+    }//GEN-LAST:event_btnMostrarEmpleadosActionPerformed
 
     private void btnModificarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarEmpleadoActionPerformed
         //creamos un empleado temporal, a partir del renglón seleccionado en la tabla:
@@ -261,7 +263,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
             //Obtenemos el sueldo del empleado que se seleccionó en la tabla:
             float desempenio = empleadoTemporal.getEmpDesempenio();
 
-            establecerDesempenioEnVtn(desempenio, vtnModificaEmpleado);
+            establecerDesempenioEnVtnEmpleados(desempenio, vtnModificaEmpleado);
 
             //le ponemos el título a la ventana:
             vtnModificaEmpleado.setTitle("Modificará la información de un empleado");
@@ -283,7 +285,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnModificarEmpleadoActionPerformed
 
-    private void establecerDesempenioEnVtn(float desempenio, VtnAgrega_oModificaEmpleados vtnModificaEmpleado) {
+    private void establecerDesempenioEnVtnEmpleados(float desempenio, VtnAgrega_oModificaEmpleados vtnModificaEmpleado) {
         if (desempenio == vtnModificaEmpleado.getValCbDesempenio1()) {
 
             vtnModificaEmpleado.getCbDesempenio1().setSelected(true);
@@ -343,7 +345,8 @@ public class VtnEmpleados extends javax.swing.JFrame {
     private void btnEliminarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarEmpleadoActionPerformed
         // TODO add your handling code here:
         /*Obtenemos el empleado seleccionado de la tabla:*/
-        int idEmpleadoQueSeEliminara = obtenerIdEmpleadoAEliminar();
+       // int idEmpleadoQueSeEliminara = obtenerIdEmpleadoAEliminar();
+        int idEmpleadoQueSeEliminara = obtenerInformacionDeRenglonSelecccionado().getIdPersona();
 
         //checamos si se seleccionó algún empleado de la tabla,
         //es decir, si no es nulo.
@@ -413,39 +416,6 @@ public class VtnEmpleados extends javax.swing.JFrame {
         }
     }
 
-    private int obtenerIdEmpleadoAEliminar() {
-        //obtiene el número del renglón seleccionado en la tabla.
-        int numDeRenglonSeleccionado = this.listaEmpleados.getSelectedRow();
-
-        /*Si es negativo, quiere decir que ningún renglón ha sido seleccionado:*/
-        if (numDeRenglonSeleccionado < 0) {
-            return -1;
-        }
-
-        //declaramos las constantes, de las columnas donde está la información:
-        int columnaId = 0;
-        //int columnaNombre = 1;
-        //int columnaDireccion = 2;
-        //int columnaTelefono = 3;
-        //int columnaCorreo = 4;
-        //int columnaDesempenio = 5;
-        //int columnaSueldo = 6;
-
-        //obtenemos la información del renglón seleccionado.
-        int id = (int) listaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaId);
-        //String nombre = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaNombre);
-        //String direccion = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaDireccion);
-        //String telefono = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaTelefono);
-        //String correo = (String) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaCorreo);
-        //float desempenio = (float) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaDesempenio);
-        //float sueldo = (float) tablaEmpleados.getValueAt(numDeRenglonSeleccionado, columnaSueldo);
-
-        //regresamos el empelado.
-        //return new Empleado(id, nombre, direccion, telefono, correo, desempenio, sueldo);
-        //regresamos el id del empleado a eliminar
-        return id;
-    }
-
     private void cerrarEstaVentana() {
         borrarCampos();
         this.dispose();
@@ -498,9 +468,9 @@ public class VtnEmpleados extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarEmpleado;
-    private javax.swing.JButton btnBuscarEmpleado;
     private javax.swing.JButton btnEliminarEmpleado;
     private javax.swing.JButton btnModificarEmpleado;
+    private javax.swing.JButton btnMostrarEmpleados;
     private javax.swing.JButton btnRegresarVtnPrincipal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

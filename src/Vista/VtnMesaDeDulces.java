@@ -47,7 +47,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         txtNombreMesaDeDulces = new javax.swing.JTextField();
-        btnBuscarMesaDulces = new javax.swing.JButton();
+        btnMostrarMesaDeDulces = new javax.swing.JButton();
         btnAgregarMesaDulces = new javax.swing.JButton();
         btnModificarMesaDulces = new javax.swing.JButton();
         btnEliminarMesaDulces = new javax.swing.JButton();
@@ -61,10 +61,10 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel1.setText("Mesa de Dulces");
 
-        btnBuscarMesaDulces.setText("Buscar");
-        btnBuscarMesaDulces.addActionListener(new java.awt.event.ActionListener() {
+        btnMostrarMesaDeDulces.setText("Buscar");
+        btnMostrarMesaDeDulces.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarMesaDulcesActionPerformed(evt);
+                btnMostrarMesaDeDulcesActionPerformed(evt);
             }
         });
 
@@ -91,10 +91,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
 
         tablaMesaDeDulces.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Id", "Nombre", "Precio"
@@ -132,7 +129,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
                                 .addComponent(btnEliminarMesaDulces))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnBuscarMesaDulces)
+                                .addComponent(btnMostrarMesaDeDulces)
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -150,7 +147,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNombreMesaDeDulces, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnBuscarMesaDulces))
+                    .addComponent(btnMostrarMesaDeDulces))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregarMesaDulces)
@@ -215,7 +212,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnEliminarMesaDulcesActionPerformed
 
-    private void btnBuscarMesaDulcesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarMesaDulcesActionPerformed
+    private void btnMostrarMesaDeDulcesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMostrarMesaDeDulcesActionPerformed
         // TODO add your handling code here:
         /*Declaramos el controlador que busca las mesas de ducles
          en la base de datos: */
@@ -233,7 +230,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
             //si hay Excepción, mostramos el mensaje en pantalla:
             mostrarMensaje("Hubo un error: " + ex.getLocalizedMessage());
         }
-    }//GEN-LAST:event_btnBuscarMesaDulcesActionPerformed
+    }//GEN-LAST:event_btnMostrarMesaDeDulcesActionPerformed
 
     private void btnModificarMesaDulcesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarMesaDulcesActionPerformed
         // TODO add your handling code here:
@@ -396,9 +393,9 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregarMesaDulces;
-    private javax.swing.JButton btnBuscarMesaDulces;
     private javax.swing.JButton btnEliminarMesaDulces;
     private javax.swing.JButton btnModificarMesaDulces;
+    private javax.swing.JButton btnMostrarMesaDeDulces;
     private javax.swing.JButton btnRegresarPrincipal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;

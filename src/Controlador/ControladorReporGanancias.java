@@ -11,22 +11,24 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ControladorReporGanancias {
 
-    private Date fecha;
-
     public ControladorReporGanancias() {
 
     }
 
-    public float calcularMontoTotal(DefaultTableModel datosTabla) {
-        float montoTotal = 0;
-        //DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
-        //System.out.println("row count " + datosTabla.getRowCount());
-        //System.out.println("Va a entrar");
+    /**
+     * Calcula el monto total de todos los eventos que se han realizado
+     *
+     * @param datosTabla es el modelo de la tabla de donde se van obtener los
+     * datos
+     * @return el total de las ganancias obtenidas
+     */
+    public float calcularGananciasTotales(DefaultTableModel datosTabla) {
+        float gananciasTotales = 0;
         for (int indice = 0; indice < datosTabla.getRowCount(); indice++) {
 
-            montoTotal = montoTotal + (float) datosTabla.getValueAt(indice, 2);
+            gananciasTotales = gananciasTotales + (float) datosTabla.getValueAt(indice, 2);
         }
-        return montoTotal;
+        return gananciasTotales;
     }
 
     private final int enero = 1;
@@ -42,66 +44,85 @@ public class ControladorReporGanancias {
     private final int noviembre = 11;
     private final int diciembre = 12;
 
-    public String CalcularMesConMasVentas(DefaultTableModel datosTabla) {
+    /**
+     * Calcula el mes con en el que se gano mas dinero
+     *
+     * @param datosTabla es el modelo de la tabla que contiene los datos que se
+     * usaran en el calculo
+     * @return el mes con mas ganancias
+     */
+    public String calcularMesConMasGanancias(DefaultTableModel datosTabla) {
 
-        float[] ventasDelmes = new float[12];
+        float[] gananaciasDelMes = new float[12];
 
-        String mesConMasVentas = "";
-        ventasDelmes[0] = obtenerVentasDelMes(datosTabla, enero);
-        ventasDelmes[1] = obtenerVentasDelMes(datosTabla, febrero);
-        ventasDelmes[2] = obtenerVentasDelMes(datosTabla, marzo);
-        ventasDelmes[3] = obtenerVentasDelMes(datosTabla, abril);
-        ventasDelmes[4] = obtenerVentasDelMes(datosTabla, mayo);
-        ventasDelmes[5] = obtenerVentasDelMes(datosTabla, junio);
-        ventasDelmes[6] = obtenerVentasDelMes(datosTabla, julio);
-        ventasDelmes[7] = obtenerVentasDelMes(datosTabla, agosto);
-        ventasDelmes[8] = obtenerVentasDelMes(datosTabla, septiembre);
-        ventasDelmes[9] = obtenerVentasDelMes(datosTabla, octubre);
-        ventasDelmes[10] = obtenerVentasDelMes(datosTabla, noviembre);
-        ventasDelmes[11] = obtenerVentasDelMes(datosTabla, diciembre);
-        //System.out.println("ventas dic" + diciembreVentas);
+        String mesConMasGanancias = "";
+        gananaciasDelMes[0] = obtenerGananciasDelMes(datosTabla, enero);
+        gananaciasDelMes[1] = obtenerGananciasDelMes(datosTabla, febrero);
+        gananaciasDelMes[2] = obtenerGananciasDelMes(datosTabla, marzo);
+        gananaciasDelMes[3] = obtenerGananciasDelMes(datosTabla, abril);
+        gananaciasDelMes[4] = obtenerGananciasDelMes(datosTabla, mayo);
+        gananaciasDelMes[5] = obtenerGananciasDelMes(datosTabla, junio);
+        gananaciasDelMes[6] = obtenerGananciasDelMes(datosTabla, julio);
+        gananaciasDelMes[7] = obtenerGananciasDelMes(datosTabla, agosto);
+        gananaciasDelMes[8] = obtenerGananciasDelMes(datosTabla, septiembre);
+        gananaciasDelMes[9] = obtenerGananciasDelMes(datosTabla, octubre);
+        gananaciasDelMes[10] = obtenerGananciasDelMes(datosTabla, noviembre);
+        gananaciasDelMes[11] = obtenerGananciasDelMes(datosTabla, diciembre);
 
-        float gananciaMayor = obtenerGananciaMayor(ventasDelmes);
+        float gananciaMayor = obtenerGananciaMayor(gananaciasDelMes);
 
         for (int i = 0; i < 12; i++) {
-            if (gananciaMayor == ventasDelmes[i]) {
-                mesConMasVentas = obtenerMesPorNumero(i + 1);
+            if (gananciaMayor == gananaciasDelMes[i]) {
+                mesConMasGanancias = obtenerMesPorNumero(i + 1);
             }
         }
 
-        return mesConMasVentas;
+        return mesConMasGanancias;
     }
 
-    public String CalcularMesConMenosVentas(DefaultTableModel datosTabla) {
-        
-        float[] ventasDelmes = new float[12];
+    /**
+     * Calcula el mes con menos ganancias
+     *
+     * @param datosTabla es el modelo de la tabla que contiene los datos que se
+     * usaran en el calculo
+     * @return el mes con menos ganancias
+     */
+    public String CalcularMesConMenosGanancias(DefaultTableModel datosTabla) {
+
+        float[] gananciasDelmes = new float[12];
         //datosTabla.getValueAt(i, 1);
-        String mesConMenosVentas = "";
-        ventasDelmes[0] = obtenerVentasDelMes(datosTabla, enero);
-        ventasDelmes[1] = obtenerVentasDelMes(datosTabla, febrero);
-        ventasDelmes[2] = obtenerVentasDelMes(datosTabla, marzo);
-        ventasDelmes[3] = obtenerVentasDelMes(datosTabla, abril);
-        ventasDelmes[4] = obtenerVentasDelMes(datosTabla, mayo);
-        ventasDelmes[5] = obtenerVentasDelMes(datosTabla, junio);
-        ventasDelmes[6] = obtenerVentasDelMes(datosTabla, julio);
-        ventasDelmes[7] = obtenerVentasDelMes(datosTabla, agosto);
-        ventasDelmes[8] = obtenerVentasDelMes(datosTabla, septiembre);
-        ventasDelmes[9] = obtenerVentasDelMes(datosTabla, octubre);
-        ventasDelmes[10] = obtenerVentasDelMes(datosTabla, noviembre);
-        ventasDelmes[11] = obtenerVentasDelMes(datosTabla, diciembre);
+        String mesConMenosGanancias = "";
+        gananciasDelmes[0] = obtenerGananciasDelMes(datosTabla, enero);
+        gananciasDelmes[1] = obtenerGananciasDelMes(datosTabla, febrero);
+        gananciasDelmes[2] = obtenerGananciasDelMes(datosTabla, marzo);
+        gananciasDelmes[3] = obtenerGananciasDelMes(datosTabla, abril);
+        gananciasDelmes[4] = obtenerGananciasDelMes(datosTabla, mayo);
+        gananciasDelmes[5] = obtenerGananciasDelMes(datosTabla, junio);
+        gananciasDelmes[6] = obtenerGananciasDelMes(datosTabla, julio);
+        gananciasDelmes[7] = obtenerGananciasDelMes(datosTabla, agosto);
+        gananciasDelmes[8] = obtenerGananciasDelMes(datosTabla, septiembre);
+        gananciasDelmes[9] = obtenerGananciasDelMes(datosTabla, octubre);
+        gananciasDelmes[10] = obtenerGananciasDelMes(datosTabla, noviembre);
+        gananciasDelmes[11] = obtenerGananciasDelMes(datosTabla, diciembre);
         //System.out.println("ventas dic" + diciembreVentas);
 
-        float gananciaMenor = obtenerGananciaMenor(ventasDelmes);
+        float gananciaMenor = obtenerGananciaMenor(gananciasDelmes);
 
         for (int i = 0; i < 12; i++) {
-            if (gananciaMenor == ventasDelmes[i]) {
-                mesConMenosVentas = obtenerMesPorNumero(i + 1);
+            if (gananciaMenor == gananciasDelmes[i]) {
+                mesConMenosGanancias = obtenerMesPorNumero(i + 1);
             }
         }
 
-        return mesConMenosVentas;
+        return mesConMenosGanancias;
     }
 
+    /**
+     * Obtiene el mes dependiendo del numero que se le pase (1-12)
+     *
+     * @param numeroDeMes es el mes que se desea obtener
+     * @return el mes correspondiente al numero de este
+     */
     private String obtenerMesPorNumero(int numeroDeMes) {
         switch (numeroDeMes) {
             case 1:
@@ -133,6 +154,12 @@ public class ControladorReporGanancias {
         }
     }
 
+    /**
+     * Obtiene la ganancia mas grande de todos los meses
+     *
+     * @param ganancias son las ganancias de todos los meses
+     * @return la mayor ganancia
+     */
     private float obtenerGananciaMayor(float[] ganancias) {
         float gananciaMayor = ganancias[0];
         //float resultado = 0;
@@ -144,18 +171,24 @@ public class ControladorReporGanancias {
         return gananciaMayor;
     }
 
+    /**
+     * Obtiene la ganancia mas pequeña de todos los meses
+     *
+     * @param ganancias on las ganancias de todos los meses
+     * @return la menor ganancia
+     */
     private float obtenerGananciaMenor(float[] ganancias) {
         boolean band = false;
         float gananciaMenor = -1;        //float resultado = 0;
         for (int i = 0; i < ganancias.length; i++) {
             if (ganancias[i] == 0) {
-                
-            }else{
-                if(band==false){
-                gananciaMenor = ganancias[i];
-                band =true;
-                }else{
-                    if(gananciaMenor>ganancias[i]){
+
+            } else {
+                if (band == false) {
+                    gananciaMenor = ganancias[i];
+                    band = true;
+                } else {
+                    if (gananciaMenor > ganancias[i]) {
                         gananciaMenor = ganancias[i];
                     }
                 }
@@ -164,27 +197,27 @@ public class ControladorReporGanancias {
         return gananciaMenor;
     }
 
-    private float obtenerVentasDelMes(DefaultTableModel datosTabla, int mes) {
+    /**
+     * Obtiene las ganancias de un mes específico
+     *
+     * @param datosTabla es el modelo de la tabla que contiene los datos de
+     * donde se obtendra la ganancia del mes
+     * @param mes es el numero del mes que se quieren sus ganancias
+     * @return las ganancia total de ese mes
+     */
+    private float obtenerGananciasDelMes(DefaultTableModel datosTabla, int mes) {
         //DefaultTableModel datosTabla = (DefaultTableModel) this.listaEventos.getModel();
-        float totalVentaDelMes = 0;
+        float gananciaTotalDelMes = 0;
         for (int indice = 0; indice < datosTabla.getRowCount(); indice++) {
             StringTokenizer token = new StringTokenizer((String) datosTabla.getValueAt(indice, 1).toString(), "-");
             token.nextToken();
             int mesAcomparar = Integer.parseInt(token.nextToken());
             if (mes == mesAcomparar) {
-                totalVentaDelMes = totalVentaDelMes + (float) datosTabla.getValueAt(indice, 2);
+                gananciaTotalDelMes = gananciaTotalDelMes + (float) datosTabla.getValueAt(indice, 2);
             }
         }
 
-        return totalVentaDelMes;
-    }
-
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
+        return gananciaTotalDelMes;
     }
 
 }
