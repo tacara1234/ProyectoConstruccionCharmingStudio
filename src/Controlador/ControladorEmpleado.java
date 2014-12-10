@@ -109,14 +109,14 @@ public class ControladorEmpleado implements ControladorPersona {
         return null;
    }
     
-     private DefaultTableModel llenarListaDeEmpleados(LinkedList<Empleado> listaDeEmpleados,JTable tabla) {
+     private DefaultTableModel llenarListaDeEmpleados(LinkedList<Empleado> listaDeEmpleados,JTable lista) {
         //Declaramos las columnas:
         Object columnasDeDatos[] = new Object[7];
 
         //obtenemos el modelo default de la tabla:
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) tabla.getModel();
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) lista.getModel();
 
-        limpiarLista(tabla);
+        limpiarLista(lista);
         if (listaDeEmpleados != null) {
             //agregamos a cada columna los datos que le corresponden:
             for (Empleado empleado : listaDeEmpleados) {
@@ -139,9 +139,9 @@ public class ControladorEmpleado implements ControladorPersona {
         return modeloDeLaTabla;
     }
      
-         private void limpiarLista(JTable tabla) {
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) tabla.getModel();
-        for (int i = 0; i < tabla.getRowCount(); i++) {
+         private void limpiarLista(JTable lista) {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) lista.getModel();
+        for (int i = 0; i < lista.getRowCount(); i++) {
             modeloDeLaTabla.removeRow(0);
             i -= 1;
         }

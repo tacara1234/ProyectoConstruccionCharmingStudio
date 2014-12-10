@@ -52,7 +52,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
         btnModificarMesaDulces = new javax.swing.JButton();
         btnEliminarMesaDulces = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tablaMesaDeDulces = new javax.swing.JTable();
+        listaDeMesaDeDulces = new javax.swing.JTable();
         btnRegresarPrincipal = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -89,7 +89,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
             }
         });
 
-        tablaMesaDeDulces.setModel(new javax.swing.table.DefaultTableModel(
+        listaDeMesaDeDulces.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -97,7 +97,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
                 "Id", "Nombre", "Precio"
             }
         ));
-        jScrollPane1.setViewportView(tablaMesaDeDulces);
+        jScrollPane1.setViewportView(listaDeMesaDeDulces);
 
         btnRegresarPrincipal.setText("Regresar");
         btnRegresarPrincipal.addActionListener(new java.awt.event.ActionListener() {
@@ -216,20 +216,11 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
         // TODO add your handling code here:
         /*Declaramos el controlador que busca las mesas de ducles
          en la base de datos: */
-        ControladorMesaDeDulces controladorMD = new ControladorMesaDeDulces();
 
-        try {
-            String nombreMesa = this.txtNombreMesaDeDulces.getText();
-            /*El controlador, devuelve una lista con los clientes que coincidieron con la búsqueda:*/
-            LinkedList<MesaDeDulces> listaDeMesaDeDulces = 
-                    controladorMD.buscarCoincidencias(nombreMesa);
-            llenarListaDeDatos(listaDeMesaDeDulces);
-
-        } catch (SQLException ex) {
-
-            //si hay Excepción, mostramos el mensaje en pantalla:
-            mostrarMensaje("Hubo un error: " + ex.getLocalizedMessage());
-        }
+        String nombreMesa = this.txtNombreMesaDeDulces.getText();
+        ControladorMesaDeDulces ctrlMesaDeDulces = new ControladorMesaDeDulces();
+        DefaultTableModel modeloDeLaTabla = ctrlMesaDeDulces.obtenerListaActualizadaDeMesasDeDulces(listaDeMesaDeDulces, nombreMesa);
+        this.listaDeMesaDeDulces.setModel(modeloDeLaTabla);
     }//GEN-LAST:event_btnMostrarMesaDeDulcesActionPerformed
 
     private void btnModificarMesaDulcesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarMesaDulcesActionPerformed
@@ -285,7 +276,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
 
     private MesaDeDulces obtenerInformacionDeRenglonSelecccionado() {
         //obtiene el número del renglón seleccionado en la tabla.
-        int numDeRenglonSeleccionado = this.tablaMesaDeDulces.getSelectedRow();
+        int numDeRenglonSeleccionado = this.listaDeMesaDeDulces.getSelectedRow();
         /*Si es negativo, quiere decir que ningún renglón ha sido seleccionado:*/
         if (numDeRenglonSeleccionado < 0) {
             return null;
@@ -295,9 +286,9 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
         int columnaNombre = 1;
         int columnaPrecio = 2;
         //obtenemos la información del renglón seleccionado.
-        int id = (int) tablaMesaDeDulces.getValueAt(numDeRenglonSeleccionado, columnaId);
-        String nombre = (String) tablaMesaDeDulces.getValueAt(numDeRenglonSeleccionado, columnaNombre);
-        float precio = (Float) tablaMesaDeDulces.getValueAt(numDeRenglonSeleccionado, columnaPrecio);
+        int id = (int) listaDeMesaDeDulces.getValueAt(numDeRenglonSeleccionado, columnaId);
+        String nombre = (String) listaDeMesaDeDulces.getValueAt(numDeRenglonSeleccionado, columnaNombre);
+        float precio = (Float) listaDeMesaDeDulces.getValueAt(numDeRenglonSeleccionado, columnaPrecio);
 
         return new MesaDeDulces(id, nombre, precio);
     }
@@ -313,9 +304,18 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
 
     private void borrarDatos() {
         this.txtNombreMesaDeDulces.setText("");
-        llenarListaDeDatos(null);
+        limpiarLista();
 
     }
+    
+        private void limpiarLista() {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaDeMesaDeDulces.getModel();
+        for (int i = 0; i < listaDeMesaDeDulces.getRowCount(); i++) {
+            modeloDeLaTabla.removeRow(0);
+            i -= 1;
+        }
+    }
+
 
     private static final int columnaID = 0;
     private static final int columnaNombre = 1;
@@ -327,7 +327,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
         Object renglonDeDatos[] = new Object[totalColumnas];
 
         //obtenemos el modelo default de la tabla:
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaMesaDeDulces.getModel();
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaDeMesaDeDulces.getModel();
 
         limpiarTabla();
 
@@ -345,13 +345,13 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
             //se considera el else pero no es necesario                                           
         }
         //establecemos a nuestra tabla, el modelo que tenía:
-        this.tablaMesaDeDulces.setModel(modeloDeLaTabla);
+        this.listaDeMesaDeDulces.setModel(modeloDeLaTabla);
 
     }
 
     private void limpiarTabla() {
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.tablaMesaDeDulces.getModel();
-        for (int i = 0; i < tablaMesaDeDulces.getRowCount(); i++) {
+        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaDeMesaDeDulces.getModel();
+        for (int i = 0; i < listaDeMesaDeDulces.getRowCount(); i++) {
             modeloDeLaTabla.removeRow(0);
             i -= 1;
         }
@@ -399,7 +399,7 @@ public class VtnMesaDeDulces extends javax.swing.JFrame {
     private javax.swing.JButton btnRegresarPrincipal;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tablaMesaDeDulces;
+    private javax.swing.JTable listaDeMesaDeDulces;
     private javax.swing.JTextField txtNombreMesaDeDulces;
     // End of variables declaration//GEN-END:variables
 }
