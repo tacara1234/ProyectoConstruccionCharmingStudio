@@ -232,7 +232,7 @@ public class ControladorEventos {
 
         if (listaDeEventos != null) {
 
-            for (EventosSociales evento : listaDeEventos) {
+            for (EventoSocial evento : listaDeEventos) {
                 columnasDeDatos[columnaID] = evento.getIdEvento();
                 columnasDeDatos[columnaFechaReporte] = evento.getFecha();
                 columnasDeDatos[columnaPrecioTotal] = evento.getPrecioTotal();
@@ -283,7 +283,7 @@ public class ControladorEventos {
                 String colCliente = evento.getIdCliente() + " " + nombreClienteDelEvento;
                 String colEmpleado = evento.getIdEmpleado() + " " + nombreResponsableDelEvento;
                 String colMesaDeDulces = evento.getIdMD() + " " + nombreMesaDeDulcesDelEvento;
-                //QUÉ SIGNIFICAN LOS NÚMEROS DE ABAJO?
+
                 columnasDeDatos[columnaID] = evento.getIdEvento();
                 columnasDeDatos[columnaCliente] = colCliente;
                 columnasDeDatos[columnaMesaDeDulces] = colMesaDeDulces;
