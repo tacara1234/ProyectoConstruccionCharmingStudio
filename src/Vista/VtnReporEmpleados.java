@@ -18,7 +18,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
     /**
      * Creates new form VtnReporEmpleados
      */
-    public VtnReporEmpleados() {
+    private VtnReporEmpleados() {
         initComponents();
         setLocationRelativeTo(null);
         listarEmpleados();
@@ -141,6 +141,7 @@ public class VtnReporEmpleados extends javax.swing.JFrame {
         }else{
             JOptionPane.showMessageDialog(null, "Hubo un error. Contacta al administrador.");
         }
+        
     }//GEN-LAST:event_btnExportarExcelActionPerformed
 
     /**
