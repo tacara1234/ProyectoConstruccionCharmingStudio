@@ -200,17 +200,10 @@ public class VtnEmpleados extends javax.swing.JFrame {
          en la base de datos:                              */
         String nombreEmpleado = this.txtNombreEmpleado.getText();
         ControladorEmpleado ctrlEmpleado = new ControladorEmpleado();
-        ctrlEmpleado.llenarListaDeEmpleados(this.listaEmpleados,nombreEmpleado);
-//        try {
-//            /*El controlador, devuelve una lista con los empleados que coincidieron con la búsqueda:*/
-//            LinkedList<Empleado> listaDeEmpleados = ctrlBuscarEmpleados.buscarCoincidencias(this.txtNombreEmpleado.getText());
-//            llenarListaDeDatos(listaDeEmpleados);
-//
-//        } catch (SQLException ex) {
-//
-//            //si hay Excepción, mostramos el mensaje en pantalla:
-//            mostrarMensajeEnPantalla("Hubo un error: " + ex.getLocalizedMessage());
-//        }
+        
+        DefaultTableModel modeloDeLaTabla = ctrlEmpleado.obtenerListaActualizadaDeEmpleados(this.listaEmpleados,nombreEmpleado);
+        this.listaEmpleados.setModel(modeloDeLaTabla);
+
     }//GEN-LAST:event_btnMostrarEmpleadosActionPerformed
 
     private void btnModificarEmpleadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarEmpleadoActionPerformed
@@ -378,36 +371,6 @@ public class VtnEmpleados extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_listaEmpleadosVetoableChange
 
-    private void llenarListaDeDatos(LinkedList<Empleado> listaDeEmpleados) {
-        //Declaramos las columnas:
-        Object columnasDeDatos[] = new Object[7];
-
-        //obtenemos el modelo default de la tabla:
-        DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaEmpleados.getModel();
-
-        limpiarLista();
-        if (listaDeEmpleados != null) {
-            //agregamos a cada columna los datos que le corresponden:
-            for (Empleado empleado : listaDeEmpleados) {
-                columnasDeDatos[0] = empleado.getIdPersona();
-                columnasDeDatos[1] = empleado.getNombrePersona();
-                columnasDeDatos[2] = empleado.getDireccionPersona();
-                columnasDeDatos[3] = empleado.getTelefonoPersona();
-                columnasDeDatos[4] = empleado.getCorreoPersona();
-                columnasDeDatos[5] = empleado.getEmpDesempenio();
-                columnasDeDatos[6] = empleado.getEmpSueldo();
-
-                //agregamos los datos de cada columna en cada renglón:
-                modeloDeLaTabla.addRow(columnasDeDatos);
-            }
-        } else {
-            /*El else no es necesario, pero fue considerado.*/
-        }
-        //establecemos a nuestra tabla, el modelo que tenía:
-        this.listaEmpleados.setModel(modeloDeLaTabla);
-
-    }
-
     private void limpiarLista() {
         DefaultTableModel modeloDeLaTabla = (DefaultTableModel) this.listaEmpleados.getModel();
         for (int i = 0; i < listaEmpleados.getRowCount(); i++) {
@@ -423,9 +386,7 @@ public class VtnEmpleados extends javax.swing.JFrame {
 
     private void borrarCampos() {
         this.txtNombreEmpleado.setText("");
-        //this.txtNombreEmpleado.requestFocus();
-        llenarListaDeDatos(null);
-        //limpiarTabla();
+        limpiarLista();
     }
 
     private void mostrarMensajeEnPantalla(String mensaje) {

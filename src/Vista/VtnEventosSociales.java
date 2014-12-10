@@ -223,7 +223,7 @@ public class VtnEventosSociales extends javax.swing.JFrame {
         int id = (int) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaId);
         String strIdCliente = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdCliente);
         String idYmd = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdMD);
-        Date fecha = (Date) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaFecha);
+        String fecha = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaFecha);
         float precio = (float) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaPrecio);
         String idYempleado = (String) listaEventos.getValueAt(numDeRenglonSeleccionado, columnaIdEmpleado);
 
