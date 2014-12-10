@@ -175,37 +175,5 @@ public class DAOEventos {
         precioTotal = precioTotal + evento.getPrecioTotal();
         return precioTotal;
     }
-    /*
-     public void agregaArma(int idpaq, LinkedList idprovs, LinkedList idservs) throws SQLException {
-     Statement sentenciaAgregaArma = Conexion.createStatement();
-     for (int i = 0; i < idprovs.size(); i++) {
-     if (!existeCombinacion(idpaq, (Integer) idprovs.get(i), (Integer) idprovs.get(i))) {
-     sentenciaAgregaArma.executeUpdate("INSERT INTO charmingstudio.arma "
-     + "(`Paquetes_idPaquetes`, `Provee_idProveedor`,`Provee_idServicios` )" + "VALUES("
-     + "'" + idpaq + "',"
-     + "'" + idprovs.get(i) + "',"
-     + "'" + idservs.get(i) + "')");
-     }
-     }
-
-     }
-     * */
-    /*
-     private boolean existeCombinacion(int a, int b, int c) throws SQLException {
-
-     Statement sentencia = Conexion.createStatement();
-     ResultSet busqueda = sentencia.executeQuery("SELECT * FROM charmingstudio.arma WHERE Paquetes_idPaquetes='"
-     + a + "' AND Provee_idProveedor='" + b + "' AND Provee_idServicios='" + c + "'");
-     //busqueda.next();
-     boolean existeComb = true;
-     if (busqueda.wasNull()) {
-     existeComb = false;
-
-
-     }
-     /*el else fue considerado, pero no es usado.
-
-     return existeComb;
-     }
-     */
+    
 }
