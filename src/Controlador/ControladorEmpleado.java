@@ -98,16 +98,18 @@ public class ControladorEmpleado implements ControladorPersona {
 
     }
     
-    public void llenarListaDeEmpleados(JTable tabla, String nombre){
+    public DefaultTableModel obtenerListaActualizadaDeEmpleados(JTable tabla, String nombre){
         try {
             LinkedList<Empleado> listaDeEmpleados = obtenerCoincidenciasPorNombre(nombre);
-            llenarListaDeDatos(listaDeEmpleados,tabla);
+           DefaultTableModel modeloDeLaTabla =  llenarListaDeEmpleados(listaDeEmpleados,tabla);
+           return modeloDeLaTabla;
         } catch (SQLException ex) {
             Logger.getLogger(ControladorEmpleado.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+        return null;
+   }
     
-     private void llenarListaDeDatos(LinkedList<Empleado> listaDeEmpleados,JTable tabla) {
+     private DefaultTableModel llenarListaDeEmpleados(LinkedList<Empleado> listaDeEmpleados,JTable tabla) {
         //Declaramos las columnas:
         Object columnasDeDatos[] = new Object[7];
 
@@ -133,8 +135,8 @@ public class ControladorEmpleado implements ControladorPersona {
             /*El else no es necesario, pero fue considerado.*/
         }
         //establecemos a nuestra tabla, el modelo que tenía:
-        tabla.setModel(modeloDeLaTabla);
-
+        //tabla.setModel(modeloDeLaTabla);
+        return modeloDeLaTabla;
     }
      
          private void limpiarLista(JTable tabla) {
